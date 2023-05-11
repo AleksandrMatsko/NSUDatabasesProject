@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.users.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
