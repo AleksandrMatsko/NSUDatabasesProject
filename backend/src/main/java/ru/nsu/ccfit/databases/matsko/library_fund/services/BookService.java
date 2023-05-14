@@ -2,7 +2,7 @@ package ru.nsu.ccfit.databases.matsko.library_fund.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.nsu.ccfit.databases.matsko.library_fund.entities.BookEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.BookRepository;
 
 import java.util.ArrayList;

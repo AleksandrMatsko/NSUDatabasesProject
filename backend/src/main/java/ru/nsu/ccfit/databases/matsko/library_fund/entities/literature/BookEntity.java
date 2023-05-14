@@ -1,7 +1,10 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.entities;
+package ru.nsu.ccfit.databases.matsko.library_fund.entities.literature;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "public.Books", schema = "public")
@@ -13,6 +16,14 @@ public class BookEntity {
 
     @Nonnull
     private String name;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "public.WorksInBook",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "lw_id"))
+    @JsonManagedReference
+    private Set<LiteraryWorkEntity> literaryWorks;
+
 
     public Integer getBookId() {
         return bookId;

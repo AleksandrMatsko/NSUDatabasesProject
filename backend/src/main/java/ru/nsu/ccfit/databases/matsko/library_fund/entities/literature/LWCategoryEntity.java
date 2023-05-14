@@ -1,5 +1,4 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.entities.users;
-
+package ru.nsu.ccfit.databases.matsko.library_fund.entities.literature;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.annotation.Nonnull;
@@ -8,8 +7,8 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "public.UserCategories", schema = "public")
-public class UserCategoryEntity {
+@Table(name = "public.LWCategories", schema = "public")
+public class LWCategoryEntity {
     @Id
     @Column(name = "category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +24,7 @@ public class UserCategoryEntity {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
     @JsonBackReference
-    private Set<UserEntity> userEntities;
-
+    private Set<LiteraryWorkEntity> lwEntities;
 
     public Integer getCategoryId() {
         return categoryId;
@@ -54,11 +52,11 @@ public class UserCategoryEntity {
         this.tableName = tableName;
     }
 
-    public Set<UserEntity> getUserEntities() {
-        return userEntities;
+    public Set<LiteraryWorkEntity> getLwEntities() {
+        return lwEntities;
     }
 
-    public void setUserEntities(Set<UserEntity> userEntities) {
-        this.userEntities = userEntities;
+    public void setLwEntities(Set<LiteraryWorkEntity> lwEntities) {
+        this.lwEntities = lwEntities;
     }
 }

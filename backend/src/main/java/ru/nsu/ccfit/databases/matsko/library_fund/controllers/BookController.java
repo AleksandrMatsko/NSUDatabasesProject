@@ -3,7 +3,7 @@ package ru.nsu.ccfit.databases.matsko.library_fund.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.nsu.ccfit.databases.matsko.library_fund.entities.BookEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.BookService;
 
 import java.util.List;
