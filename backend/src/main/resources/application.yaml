@@ -2,17 +2,20 @@ server:
   port: 8082
 
 spring:
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
   datasource:
-        url: jdbc:postgresql://sblab03.nsu.ru:5432/matsko_library_fund
-        username: amatsko20205
-        password: ${DB_PASSWORD}
+    url: jdbc:postgresql://sblab03.nsu.ru:5432/matsko_library_fund
+    username: amatsko20205
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
       naming:
         physical-strategy: ru.nsu.ccfit.databases.matsko.library_fund.config.MyPhysicalNamingStrategy
         hbm2ddl:
           auto: update
-      show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true

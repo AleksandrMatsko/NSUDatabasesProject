@@ -26,12 +26,12 @@ public class UserEntity {
 
     private String patronymic;
 
-    @ManyToOne
-    @JoinColumn(name="category", referencedColumnName = "category_id", foreignKey = @ForeignKey(name = "categories_fk"))
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category", referencedColumnName = "category_id", foreignKey = @ForeignKey(name = "categories_fk"))
     @JsonManagedReference
     private UserCategoryEntity category;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
     @JsonManagedReference
     private BaseUserCategoryEntity categoryInfo;
 
@@ -108,4 +108,5 @@ public class UserEntity {
     public void setIssues(Set<IssueJournalEntity> issues) {
         this.issues = issues;
     }
+
 }
