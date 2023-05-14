@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "public.Students", schema = "public")
-public class StudentEntity extends CategoryEntity {
+public class StudentEntityBaseUser extends BaseUserCategoryEntity {
 
     @Nonnull
     @Column(name = "faculty")

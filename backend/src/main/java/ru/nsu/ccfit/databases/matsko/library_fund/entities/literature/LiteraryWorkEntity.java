@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
 
 import java.util.Set;
 
@@ -23,6 +24,10 @@ public class LiteraryWorkEntity {
     @JoinColumn(name="category", referencedColumnName = "category_id", foreignKey = @ForeignKey(name = "lw_category_fk"))
     @JsonManagedReference
     private LWCategoryEntity category;
+
+    @OneToOne(mappedBy = "literaryWork")
+    @JsonManagedReference
+    private BaseLWCategoryEntity categoryInfo;
 
     @ManyToMany(mappedBy = "literaryWorks")
     @JsonBackReference

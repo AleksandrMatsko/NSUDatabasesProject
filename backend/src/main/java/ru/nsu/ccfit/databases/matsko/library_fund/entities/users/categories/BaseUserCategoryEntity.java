@@ -6,14 +6,14 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class CategoryEntity {
+public abstract class BaseUserCategoryEntity {
     @Id
     @Column(name = "user_id", unique = true)
     private Integer userId;
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", foreignKey = @ForeignKey(name = "Students_fk0"))
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     @JsonBackReference
     private UserEntity user;
 

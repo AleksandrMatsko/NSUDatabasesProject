@@ -3,7 +3,7 @@ package ru.nsu.ccfit.databases.matsko.library_fund.entities.users;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
-import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.CategoryEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.BaseUserCategoryEntity;
 
 @Entity
 @Table(name = "public.Users", schema = "public")
@@ -30,7 +30,7 @@ public class UserEntity {
 
     @OneToOne(mappedBy = "user")
     @JsonManagedReference
-    private CategoryEntity categoryInfo;
+    private BaseUserCategoryEntity categoryInfo;
 
     public Integer getUserId() {
         return userId;
@@ -74,11 +74,11 @@ public class UserEntity {
         this.category = category;
     }
 
-    public CategoryEntity getCategoryInfo() {
+    public BaseUserCategoryEntity getCategoryInfo() {
         return categoryInfo;
     }
 
-    public void setCategoryInfo(CategoryEntity categoryInfo) {
+    public void setCategoryInfo(BaseUserCategoryEntity categoryInfo) {
         this.categoryInfo = categoryInfo;
     }
 }
