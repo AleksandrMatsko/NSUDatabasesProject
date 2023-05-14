@@ -41,6 +41,14 @@ public class LibrarianEntity {
     @JsonBackReference
     private Set<RegistrationJournalEntity> registrations;
 
+    @OneToMany(mappedBy = "issuedBy")
+    @JsonBackReference
+    private Set<IssueJournalEntity> issues;
+
+    @OneToMany(mappedBy = "acceptedBy")
+    @JsonBackReference
+    private Set<IssueJournalEntity> accepts;
+
     public Integer getLibraryId() {
         return libraryId;
     }
@@ -105,5 +113,20 @@ public class LibrarianEntity {
         this.registrations = registrations;
     }
 
+    public Set<IssueJournalEntity> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(Set<IssueJournalEntity> issues) {
+        this.issues = issues;
+    }
+
+    public Set<IssueJournalEntity> getAccepts() {
+        return accepts;
+    }
+
+    public void setAccepts(Set<IssueJournalEntity> accepts) {
+        this.accepts = accepts;
+    }
 
 }

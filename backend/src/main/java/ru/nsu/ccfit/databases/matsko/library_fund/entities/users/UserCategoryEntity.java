@@ -2,6 +2,7 @@ package ru.nsu.ccfit.databases.matsko.library_fund.entities.users;
 
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 
@@ -15,10 +16,11 @@ public class UserCategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
 
-    @Column(name = "category_name", nullable = false)
+    @Column(name = "category_name", nullable = false, updatable = false)
     private String categoryName;
 
-    @Column(name = "table_name", nullable = false)
+    @Column(name = "table_name", nullable = false, updatable = false)
+    @JsonIgnore
     private String tableName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)

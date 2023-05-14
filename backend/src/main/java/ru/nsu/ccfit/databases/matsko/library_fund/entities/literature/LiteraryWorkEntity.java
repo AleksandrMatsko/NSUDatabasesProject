@@ -24,7 +24,7 @@ public class LiteraryWorkEntity {
     @JsonManagedReference
     private LWCategoryEntity category;
 
-    @OneToOne(mappedBy = "literaryWork")
+    @OneToOne(mappedBy = "literaryWork", cascade = CascadeType.ALL)
     @JsonManagedReference
     private BaseLWCategoryEntity categoryInfo;
 
@@ -32,7 +32,7 @@ public class LiteraryWorkEntity {
     @JsonBackReference
     private Set<BookEntity> books;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "public.AuthorsWorks",
             joinColumns = @JoinColumn(name = "lw_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))

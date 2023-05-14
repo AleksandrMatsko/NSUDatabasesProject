@@ -1,6 +1,7 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 
@@ -9,6 +10,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 public abstract class BaseUserCategoryEntity {
     @Id
     @Column(name = "user_id", unique = true, updatable = false)
+    @JsonIgnore
     private Integer userId;
 
     @OneToOne

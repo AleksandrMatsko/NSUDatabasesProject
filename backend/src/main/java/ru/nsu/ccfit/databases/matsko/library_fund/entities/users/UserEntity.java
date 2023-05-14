@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.IssueJournalEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.RegistrationJournalEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.BaseUserCategoryEntity;
+
+import java.util.Set;
 
 @Entity
 @Table(name = "public.Users", schema = "public")
@@ -35,6 +38,10 @@ public class UserEntity {
     @OneToOne(mappedBy = "user")
     @JsonBackReference
     private RegistrationJournalEntity registration;
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private Set<IssueJournalEntity> issues;
 
     public Integer getUserId() {
         return userId;
@@ -92,5 +99,13 @@ public class UserEntity {
 
     public void setRegistration(RegistrationJournalEntity registration) {
         this.registration = registration;
+    }
+
+    public Set<IssueJournalEntity> getIssues() {
+        return issues;
+    }
+
+    public void setIssues(Set<IssueJournalEntity> issues) {
+        this.issues = issues;
     }
 }

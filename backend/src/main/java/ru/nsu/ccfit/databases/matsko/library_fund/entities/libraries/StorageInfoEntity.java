@@ -1,11 +1,13 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
 
 import java.util.Date;
+import java.util.Set;
 
 
 @Entity
@@ -45,6 +47,10 @@ public class StorageInfoEntity {
     @JoinColumn(name = "book_id", referencedColumnName = "book_id")
     @JsonManagedReference
     private BookEntity book;
+
+    @OneToMany(mappedBy = "stored", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private Set<IssueJournalEntity> issues;
 
     public Integer getStoredId() {
         return storedId;
@@ -118,5 +124,11 @@ public class StorageInfoEntity {
         this.book = book;
     }
 
+    public Set<IssueJournalEntity> getIssues() {
+        return issues;
+    }
 
+    public void setIssues(Set<IssueJournalEntity> issues) {
+        this.issues = issues;
+    }
 }
