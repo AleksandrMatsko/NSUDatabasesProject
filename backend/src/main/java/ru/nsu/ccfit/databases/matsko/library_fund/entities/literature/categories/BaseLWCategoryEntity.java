@@ -9,7 +9,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWo
 public abstract class BaseLWCategoryEntity {
 
     @Id
-    @Column(name = "lw_id", unique = true, nullable = false)
+    @Column(name = "lw_id", unique = true, nullable = false, updatable = false)
     private Integer lwId;
 
     @OneToOne

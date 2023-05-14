@@ -9,7 +9,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.Base
 @Table(name = "public.Users", schema = "public")
 public class UserEntity {
     @Id
-    @Column(name = "user_id")
+    @Column(name = "user_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 

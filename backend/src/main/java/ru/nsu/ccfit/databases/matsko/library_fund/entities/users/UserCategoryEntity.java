@@ -11,7 +11,7 @@ import java.util.Set;
 @Table(name = "public.UserCategories", schema = "public")
 public class UserCategoryEntity {
     @Id
-    @Column(name = "category_id")
+    @Column(name = "category_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
 

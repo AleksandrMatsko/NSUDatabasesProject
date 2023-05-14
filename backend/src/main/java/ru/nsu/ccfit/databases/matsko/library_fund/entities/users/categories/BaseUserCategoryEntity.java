@@ -8,7 +8,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class BaseUserCategoryEntity {
     @Id
-    @Column(name = "user_id", unique = true)
+    @Column(name = "user_id", unique = true, updatable = false)
     private Integer userId;
 
     @OneToOne
