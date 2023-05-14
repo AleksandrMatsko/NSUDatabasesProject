@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.CategoryEntity;
 
 @Entity
 @Table(name = "public.Users", schema = "public")
@@ -27,6 +28,10 @@ public class UserEntity {
     @JoinColumn(name="category", referencedColumnName = "category_id", foreignKey = @ForeignKey(name = "categories_fk"))
     @JsonManagedReference
     private UserCategoryEntity category;
+
+    @OneToOne(mappedBy = "user")
+    @JsonManagedReference
+    private CategoryEntity categoryInfo;
 
     public Integer getUserId() {
         return userId;
@@ -68,5 +73,13 @@ public class UserEntity {
 
     public void setCategory(UserCategoryEntity category) {
         this.category = category;
+    }
+
+    public CategoryEntity getCategoryInfo() {
+        return categoryInfo;
+    }
+
+    public void setCategoryInfo(CategoryEntity categoryInfo) {
+        this.categoryInfo = categoryInfo;
     }
 }

@@ -5,7 +5,7 @@ spring:
   datasource:
         url: jdbc:postgresql://sblab03.nsu.ru:5432/matsko_library_fund
         username: amatsko20205
-        password: am050102for_study
+        password:
   jpa:
     hibernate:
       naming:
