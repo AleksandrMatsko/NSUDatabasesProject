@@ -14,7 +14,7 @@ public class BookEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bookId;
 
-    @Nonnull
+    @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToMany(cascade = CascadeType.ALL)

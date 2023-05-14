@@ -8,12 +8,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "public.Workers", schema = "public")
 public class WorkerEntityBaseUser extends BaseUserCategoryEntity {
-    @Nonnull
-    @Column(name = "job")
+
+    @Column(name = "job", nullable = false)
     private String job;
 
-    @Nonnull
-    @Column(name = "company")
+    @Column(name = "company", nullable = false)
     private String company;
 
     @Nonnull

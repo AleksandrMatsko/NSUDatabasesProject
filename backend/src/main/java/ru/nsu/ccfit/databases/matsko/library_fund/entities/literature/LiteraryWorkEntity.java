@@ -16,8 +16,7 @@ public class LiteraryWorkEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer lwId;
 
-    @Nonnull
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @ManyToOne
@@ -32,6 +31,13 @@ public class LiteraryWorkEntity {
     @ManyToMany(mappedBy = "literaryWorks")
     @JsonBackReference
     private Set<BookEntity> books;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "public.AuthorsWorks",
+            joinColumns = @JoinColumn(name = "lw_id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
+    @JsonManagedReference
+    private Set<AuthorEntity> authors;
 
     public Integer getLwId() {
         return lwId;
@@ -56,5 +62,29 @@ public class LiteraryWorkEntity {
 
     public void setCategory(LWCategoryEntity category) {
         this.category = category;
+    }
+
+    public BaseLWCategoryEntity getCategoryInfo() {
+        return categoryInfo;
+    }
+
+    public void setCategoryInfo(BaseLWCategoryEntity categoryInfo) {
+        this.categoryInfo = categoryInfo;
+    }
+
+    public Set<BookEntity> getBooks() {
+        return books;
+    }
+
+    public void setBooks(Set<BookEntity> books) {
+        this.books = books;
+    }
+
+    public Set<AuthorEntity> getAuthors() {
+        return authors;
+    }
+
+    public void setAuthors(Set<AuthorEntity> authors) {
+        this.authors = authors;
     }
 }

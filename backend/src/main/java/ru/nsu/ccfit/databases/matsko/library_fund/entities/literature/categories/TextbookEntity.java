@@ -9,12 +9,10 @@ import jakarta.persistence.Table;
 @Table(name = "public.Textbooks", schema = "public")
 public class TextbookEntity extends BaseLWCategoryEntity {
 
-    @Nonnull
-    @Column(name = "subject")
+    @Column(name = "subject", nullable = false)
     private String subject;
 
-    @Nonnull
-    @Column(name = "complexity_level")
+    @Column(name = "complexity_level", nullable = false)
     private String complexityLevel;
 
     @Nonnull

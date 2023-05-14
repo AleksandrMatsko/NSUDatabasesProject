@@ -7,12 +7,10 @@ import jakarta.persistence.*;
 @Table(name = "public.Students", schema = "public")
 public class StudentEntityBaseUser extends BaseUserCategoryEntity {
 
-    @Nonnull
-    @Column(name = "faculty")
+    @Column(name = "faculty", nullable = false)
     private String faculty;
 
-    @Nonnull
-    @Column(name = "university")
+    @Column(name = "university", nullable = false)
     private String university;
 
     @Nonnull

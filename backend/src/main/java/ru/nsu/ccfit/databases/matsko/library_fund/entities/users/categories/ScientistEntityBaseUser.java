@@ -9,8 +9,7 @@ import jakarta.persistence.Table;
 @Table(name = "public.Scientists", schema = "public")
 public class ScientistEntityBaseUser extends BaseUserCategoryEntity {
 
-    @Nonnull
-    @Column(name = "degree")
+    @Column(name = "degree", nullable = false)
     private String degree;
 
     @Nonnull

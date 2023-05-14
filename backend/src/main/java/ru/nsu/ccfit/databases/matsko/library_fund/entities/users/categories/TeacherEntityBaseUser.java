@@ -9,12 +9,10 @@ import jakarta.persistence.Table;
 @Table(name = "public.Teachers", schema = "public")
 public class TeacherEntityBaseUser extends BaseUserCategoryEntity {
 
-    @Nonnull
-    @Column(name = "school")
+    @Column(name = "school", nullable = false)
     private String school;
 
-    @Nonnull
-    @Column(name = "subject")
+    @Column(name = "subject", nullable = false)
     private String subject;
 
     @Nonnull

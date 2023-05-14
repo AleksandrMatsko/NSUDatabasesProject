@@ -8,12 +8,11 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "public.Novels", schema = "public")
 public class NovelEntity extends BaseLWCategoryEntity {
-    @Nonnull
-    @Column(name = "number_chapters")
+
+    @Column(name = "number_chapters", nullable = false)
     private Integer numberChapters;
 
-    @Nonnull
-    @Column(name = "short_desc")
+    @Column(name = "short_desc", nullable = false)
     private String shortDesc;
 
     @Nonnull

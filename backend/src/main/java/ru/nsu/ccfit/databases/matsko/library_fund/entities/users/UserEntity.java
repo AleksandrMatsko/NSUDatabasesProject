@@ -13,13 +13,11 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
-    @Nonnull
-    @Column(name = "first_name")
-    private String firstName;
-
-    @Nonnull
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
     private String patronymic;
 

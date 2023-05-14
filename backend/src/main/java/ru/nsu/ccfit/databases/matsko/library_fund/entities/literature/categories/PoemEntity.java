@@ -9,12 +9,10 @@ import jakarta.persistence.Table;
 @Table(name = "public.Poems", schema = "public")
 public class PoemEntity extends BaseLWCategoryEntity {
 
-    @Nonnull
-    @Column(name = "rhyming_method")
+    @Column(name = "rhyming_method", nullable = false)
     private String rhymingMethod;
 
-    @Nonnull
-    @Column(name = "verse_size")
+    @Column(name = "verse_size", nullable = false)
     private String verseSize;
 
     @Nonnull

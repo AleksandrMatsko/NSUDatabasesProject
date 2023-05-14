@@ -8,8 +8,7 @@ import java.util.Date;
 @Entity
 @Table(name = "public.ScientificArticles", schema = "public")
 public class ScientificArticleEntity extends BaseLWCategoryEntity {
-    @Nonnull
-    @Column(name = "date_issue")
+    @Column(name = "date_issue", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateIssue;
 

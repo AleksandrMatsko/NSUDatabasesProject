@@ -14,12 +14,10 @@ public class LWCategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
 
-    @Nonnull
-    @Column(name = "category_name")
+    @Column(name = "category_name", nullable = false)
     private String categoryName;
 
-    @Nonnull
-    @Column(name = "table_name")
+    @Column(name = "table_name", nullable = false)
     private String tableName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
