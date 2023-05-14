@@ -24,6 +24,10 @@ public class HallEntity {
     @JsonBackReference
     private Set<LibrarianEntity> librarians;
 
+    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private Set<StorageInfoEntity> stored;
+
     public Integer getHallId() {
         return hallId;
     }
@@ -46,5 +50,13 @@ public class HallEntity {
 
     public void setLibrarians(Set<LibrarianEntity> librarians) {
         this.librarians = librarians;
+    }
+
+    public Set<StorageInfoEntity> getStored() {
+        return stored;
+    }
+
+    public void setStored(Set<StorageInfoEntity> stored) {
+        this.stored = stored;
     }
 }

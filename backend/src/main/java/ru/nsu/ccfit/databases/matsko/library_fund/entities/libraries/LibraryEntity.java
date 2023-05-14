@@ -29,9 +29,9 @@ public class LibraryEntity {
     @JsonBackReference
     private Set<HallEntity> halls;
 
-    @OneToOne(mappedBy = "library")
+    @OneToMany(mappedBy = "library")
     @JsonBackReference
-    private RegistrationJournalEntity registration;
+    private Set<RegistrationJournalEntity> registrations;
 
     public Integer getLibraryId() {
         return libraryId;
@@ -81,11 +81,13 @@ public class LibraryEntity {
         this.halls = halls;
     }
 
-    public RegistrationJournalEntity getRegistration() {
-        return registration;
+    public Set<RegistrationJournalEntity> getRegistrations() {
+        return registrations;
     }
 
-    public void setRegistration(RegistrationJournalEntity registration) {
-        this.registration = registration;
+    public void setRegistrations(Set<RegistrationJournalEntity> registrations) {
+        this.registrations = registrations;
     }
+
+
 }

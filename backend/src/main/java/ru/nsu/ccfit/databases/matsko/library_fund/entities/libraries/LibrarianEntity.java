@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "public.Librarians", schema = "public")
@@ -27,7 +28,7 @@ public class LibrarianEntity {
     @Temporal(TemporalType.DATE)
     private Date dateHired;
 
-    @Column(name = "date_retired", nullable = true)
+    @Column(name = "date_retired")
     @Temporal(TemporalType.DATE)
     private Date dateRetired;
 
@@ -36,9 +37,9 @@ public class LibrarianEntity {
     @JsonManagedReference
     private HallEntity hall;
 
-    @OneToOne(mappedBy = "librarian")
+    @OneToMany(mappedBy = "librarian")
     @JsonBackReference
-    private RegistrationJournalEntity registration;
+    private Set<RegistrationJournalEntity> registrations;
 
     public Integer getLibraryId() {
         return libraryId;
@@ -96,11 +97,13 @@ public class LibrarianEntity {
         this.hall = hall;
     }
 
-    public RegistrationJournalEntity getRegistration() {
-        return registration;
+    public Set<RegistrationJournalEntity> getRegistrations() {
+        return registrations;
     }
 
-    public void setRegistration(RegistrationJournalEntity registration) {
-        this.registration = registration;
+    public void setRegistrations(Set<RegistrationJournalEntity> registrations) {
+        this.registrations = registrations;
     }
+
+
 }

@@ -25,14 +25,12 @@ public class RegistrationJournalEntity {
     @JsonManagedReference
     private UserEntity user;
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "librarian_id", referencedColumnName = "librarian_id")
+    @ManyToOne
+    @JoinColumn(name="librarian_id", referencedColumnName = "librarian_id")
     @JsonManagedReference
     private LibrarianEntity librarian;
 
-    @OneToOne
-    @MapsId
+    @ManyToOne
     @JoinColumn(name = "library_id", referencedColumnName = "library_id")
     @JsonManagedReference
     private LibraryEntity library;
@@ -76,4 +74,6 @@ public class RegistrationJournalEntity {
     public void setLibrary(LibraryEntity library) {
         this.library = library;
     }
+
+
 }
