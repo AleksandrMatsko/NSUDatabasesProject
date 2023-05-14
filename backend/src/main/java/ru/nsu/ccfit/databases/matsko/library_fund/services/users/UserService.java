@@ -7,18 +7,19 @@ import ru.nsu.ccfit.databases.matsko.library_fund.repositories.users.UserReposit
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class UserService {
+    private static final Logger logger = Logger.getLogger(UserService.class.getName());
 
     @Autowired
     private UserRepository userRepository;
 
     public List<UserEntity> getAll() {
-        List<UserEntity> list = new ArrayList<>();
-        for (UserEntity user: userRepository.findAll()) {
-            list.add(user);
-        }
+        logger.info(() -> "requesting all users");
+        List<UserEntity> list = new ArrayList<>(userRepository.findAll());
+        logger.info(() -> "got " + list.size() + " users");
         return list;
     }
 

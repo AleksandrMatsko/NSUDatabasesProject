@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.services;
+package ru.nsu.ccfit.databases.matsko.library_fund.services.literature;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +19,7 @@ public class BookService {
 
     public List<BookEntity> getAll() {
         logger.info(() -> "requesting all Books");
-        List<BookEntity> list = new ArrayList<>();
-        for (BookEntity book: bookRepository.findAll()) {
-            list.add(book);
-        }
+        List<BookEntity> list = new ArrayList<>(bookRepository.findAll());
         logger.info(() -> "got " + list.size() + " Books");
         return list;
     }
@@ -45,10 +42,6 @@ public class BookService {
     }
 
     public List<BookEntity> getAllByIds(List<Integer> ids) {
-        List<BookEntity> list = new ArrayList<>();
-        for (BookEntity book: bookRepository.findAllById(ids)) {
-            list.add(book);
-        }
-        return list;
+        return new ArrayList<>(bookRepository.findAllById(ids));
     }
 }
