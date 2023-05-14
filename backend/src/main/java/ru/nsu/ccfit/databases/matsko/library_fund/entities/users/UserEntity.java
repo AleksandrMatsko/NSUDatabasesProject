@@ -1,8 +1,10 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.users;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.RegistrationJournalEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.BaseUserCategoryEntity;
 
 @Entity
@@ -29,6 +31,10 @@ public class UserEntity {
     @OneToOne(mappedBy = "user")
     @JsonManagedReference
     private BaseUserCategoryEntity categoryInfo;
+
+    @OneToOne(mappedBy = "user")
+    @JsonBackReference
+    private RegistrationJournalEntity registration;
 
     public Integer getUserId() {
         return userId;
@@ -78,5 +84,13 @@ public class UserEntity {
 
     public void setCategoryInfo(BaseUserCategoryEntity categoryInfo) {
         this.categoryInfo = categoryInfo;
+    }
+
+    public RegistrationJournalEntity getRegistration() {
+        return registration;
+    }
+
+    public void setRegistration(RegistrationJournalEntity registration) {
+        this.registration = registration;
     }
 }
