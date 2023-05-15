@@ -1,9 +1,9 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.users;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.IssueJournalEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.RegistrationJournalEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.BaseUserCategoryEntity;
@@ -13,34 +13,37 @@ import java.util.Set;
 @Entity
 @Table(name = "public.Users", schema = "public")
 public class UserEntity {
+
+    @JsonView({View.UserView.class, View.IJView.class, View.RJView.class})
     @Id
     @Column(name = "user_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer userId;
 
+    @JsonView({View.UserView.class, View.IJView.class, View.RJView.class})
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @JsonView({View.UserView.class, View.IJView.class, View.RJView.class})
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @JsonView({View.UserView.class, View.IJView.class, View.RJView.class})
     private String patronymic;
 
+    @JsonView({View.UserView.class, View.IJView.class, View.RJView.class})
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category", referencedColumnName = "category_id", foreignKey = @ForeignKey(name = "categories_fk"))
-    @JsonManagedReference
     private UserCategoryEntity category;
 
+    @JsonView({View.UserView.class})
     @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
-    @JsonManagedReference
     private BaseUserCategoryEntity categoryInfo;
 
     @OneToOne(mappedBy = "user")
-    @JsonBackReference
     private RegistrationJournalEntity registration;
 
     @OneToMany(mappedBy = "user")
-    @JsonBackReference
     private Set<IssueJournalEntity> issues;
 
     public Integer getUserId() {

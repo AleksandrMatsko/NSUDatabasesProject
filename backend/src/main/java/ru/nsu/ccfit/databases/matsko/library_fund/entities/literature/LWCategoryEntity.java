@@ -1,27 +1,32 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.literature;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "public.LWCategories", schema = "public")
 public class LWCategoryEntity {
+
+    @JsonView({View.LWView.class})
     @Id
     @Column(name = "category_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
 
+    @JsonView({View.LWView.class})
     @Column(name = "category_name", nullable = false)
     private String categoryName;
 
     @Column(name = "table_name", nullable = false)
+    @JsonIgnore
     private String tableName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    @JsonBackReference
     private Set<LiteraryWorkEntity> lwEntities;
 
     public Integer getCategoryId() {

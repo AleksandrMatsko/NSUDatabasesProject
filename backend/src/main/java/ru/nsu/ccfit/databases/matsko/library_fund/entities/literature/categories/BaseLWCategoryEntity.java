@@ -1,6 +1,5 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
@@ -17,7 +16,6 @@ public abstract class BaseLWCategoryEntity {
     @OneToOne
     @MapsId
     @JoinColumn(name = "lw_id", referencedColumnName = "lw_id")
-    @JsonBackReference
     private LiteraryWorkEntity literaryWork;
 
     public Integer getLwId() {

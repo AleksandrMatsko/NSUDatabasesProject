@@ -1,8 +1,8 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 
 import java.util.Date;
 import java.util.Set;
@@ -11,50 +11,53 @@ import java.util.Set;
 @Table(name = "public.Librarians", schema = "public")
 public class LibrarianEntity {
 
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
     @Id
     @Column(name = "librarian_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer libraryId;
+    private Integer librarianId;
 
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
     private String patronymic;
 
+    @JsonView({View.LibrarianView.class})
     @Column(name = "date_hired", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateHired;
 
+    @JsonView({View.LibrarianView.class})
     @Column(name = "date_retired")
     @Temporal(TemporalType.DATE)
     private Date dateRetired;
 
+    @JsonView({View.LibrarianView.class})
     @ManyToOne
     @JoinColumn(name="hall_id", referencedColumnName = "hall_id")
-    @JsonManagedReference
     private HallEntity hall;
 
     @OneToMany(mappedBy = "librarian")
-    @JsonBackReference
     private Set<RegistrationJournalEntity> registrations;
 
     @OneToMany(mappedBy = "issuedBy")
-    @JsonBackReference
     private Set<IssueJournalEntity> issues;
 
     @OneToMany(mappedBy = "acceptedBy")
-    @JsonBackReference
     private Set<IssueJournalEntity> accepts;
 
-    public Integer getLibraryId() {
-        return libraryId;
+    public Integer getLibrarianId() {
+        return librarianId;
     }
 
-    public void setLibraryId(Integer libraryId) {
-        this.libraryId = libraryId;
+    public void setLibrarianId(Integer librarianId) {
+        this.librarianId = librarianId;
     }
 
     public String getLastName() {

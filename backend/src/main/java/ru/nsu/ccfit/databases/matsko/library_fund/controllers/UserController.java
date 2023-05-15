@@ -1,11 +1,13 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.BookService;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.users.UserService;
@@ -23,6 +25,7 @@ public class UserController {
     @Autowired
     private BookService bookService;
 
+    @JsonView(View.UserView.class)
     @GetMapping(value = "")
     public ResponseEntity<List<UserEntity>> getByParams(
             @RequestParam(value = "lwtmp", required = false) String lwTemplate,
@@ -37,6 +40,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAll());
     }
 
+    @JsonView(View.UserView.class)
     @GetMapping(value = "", params = {"lwtmp", "start", "end"})
     public ResponseEntity<List<LinkedHashMap<String, Object>>> getByLWAndPeriod(
             @RequestParam("lwtmp") String lwTemplate,
@@ -62,6 +66,7 @@ public class UserController {
         }
     }
 
+    @JsonView(View.UserView.class)
     @GetMapping(value = "", params = {"librn_last_name", "start", "end"})
     public ResponseEntity<List<UserEntity>> getByIdAndPeriod(
             @RequestParam("librn_last_name")  String librnLastName,
@@ -81,11 +86,13 @@ public class UserController {
         }
     }
 
+    @JsonView(View.UserView.class)
     @GetMapping("/overdue")
     public ResponseEntity<List<UserEntity>> getUserOverdue() {
         return ResponseEntity.ok(userService.getUserWithOverdueBook());
     }
 
+    @JsonView(View.UserView.class)
     @GetMapping(value = "/not_visit", params = {"start", "end"})
     public ResponseEntity<List<UserEntity>> getUsersNotVisit(
             @RequestParam("start") String start,

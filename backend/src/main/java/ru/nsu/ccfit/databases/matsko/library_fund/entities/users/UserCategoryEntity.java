@@ -3,19 +3,24 @@ package ru.nsu.ccfit.databases.matsko.library_fund.entities.users;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "public.UserCategories", schema = "public")
 public class UserCategoryEntity {
+
+    @JsonView({View.UserView.class})
     @Id
     @Column(name = "category_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
 
+    @JsonView({View.UserView.class, View.IJView.class, View.RJView.class})
     @Column(name = "category_name", nullable = false, updatable = false)
     private String categoryName;
 
@@ -24,7 +29,6 @@ public class UserCategoryEntity {
     private String tableName;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    @JsonBackReference
     private Set<UserEntity> userEntities;
 
 

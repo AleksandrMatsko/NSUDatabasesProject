@@ -1,9 +1,11 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.BookService;
 
@@ -20,11 +22,13 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    @JsonView(View.BookView.class)
     @GetMapping("")
     public ResponseEntity<List<BookEntity>> getBooks() {
         return ResponseEntity.ok(bookService.getAll());
     }
 
+    @JsonView(View.BookView.class)
     @GetMapping(value = "/from_reg_lib", params = {"user_last_name", "start", "end"})
     public ResponseEntity<List<BookEntity>> getByUserIdDuringPeriodFromRegLib(
             @RequestParam("user_last_name")  String userLastName,
@@ -44,6 +48,7 @@ public class BookController {
         }
     }
 
+    @JsonView(View.BookView.class)
     @GetMapping(value = "/not_from_reg_lib", params = {"user_last_name", "start", "end"})
     public ResponseEntity<List<BookEntity>> getByUserIdDuringPeriodNotFromRegLib(
             @RequestParam("user_last_name") String userLastName,
@@ -63,6 +68,7 @@ public class BookController {
         }
     }
 
+    @JsonView(View.BookView.class)
     @GetMapping(value = "/place", params = {"lib", "hall", "bookcase", "shelf"})
     public ResponseEntity<List<BookEntity>> getByPlace(
             @RequestParam("lib") String lib,
@@ -72,6 +78,7 @@ public class BookController {
         return ResponseEntity.ok(bookService.getByPlace(lib, hallId, bookcase, shelf));
     }
 
+    @JsonView(View.BookView.class)
     @GetMapping(value = "/{act}", params = {"start", "end"})
     public ResponseEntity<List<BookEntity>> getBookFlowInfo(
             @PathVariable("act") String act,
@@ -97,7 +104,7 @@ public class BookController {
         }
     }
 
-
+    @JsonView(View.BookView.class)
     @PostMapping(consumes = {"application/json"})
     public ResponseEntity<BookEntity> addBook(@RequestBody BookEntity book) {
         BookEntity res = bookService.add(book);

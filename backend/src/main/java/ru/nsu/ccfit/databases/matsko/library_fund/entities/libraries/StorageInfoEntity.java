@@ -1,9 +1,8 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
 
 import java.util.Date;
@@ -13,43 +12,50 @@ import java.util.Set;
 @Entity
 @Table(name = "public.StorageInfo", schema = "public")
 public class StorageInfoEntity {
+
+    @JsonView({View.SIView.class, View.IJView.class})
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "stored_id")
     private Integer storedId;
 
+    @JsonView({View.SIView.class})
     @ManyToOne
     @JoinColumn(name = "hall_id", referencedColumnName = "hall_id")
-    @JsonManagedReference
     private HallEntity hall;
 
+    @JsonView({View.SIView.class})
     @Column(nullable = false)
     private Integer bookcase;
 
+    @JsonView({View.SIView.class})
     @Column(nullable = false)
     private Integer shelf;
 
+    @JsonView({View.SIView.class, View.IJView.class})
     @Column(name = "available_issue", nullable = false)
     private Boolean availableIssue;
 
+    @JsonView({View.SIView.class, View.IJView.class})
     @Column(name = "duration_issue", nullable = false)
     private Integer durationIssue;
 
+    @JsonView({View.SIView.class})
     @Column(name = "date_receipt", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateReceipt;
 
+    @JsonView({View.SIView.class})
     @Column(name = "date_dispose")
     @Temporal(TemporalType.DATE)
     private Date dateDispose;
 
+    @JsonView({View.SIView.class, View.IJView.class})
     @ManyToOne
     @JoinColumn(name = "book_id", referencedColumnName = "book_id")
-    @JsonManagedReference
     private BookEntity book;
 
     @OneToMany(mappedBy = "stored", cascade = CascadeType.ALL)
-    @JsonBackReference
     private Set<IssueJournalEntity> issues;
 
     public Integer getStoredId() {

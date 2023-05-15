@@ -1,9 +1,9 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.literature;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
 
 import java.util.Set;
@@ -11,32 +11,33 @@ import java.util.Set;
 @Entity
 @Table(name = "public.LiteraryWorks", schema = "public")
 public class LiteraryWorkEntity {
+    @JsonView({View.BookView.class, View.LWView.class})
     @Id
     @Column(name = "lw_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer lwId;
 
+    @JsonView({View.BookView.class, View.LWView.class})
     @Column(name = "name", nullable = false)
     private String name;
 
+    @JsonView(View.LWView.class)
     @ManyToOne
     @JoinColumn(name="category", referencedColumnName = "category_id", foreignKey = @ForeignKey(name = "lw_category_fk"))
-    @JsonManagedReference
     private LWCategoryEntity category;
 
+    @JsonView(View.LWView.class)
     @OneToOne(mappedBy = "literaryWork", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private BaseLWCategoryEntity categoryInfo;
 
     @ManyToMany(mappedBy = "literaryWorks")
-    @JsonBackReference
     private Set<BookEntity> books;
 
+    @JsonView(View.LWView.class)
     @ManyToMany
     @JoinTable(name = "public.AuthorsWorks",
             joinColumns = @JoinColumn(name = "lw_id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
-    @JsonManagedReference
     private Set<AuthorEntity> authors;
 
     public Integer getLwId() {

@@ -1,7 +1,8 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 
 import java.util.Date;
@@ -15,32 +16,34 @@ public class IssueJournalEntity {
     @Column(name = "issue_id")
     private Integer issueId;
 
+    @JsonView({View.IJView.class})
     @ManyToOne
     @JoinColumn(name = "stored_id", referencedColumnName = "stored_id")
-    @JsonManagedReference
     private StorageInfoEntity stored;
 
+    @JsonView({View.IJView.class})
     @Column(name = "date_issue", nullable = false, updatable = false)
     @Temporal(TemporalType.DATE)
     private Date dateIssue;
 
+    @JsonView({View.IJView.class})
     @Column(name = "date_return")
     @Temporal(TemporalType.DATE)
     private Date dateReturn;
 
+    @JsonView({View.IJView.class})
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
-    @JsonManagedReference
     private UserEntity user;
 
+    @JsonView({View.IJView.class})
     @ManyToOne
     @JoinColumn(name = "issued_by_lbrn", referencedColumnName = "librarian_id")
-    @JsonManagedReference
     private LibrarianEntity issuedBy;
 
+    @JsonView({View.IJView.class})
     @ManyToOne
     @JoinColumn(name = "accepted_by_lbrn", referencedColumnName = "librarian_id")
-    @JsonManagedReference
     private LibrarianEntity acceptedBy;
 
     public Integer getIssueId() {

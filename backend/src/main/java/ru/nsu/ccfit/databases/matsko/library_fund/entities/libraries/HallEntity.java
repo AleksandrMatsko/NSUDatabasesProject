@@ -1,8 +1,8 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 
 import java.util.Set;
 
@@ -10,22 +10,21 @@ import java.util.Set;
 @Table(name = "public.Halls", schema = "public")
 public class HallEntity {
 
+    @JsonView({View.LibrarianView.class, View.SIView.class})
     @Id
     @Column(name = "hall_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer hallId;
 
+    @JsonView({View.LibrarianView.class})
     @ManyToOne
     @JoinColumn(name="library_id", referencedColumnName = "library_id")
-    @JsonManagedReference
     private LibraryEntity library;
 
     @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL)
-    @JsonBackReference
     private Set<LibrarianEntity> librarians;
 
     @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL)
-    @JsonBackReference
     private Set<StorageInfoEntity> stored;
 
     public Integer getHallId() {

@@ -1,11 +1,13 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.controllers;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.LibrarianEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.libraries.LibrarianService;
 
@@ -22,11 +24,13 @@ public class LibrarianController {
     @Autowired
     private LibrarianService librarianService;
 
+    @JsonView({View.LibrarianView.class})
     @GetMapping("")
     public ResponseEntity<List<LibrarianEntity>> getAll() {
         return ResponseEntity.ok(librarianService.getAll());
     }
 
+    @JsonView({View.LibrarianView.class})
     @GetMapping(value = "", params = {"lib_name", "hall"})
     public ResponseEntity<List<LibrarianEntity>> getByLibAndHall(
             @RequestParam("lib_name") String libraryName,
@@ -34,6 +38,7 @@ public class LibrarianController {
         return ResponseEntity.ok(librarianService.getByLibraryAndHall(libraryName, hallId));
     }
 
+    @JsonView({View.LibrarianView.class})
     @GetMapping(value = "/report", params = {"start", "end"})
     public ResponseEntity<List<LinkedHashMap<String, Object>>> getReport(
             @RequestParam("start") String start,
