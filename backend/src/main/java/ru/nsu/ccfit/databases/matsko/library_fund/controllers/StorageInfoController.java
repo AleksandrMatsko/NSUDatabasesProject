@@ -25,7 +25,7 @@ public class StorageInfoController {
         if (lwTmp != null && !lwTmp.isEmpty()) {
             return ResponseEntity.ok(siService.getByLW(lwTmp));
         }
-        else if (authorTmp != null) {
+        else if (authorTmp != null && !authorTmp.isEmpty()) {
             return ResponseEntity.ok(siService.getByAuthor(authorTmp));
         }
         return ResponseEntity.ok(siService.getAll());

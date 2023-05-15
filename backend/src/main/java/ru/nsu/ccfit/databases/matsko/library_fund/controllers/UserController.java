@@ -86,7 +86,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserWithOverdueBook());
     }
 
-    @GetMapping(value = "/notvisit", params = {"start", "end"})
+    @GetMapping(value = "/not_visit", params = {"start", "end"})
     public ResponseEntity<List<UserEntity>> getUsersNotVisit(
             @RequestParam("start") String start,
             @RequestParam("end") String end) {
