@@ -12,23 +12,24 @@ import java.util.Set;
 @Table(name = "public.Authors", schema = "public")
 public class AuthorEntity {
 
-    @JsonView({View.LWView.class})
+    @JsonView({View.LWView.class, View.AuthorView.class})
     @Id
     @Column(name = "author_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer authorId;
 
-    @JsonView({View.LWView.class})
+    @JsonView({View.LWView.class, View.AuthorView.class})
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @JsonView({View.LWView.class})
+    @JsonView({View.LWView.class, View.AuthorView.class})
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @JsonView({View.LWView.class})
+    @JsonView({View.LWView.class, View.AuthorView.class})
     private String patronymic;
 
+    @JsonView(View.AuthorView.class)
     @ManyToMany(mappedBy = "authors")
     private Set<LiteraryWorkEntity> literaryWorks;
 

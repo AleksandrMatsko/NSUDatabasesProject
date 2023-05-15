@@ -11,13 +11,13 @@ import java.util.Set;
 @Entity
 @Table(name = "public.LiteraryWorks", schema = "public")
 public class LiteraryWorkEntity {
-    @JsonView({View.BookView.class, View.LWView.class})
+    @JsonView({View.BookView.class, View.LWView.class, View.AuthorView.class})
     @Id
     @Column(name = "lw_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer lwId;
 
-    @JsonView({View.BookView.class, View.LWView.class})
+    @JsonView({View.BookView.class, View.LWView.class, View.AuthorView.class})
     @Column(name = "name", nullable = false)
     private String name;
 
@@ -30,6 +30,7 @@ public class LiteraryWorkEntity {
     @OneToOne(mappedBy = "literaryWork", cascade = CascadeType.ALL)
     private BaseLWCategoryEntity categoryInfo;
 
+    @JsonView(View.LWView.class)
     @ManyToMany(mappedBy = "literaryWorks")
     private Set<BookEntity> books;
 

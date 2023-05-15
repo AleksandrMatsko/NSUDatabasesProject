@@ -9,4 +9,5 @@ public interface View {
     interface SIView {}
     interface LibrarianView {}
     interface LibraryView {}
+    interface AuthorView {}
 }

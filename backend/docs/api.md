@@ -1,5 +1,9 @@
 # Описание API
 
+### Authors
+
+    /api/authors
+
 ### Books
     /api/books
         GET: получить все книги

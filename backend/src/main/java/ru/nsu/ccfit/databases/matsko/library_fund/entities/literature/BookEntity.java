@@ -1,8 +1,5 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.literature;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
@@ -14,13 +11,13 @@ import java.util.Set;
 @Table(name = "public.Books", schema = "public")
 public class BookEntity {
 
-    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class})
+    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class, View.LWView.class})
     @Id
     @Column(name = "book_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bookId;
 
-    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class})
+    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class, View.LWView.class})
     @Column(name = "name", nullable = false)
     private String name;
 
