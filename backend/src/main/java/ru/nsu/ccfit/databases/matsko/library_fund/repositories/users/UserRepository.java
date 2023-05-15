@@ -73,16 +73,25 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
     // query 8
     @Query(value = """           
-            SELECT DISTINCT user_id FROM "public.IssueJournal" IJ
-            WHERE ((:start_date <= date_issue AND date_issue <= :end_date) OR
-            	(date_return IS NOT NULL AND :start_date <= date_return AND date_return <= :end_date)) AND
-            	(IJ.issued_by_lbrn = :l OR IJ.accepted_by_lbrn = :l)
-            UNION SELECT user_id FROM "public.RegistrationJournal" RJ
-            WHERE :start_date <= registration_date AND registration_date <= :end_date AND
-            	RJ.librarian_id = :l ;
+            WITH librn AS (
+            	SELECT librarian_id FROM "public.Librarians" L
+            	WHERE last_name ILIKE '%' || :librnLastName || '%'
+            ), users AS (
+            	SELECT DISTINCT user_id FROM "public.IssueJournal" IJ, librn
+            	WHERE ((:start_date < date_issue AND date_issue < :end_date) OR
+            		(date_return IS NOT NULL AND :start_date < date_return AND date_return < :end_date)) AND
+            		(IJ.issued_by_lbrn = librn.librarian_id OR IJ.accepted_by_lbrn = librn.librarian_id)
+            	UNION SELECT user_id FROM "public.RegistrationJournal" RJ, librn
+            	WHERE :start_date < registration_date AND registration_date < :end_date AND
+            		RJ.librarian_id = librn.librarian_id
+            )
+                        
+            SELECT U.user_id FROM "public.Users" U
+            INNER JOIN users
+            ON U.user_id = users.user_id
             """, nativeQuery = true)
-    List<Object> findUsersByLibrnIdAndPeriod(
-            @Param("l") Integer id,
+    List<Integer> findUsersByLibrnIdAndPeriod(
+            @Param("librnLastName") String librnLastName,
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
 

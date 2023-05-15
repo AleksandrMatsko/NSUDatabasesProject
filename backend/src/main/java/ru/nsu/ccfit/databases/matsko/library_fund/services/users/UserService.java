@@ -63,13 +63,13 @@ public class UserService {
         return res;
     }
 
-    public List<UserEntity> getUserByLibrnIdAndPeriod(Integer id, Date startDate, Date endDate) {
+    public List<UserEntity> getUserByLibrnIdAndPeriod(String librnLastName, Date startDate, Date endDate) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        logger.info(() -> "requesting users who was serviced by librarian with id: " + id + " from " +
+        logger.info(() -> "requesting users who was serviced by librarian " + librnLastName + " from " +
                 format.format(startDate) + " to " + format.format(endDate));
-        List<Object> list = new ArrayList<>(userRepository.findUsersByLibrnIdAndPeriod(id, startDate,endDate));
+        List<Integer> list = new ArrayList<>(userRepository.findUsersByLibrnIdAndPeriod(librnLastName, startDate,endDate));
         logger.info(() -> "got " + list.size() + USER_PLURAL);
-        return new ArrayList<>(userRepository.findAllById(list.stream().map(Integer.class::cast).toList()));
+        return new ArrayList<>(userRepository.findAllById(list));
     }
 
     public List<UserEntity> getUserWithOverdueBook() {

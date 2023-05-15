@@ -23,16 +23,16 @@ public class StorageInfoService {
         return list;
     }
 
-    public List<StorageInfoEntity> getByLW(Integer lwId) {
-        logger.info(() -> "requesting all records in storage info that contain LW with id " + lwId);
-        List<Integer> list = new ArrayList<>(siRepository.findStoredByLW(lwId));
+    public List<StorageInfoEntity> getByLW(String lwName) {
+        logger.info(() -> "requesting all records in storage info that contain LW " + lwName);
+        List<Integer> list = new ArrayList<>(siRepository.findStoredByLW(lwName));
         logger.info(() -> "got " + list.size() + " records");
         return new ArrayList<>(siRepository.findAllById(list));
     }
 
-    public List<StorageInfoEntity> getByAuthor(Integer authorId) {
-        logger.info(() -> "requesting all records in storage info that contain LW of author with id " + authorId);
-        List<Integer> list = new ArrayList<>(siRepository.findStoredByAuthor(authorId));
+    public List<StorageInfoEntity> getByAuthor(String authorName) {
+        logger.info(() -> "requesting all records in storage info that contain LW of author " + authorName);
+        List<Integer> list = new ArrayList<>(siRepository.findStoredByAuthor(authorName));
         logger.info(() -> "got " + list.size() + " records");
         return new ArrayList<>(siRepository.findAllById(list));
     }

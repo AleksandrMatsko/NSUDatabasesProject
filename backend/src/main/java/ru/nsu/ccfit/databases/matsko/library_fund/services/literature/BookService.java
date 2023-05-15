@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 @Service
 public class BookService {
+    private final String DATE_TEMPLATE = "yyyy-MM-dd";
     private static final Logger logger = Logger.getLogger(BookService.class.getName());
 
     @Autowired
@@ -26,36 +27,38 @@ public class BookService {
         return list;
     }
 
-    public List<BookEntity> getByUserIdAndPeriodFromRegLib(Integer id, Date startDate, Date endDate) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        logger.info(() -> "requesting books borrowed by user with id " + id + " from " +
+    public List<BookEntity> getByUserIdAndPeriodFromRegLib(String lastNameTmp, Date startDate, Date endDate) {
+        SimpleDateFormat format = new SimpleDateFormat(DATE_TEMPLATE);
+        logger.info(() -> "requesting books borrowed by user " + lastNameTmp + " from " +
                 format.format(startDate) + " to " + format.format(endDate) + " from library where he was registered");
-        List<Integer> list = new ArrayList<>(bookRepository.findBooksByUserIdAndPeriodFromRegLib(id, startDate, endDate));
+        List<Integer> list = new ArrayList<>(bookRepository.findBooksByUserIdAndPeriodFromRegLib(
+                lastNameTmp, startDate, endDate));
         logger.info(() -> "got " + list.size() + " Books");
         return new ArrayList<>(bookRepository.findAllById(list));
 
     }
 
-    public List<BookEntity> getByUserIdAndPeriodNotFromRegLib(Integer id, Date startDate, Date endDate) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        logger.info(() -> "requesting books borrowed by user with id " + id + " from " +
+    public List<BookEntity> getByUserIdAndPeriodNotFromRegLib(String lastNameTmp, Date startDate, Date endDate) {
+        SimpleDateFormat format = new SimpleDateFormat(DATE_TEMPLATE);
+        logger.info(() -> "requesting books borrowed by user " + lastNameTmp + " from " +
                 format.format(startDate) + " to " + format.format(endDate) +
                 " from all libraries except where he was registered");
-        List<Integer> list = new ArrayList<>(bookRepository.findBooksByUserIdAndPeriodNotFromRegLib(id, startDate, endDate));
+        List<Integer> list = new ArrayList<>(bookRepository.findBooksByUserIdAndPeriodNotFromRegLib(
+                lastNameTmp, startDate, endDate));
         logger.info(() -> "got " + list.size() + " Books");
         return new ArrayList<>(bookRepository.findAllById(list));
     }
 
-    public List<BookEntity> getByPlace(Integer libId, Integer hallId, Integer bookcase, Integer shelf) {
-        logger.info(() -> "requesting books from lib with id = " + libId + " in hall with id = " + hallId +
+    public List<BookEntity> getByPlace(String libName, Integer hallId, Integer bookcase, Integer shelf) {
+        logger.info(() -> "requesting books from lib " + libName + " in hall with id = " + hallId +
                 " in bookcase = " + bookcase + " on shelf " + shelf);
-        List<BookEntity> list = new ArrayList<>(bookRepository.findAll());
+        List<Integer> list = new ArrayList<>(bookRepository.findBooksByPlace(libName, hallId, bookcase, shelf));
         logger.info(() -> "got " + list.size() + " Books");
-        return list;
+        return new ArrayList<>(bookRepository.findAllById(list));
     }
 
     public List<BookEntity> getReceiptDuringPeriod(Date startDate, Date endDate) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat(DATE_TEMPLATE);
         logger.info(() -> "requesting books receipt from " +
                 format.format(startDate) + " to " + format.format(endDate));
         List<Integer> list = new ArrayList<>(bookRepository.findBooksReceiptDuringPeriod(startDate, endDate));
@@ -64,7 +67,7 @@ public class BookService {
     }
 
     public List<BookEntity> getDisposeDuringPeriod(Date startDate, Date endDate) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat(DATE_TEMPLATE);
         logger.info(() -> "requesting books dispose from " +
                 format.format(startDate) + " to " + format.format(endDate));
         List<Integer> list = new ArrayList<>(bookRepository.findBooksDisposeDuringPeriod(startDate, endDate));

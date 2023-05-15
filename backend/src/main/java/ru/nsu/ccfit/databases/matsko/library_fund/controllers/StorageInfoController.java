@@ -20,13 +20,13 @@ public class StorageInfoController {
 
     @GetMapping("")
     public ResponseEntity<List<StorageInfoEntity>> getByParams(
-            @RequestParam(value = "lw", required = false) Integer lwId,
-            @RequestParam(value = "author", required = false) Integer authorId) {
-        if (lwId != null) {
-            return ResponseEntity.ok(siService.getByLW(lwId));
+            @RequestParam(value = "lwtmp", required = false) String lwTmp,
+            @RequestParam(value = "author", required = false) String authorTmp) {
+        if (lwTmp != null && !lwTmp.isEmpty()) {
+            return ResponseEntity.ok(siService.getByLW(lwTmp));
         }
-        else if (authorId != null) {
-            return ResponseEntity.ok(siService.getByAuthor(authorId));
+        else if (authorTmp != null) {
+            return ResponseEntity.ok(siService.getByAuthor(authorTmp));
         }
         return ResponseEntity.ok(siService.getAll());
     }

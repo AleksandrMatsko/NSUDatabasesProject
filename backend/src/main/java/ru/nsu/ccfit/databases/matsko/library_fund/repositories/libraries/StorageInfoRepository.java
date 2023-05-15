@@ -17,14 +17,14 @@ public interface StorageInfoRepository extends JpaRepository<StorageInfoEntity, 
             	SELECT book_id FROM "public.LiteraryWorks" LW
             	INNER JOIN "public.WorksInBook" WB
             	ON LW.lw_id = WB.lw_id
-            	WHERE LW.lw_id = :lwID
+            	WHERE LW."name" ILIKE '%' || :lwName || '%'
             )
                                     
             SELECT stored_id FROM "public.StorageInfo" SI
             INNER JOIN books
             ON SI.book_id = books.book_id;
             """, nativeQuery = true)
-    List<Integer> findStoredByLW(@Param("lwID") Integer lwId);
+    List<Integer> findStoredByLW(@Param("lwName") String lwName);
 
     // query 15
     @Query(value = """
@@ -32,7 +32,7 @@ public interface StorageInfoRepository extends JpaRepository<StorageInfoEntity, 
             	SELECT lw_id FROM "public.Authors" AU
             	INNER JOIN "public.AuthorsWorks" AW
             	ON AU.author_id = AW.author_id
-            	WHERE AU.author_id = :authorId
+            	WHERE AU.last_name ILIKE '%' || :authorName || '%'
             ), books AS (
             	SELECT DISTINCT book_id FROM lworks
             	INNER JOIN "public.WorksInBook" WB
@@ -43,5 +43,5 @@ public interface StorageInfoRepository extends JpaRepository<StorageInfoEntity, 
             INNER JOIN books
             ON SI.book_id = books.book_id
             """, nativeQuery = true)
-    List<Integer> findStoredByAuthor(@Param("authorId") Integer authorId);
+    List<Integer> findStoredByAuthor(@Param("authorName") String authorName);
 }

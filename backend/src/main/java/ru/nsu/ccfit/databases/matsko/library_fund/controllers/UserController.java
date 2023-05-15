@@ -62,9 +62,9 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "", params = {"librn_id", "start", "end"})
+    @GetMapping(value = "", params = {"librn_last_name", "start", "end"})
     public ResponseEntity<List<UserEntity>> getByIdAndPeriod(
-            @RequestParam("librn_id")  Integer librarianId,
+            @RequestParam("librn_last_name")  String librnLastName,
             @RequestParam("start") String start,
             @RequestParam("end") String end) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -74,7 +74,7 @@ public class UserController {
             if (startDate.after(endDate)) {
                 return ResponseEntity.badRequest().body(null);
             }
-            return ResponseEntity.ok(userService.getUserByLibrnIdAndPeriod(librarianId, startDate, endDate));
+            return ResponseEntity.ok(userService.getUserByLibrnIdAndPeriod(librnLastName, startDate, endDate));
         }
         catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);

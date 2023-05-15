@@ -16,7 +16,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
             	SELECT U.user_id, library_id FROM "public.Users" U
             	INNER JOIN "public.RegistrationJournal" RJ
             	ON RJ.user_id = U.user_id
-            	WHERE U.user_id = :uid
+            	WHERE U.last_name ILIKE '%' || :uLastName || '%'
             ), lib_halls AS (
             	SELECT hall_id FROM "public.Halls" H
             	INNER JOIN uid_lib
@@ -37,7 +37,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
             ON books.hall_id = lib_halls.hall_id;
             """, nativeQuery = true)
     List<Integer> findBooksByUserIdAndPeriodFromRegLib(
-            @Param("uid") Integer id,
+            @Param("uLastName") String userLastName,
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
 
@@ -47,7 +47,7 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
             	SELECT U.user_id, library_id FROM "public.Users" U
             	INNER JOIN "public.RegistrationJournal" RJ
             	ON RJ.user_id = U.user_id
-            	WHERE U.user_id = :uid
+            	WHERE U.last_name ILIKE '%' || :uLastName || '%'
             ), lib_halls AS (
             	SELECT hall_id FROM "public.Halls" H
             	INNER JOIN uid_lib
@@ -68,30 +68,35 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
             ON books.hall_id = lib_halls.hall_id;
             """, nativeQuery = true)
     List<Integer> findBooksByUserIdAndPeriodNotFromRegLib(
-            @Param("uid") Integer id,
+            @Param("uLastName") String userLastName,
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
 
     // query 7
     @Query(value = """           
-            WITH examples AS (
-            	SELECT stored_id, book_id FROM "public.StorageInfo" SI
+            WITH l_halls AS (
+            	SELECT hall_id FROM "public.Libraries" L
             	INNER JOIN "public.Halls" H
-            	ON H.hall_id = SI.hall_id
-            	WHERE H.library_id = :libId AND H.hall_id = :hallId AND bookcase = :bookcase AND shelf = :shelf
+            	ON H.library_id = L.library_id
+            	WHERE L.name ILIKE '%' || :libName || '%'
+            ), examples AS (
+            	SELECT stored_id, SI.book_id FROM "public.StorageInfo" SI
+            	INNER JOIN l_halls
+            	ON l_halls.hall_id = SI.hall_id
+            	WHERE l_halls.hall_id = :hallId AND bookcase = :bookcase AND shelf = :shelf
             ), issued AS (
-                SELECT DISTINCT book_id FROM examples e
+                SELECT DISTINCT e.book_id FROM examples e
                 INNER JOIN "public.IssueJournal" IJ
                 ON IJ.stored_id = e.stored_id
                 WHERE IJ.date_return IS NULL
             )
             
-            SELECT * FROM "public.Books" B
+            SELECT B.book_id FROM "public.Books" B
             INNER JOIN issued
             ON B.book_id = issued.book_id
             """, nativeQuery = true)
-    List<BookEntity> findBooksByPlace(
-            @Param("libId") Integer libId,
+    List<Integer> findBooksByPlace(
+            @Param("libName") String libName,
             @Param("hallId") Integer hallId,
             @Param("bookcase") Integer bookcase,
             @Param("shelf") Integer shelf);

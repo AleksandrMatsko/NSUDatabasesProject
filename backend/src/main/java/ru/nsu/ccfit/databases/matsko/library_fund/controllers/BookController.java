@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
+    private final String DATE_FORMAT = "yyyy-MM-dd";
 
     @Autowired
     private BookService bookService;
@@ -24,38 +25,38 @@ public class BookController {
         return ResponseEntity.ok(bookService.getAll());
     }
 
-    @GetMapping(value = "/from_reg_lib", params = {"user_id", "start", "end"})
+    @GetMapping(value = "/from_reg_lib", params = {"user_last_name", "start", "end"})
     public ResponseEntity<List<BookEntity>> getByUserIdDuringPeriodFromRegLib(
-            @RequestParam("user_id")  Integer userId,
+            @RequestParam("user_last_name")  String userLastName,
             @RequestParam("start") String start,
             @RequestParam("end") String end) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
         try {
             Date startDate = format.parse(start);
             Date endDate = format.parse(end);
             if (startDate.after(endDate)) {
                 return ResponseEntity.badRequest().body(null);
             }
-            return ResponseEntity.ok(bookService.getByUserIdAndPeriodFromRegLib(userId, startDate, endDate));
+            return ResponseEntity.ok(bookService.getByUserIdAndPeriodFromRegLib(userLastName, startDate, endDate));
         }
         catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);
         }
     }
 
-    @GetMapping(value = "/not_from_reg_lib", params = {"user_id", "start", "end"})
+    @GetMapping(value = "/not_from_reg_lib", params = {"user_last_name", "start", "end"})
     public ResponseEntity<List<BookEntity>> getByUserIdDuringPeriodNotFromRegLib(
-            @RequestParam("user_id")  Integer userId,
+            @RequestParam("user_last_name") String userLastName,
             @RequestParam("start") String start,
             @RequestParam("end") String end) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
         try {
             Date startDate = format.parse(start);
             Date endDate = format.parse(end);
             if (startDate.after(endDate)) {
                 return ResponseEntity.badRequest().body(null);
             }
-            return ResponseEntity.ok(bookService.getByUserIdAndPeriodNotFromRegLib(userId, startDate, endDate));
+            return ResponseEntity.ok(bookService.getByUserIdAndPeriodNotFromRegLib(userLastName, startDate, endDate));
         }
         catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);
@@ -64,11 +65,11 @@ public class BookController {
 
     @GetMapping(value = "/place", params = {"lib", "hall", "bookcase", "shelf"})
     public ResponseEntity<List<BookEntity>> getByPlace(
-            @RequestParam("lib") Integer libId,
+            @RequestParam("lib") String lib,
             @RequestParam("hall") Integer hallId,
             @RequestParam("bookcase") Integer bookcase,
             @RequestParam("shelf") Integer shelf) {
-        return ResponseEntity.ok(bookService.getByPlace(libId, hallId, bookcase, shelf));
+        return ResponseEntity.ok(bookService.getByPlace(lib, hallId, bookcase, shelf));
     }
 
     @GetMapping(value = "/{act}", params = {"start", "end"})
@@ -76,7 +77,7 @@ public class BookController {
             @PathVariable("act") String act,
             @RequestParam("start") String start,
             @RequestParam("end") String end) {
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
         try {
             Date startDate = format.parse(start);
             Date endDate = format.parse(end);
