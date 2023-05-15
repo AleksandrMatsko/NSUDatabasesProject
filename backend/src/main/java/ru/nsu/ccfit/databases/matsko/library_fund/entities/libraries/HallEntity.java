@@ -10,7 +10,7 @@ import java.util.Set;
 @Table(name = "public.Halls", schema = "public")
 public class HallEntity {
 
-    @JsonView({View.LibrarianView.class, View.SIView.class})
+    @JsonView({View.LibrarianView.class, View.SIView.class, View.LibraryView.class})
     @Id
     @Column(name = "hall_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +21,7 @@ public class HallEntity {
     @JoinColumn(name="library_id", referencedColumnName = "library_id")
     private LibraryEntity library;
 
+    @JsonView({View.LibraryView.class})
     @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL)
     private Set<LibrarianEntity> librarians;
 

@@ -61,6 +61,10 @@
             - start     // start date
             - end       // end date
 
+### Libraries
+
+    /api/libs
+
 ### RegistrationJournal
 
     /api/rj

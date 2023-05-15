@@ -11,29 +11,29 @@ import java.util.Set;
 @Table(name = "public.Librarians", schema = "public")
 public class LibrarianEntity {
 
-    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class, View.LibraryView.class})
     @Id
     @Column(name = "librarian_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer librarianId;
 
-    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class, View.LibraryView.class})
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class, View.LibraryView.class})
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class})
+    @JsonView({View.LibrarianView.class, View.IJView.class, View.RJView.class, View.LibraryView.class})
     private String patronymic;
 
-    @JsonView({View.LibrarianView.class})
+    @JsonView({View.LibrarianView.class, View.LibraryView.class})
     @Column(name = "date_hired", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date dateHired;
 
-    @JsonView({View.LibrarianView.class})
+    @JsonView({View.LibrarianView.class, View.LibraryView.class})
     @Column(name = "date_retired")
     @Temporal(TemporalType.DATE)
     private Date dateRetired;
