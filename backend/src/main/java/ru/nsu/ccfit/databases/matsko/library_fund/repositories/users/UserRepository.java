@@ -1,6 +1,5 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.repositories.users;
 
-import jakarta.persistence.EntityResult;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -9,7 +8,6 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
@@ -70,6 +68,52 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
             """, nativeQuery = true)
     List<UserBookPair> findUsersAndBookNameByLWDuringPeriod(
             @Param("lwtmp") String bookTemplate,
+            @Param("start_date") Date startDate,
+            @Param("end_date") Date endDate);
+
+    // query 8
+    @Query(value = """           
+            SELECT DISTINCT user_id FROM "public.IssueJournal" IJ
+            WHERE ((:start_date <= date_issue AND date_issue <= :end_date) OR
+            	(date_return IS NOT NULL AND :start_date <= date_return AND date_return <= :end_date)) AND
+            	(IJ.issued_by_lbrn = :l OR IJ.accepted_by_lbrn = :l)
+            UNION SELECT user_id FROM "public.RegistrationJournal" RJ
+            WHERE :start_date <= registration_date AND registration_date <= :end_date AND
+            	RJ.librarian_id = :l ;
+            """, nativeQuery = true)
+    List<Object> findUsersByLibrnIdAndPeriod(
+            @Param("l") Integer id,
+            @Param("start_date") Date startDate,
+            @Param("end_date") Date endDate);
+
+    // query 10
+    @Query(value = """
+            WITH durations AS (
+            	SELECT user_id, date_issue + duration_issue AS exp_date, date_return FROM "public.StorageInfo" SI
+            	INNER JOIN "public.IssueJournal" IJ
+            	ON IJ.stored_id = SI.stored_id
+            	WHERE available_issue
+            )
+            
+            SELECT DISTINCT user_id FROM durations
+            WHERE (date_return IS NOT NULL AND exp_date < date_return) OR (date_return IS NULL AND exp_date < NOW())
+            """, nativeQuery = true)
+    List<Integer> findUsersWithOverdueBooks();
+
+    // query 13
+    @Query(value = """           
+            WITH users AS (
+                SELECT DISTINCT user_id FROM "public.IssueJournal" IJ
+                WHERE (date_issue <= :end_date AND date_issue >= :start_date) OR
+            	    (date_return IS NOT NULL AND date_return <= :end_date AND date_return >= :start_date)	
+                UNION SELECT DISTINCT user_id FROM "public.RegistrationJournal" RJ
+                WHERE registration_date <= :end_date AND registration_date >= :start_date
+            )
+            
+            SELECT U.user_id FROM "public.Users" U
+            WHERE U.user_id NOT IN(SELECT users.user_id FROM users)
+            """, nativeQuery = true)
+    List<Integer> findUsersNotVisitDuringPeriod(
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
 }

@@ -49,7 +49,8 @@ public class UserController {
             if (startDate.after(endDate)) {
                 return ResponseEntity.badRequest().body(null);
             }
-            List<LinkedHashMap<String, Object>> info = userService.getUserAndBookByNameAndPeriod(lwTemplate, startDate, endDate);
+            List<LinkedHashMap<String, Object>> info = userService.getUserAndBookByNameAndPeriod(
+                    lwTemplate, startDate, endDate);
             for (LinkedHashMap<String, Object> param : info) {
                 Integer bookId = (Integer) param.remove("book_id");
                 param.put("book", bookService.getById(bookId));
@@ -61,5 +62,45 @@ public class UserController {
         }
     }
 
+    @GetMapping(value = "", params = {"librn_id", "start", "end"})
+    public ResponseEntity<List<UserEntity>> getByIdAndPeriod(
+            @RequestParam("librn_id")  Integer librarianId,
+            @RequestParam("start") String start,
+            @RequestParam("end") String end) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date startDate = format.parse(start);
+            Date endDate = format.parse(end);
+            if (startDate.after(endDate)) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            return ResponseEntity.ok(userService.getUserByLibrnIdAndPeriod(librarianId, startDate, endDate));
+        }
+        catch (ParseException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
+    @GetMapping("/overdue")
+    public ResponseEntity<List<UserEntity>> getUserOverdue() {
+        return ResponseEntity.ok(userService.getUserWithOverdueBook());
+    }
+
+    @GetMapping(value = "/notvisit", params = {"start", "end"})
+    public ResponseEntity<List<UserEntity>> getUsersNotVisit(
+            @RequestParam("start") String start,
+            @RequestParam("end") String end) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date startDate = format.parse(start);
+            Date endDate = format.parse(end);
+            if (startDate.after(endDate)) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            return ResponseEntity.ok(userService.getUserNotVisitDuringPeriod(startDate, endDate));
+        }
+        catch (ParseException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 }
