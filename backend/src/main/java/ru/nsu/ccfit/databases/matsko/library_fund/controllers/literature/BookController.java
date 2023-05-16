@@ -1,7 +1,6 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.controllers;
+package ru.nsu.ccfit.databases.matsko.library_fund.controllers.literature;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,13 +10,16 @@ import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.BookServic
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/books")
 public class BookController {
     private final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final Logger logger = Logger.getLogger(BookController.class.getName());
 
     @Autowired
     private BookService bookService;
@@ -44,6 +46,7 @@ public class BookController {
             return ResponseEntity.ok(bookService.getByUserIdAndPeriodFromRegLib(userLastName, startDate, endDate));
         }
         catch (ParseException e) {
+            logger.warning(e::getMessage);
             return ResponseEntity.badRequest().body(null);
         }
     }
@@ -64,6 +67,7 @@ public class BookController {
             return ResponseEntity.ok(bookService.getByUserIdAndPeriodNotFromRegLib(userLastName, startDate, endDate));
         }
         catch (ParseException e) {
+            logger.warning(e::getMessage);
             return ResponseEntity.badRequest().body(null);
         }
     }
@@ -100,18 +104,27 @@ public class BookController {
             return ResponseEntity.badRequest().body(null);
         }
         catch (ParseException e) {
+            logger.warning(e::getMessage);
             return ResponseEntity.badRequest().body(null);
         }
     }
 
     @JsonView(View.BookView.class)
     @PostMapping(consumes = {"application/json"})
-    public ResponseEntity<BookEntity> addBook(@RequestBody BookEntity book) {
-        BookEntity res = bookService.add(book);
-        if (res != null) {
-            return ResponseEntity.ok(res);
+    public ResponseEntity<BookEntity> addBook(@RequestBody NewBookParams book) {
+        String bookName = book.getName();
+        ArrayList<Integer> lwIds = book.getLiteraryWorks();
+        if (bookName == null || bookName.isEmpty() || lwIds.isEmpty()) {
+            return ResponseEntity.badRequest().body(null);
         }
-        return ResponseEntity.badRequest().body(res);
+        try {
+            return  ResponseEntity.ok(bookService.add(bookName, lwIds));
+        }
+        catch (Exception e) {
+            logger.warning(e::getMessage);
+            return ResponseEntity.badRequest().body(null);
+        }
+
     }
 
 }

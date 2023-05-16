@@ -1,8 +1,11 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.literature;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.BookLWInsertRes;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.BookRepository;
 
 import java.text.SimpleDateFormat;
@@ -75,8 +78,18 @@ public class BookService {
         return new ArrayList<>(bookRepository.findAllById(list));
     }
 
-    public BookEntity add(BookEntity book) {
-        return bookRepository.save(book);
+    @Transactional
+    public BookEntity add(String bookName, List<Integer> lwIds) {
+        Integer newBookId = bookRepository.insertBook(bookName);
+        for (Integer lwId : lwIds) {
+            BookLWInsertRes res = bookRepository.insertLWorksToBook(newBookId, lwId);
+            if (!res.getBookId().equals(newBookId) || !res.getLwId().equals(lwId)) {
+                throw new IllegalStateException("bad insert: expected book_id = " + newBookId + " lw_id = " + lwId +
+                        " got book_id = " + res.getBookId() + " lw_id = " + res.getLwId());
+            }
+        }
+        return bookRepository.findById(newBookId).orElseThrow(
+                () -> new IllegalStateException("fantom insert with new book: expected book with id = " + newBookId));
     }
 
     public BookEntity getById(Integer id) {

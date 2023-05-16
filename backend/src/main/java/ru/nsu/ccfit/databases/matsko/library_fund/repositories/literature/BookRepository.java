@@ -3,6 +3,7 @@ package ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.util.Pair;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
 
 import java.util.Date;
@@ -122,4 +123,19 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
     List<Integer> findBooksDisposeDuringPeriod(
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
+
+    @Query(value = """
+            INSERT INTO "public.Books" ("name")
+            VALUES ( :bookName ) RETURNING book_id;
+            """, nativeQuery = true)
+    Integer insertBook(@Param("bookName") String bookName);
+
+
+    @Query(value = """
+            INSERT INTO "public.WorksInBook" (book_id, lw_id)
+            VALUES ( :bookId , :lwId ) RETURNING book_id AS bookId, lw_id AS lwId;
+            """, nativeQuery = true)
+    BookLWInsertRes insertLWorksToBook(
+            @Param("bookId") Integer bookId,
+            @Param("lwId") Integer lwId);
 }

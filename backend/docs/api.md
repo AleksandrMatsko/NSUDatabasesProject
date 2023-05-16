@@ -6,7 +6,13 @@
 
 ### Books
     /api/books
-        GET: получить все книги
+        GET - получить все книги
+        POST - в формате:
+            {
+                "name": "some_name",
+                "literaryWorks": [1, 2]
+            }
+        добавление новой книги
     
     /api/books/from_reg_lib
         required query params:

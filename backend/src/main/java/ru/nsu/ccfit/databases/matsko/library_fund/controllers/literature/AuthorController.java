@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.controllers;
+package ru.nsu.ccfit.databases.matsko.library_fund.controllers.literature;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
