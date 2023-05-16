@@ -111,9 +111,9 @@ public class BookController {
 
     @JsonView(View.BookView.class)
     @PostMapping(consumes = {"application/json"})
-    public ResponseEntity<BookEntity> addBook(@RequestBody NewBookParams book) {
-        String bookName = book.getName();
-        ArrayList<Integer> lwIds = book.getLiteraryWorks();
+    public ResponseEntity<BookEntity> addBook(@RequestBody NewBookParams params) {
+        String bookName = params.getName();
+        ArrayList<Integer> lwIds = params.getLiteraryWorks();
         if (bookName == null || bookName.isEmpty() || lwIds.isEmpty()) {
             return ResponseEntity.badRequest().body(null);
         }

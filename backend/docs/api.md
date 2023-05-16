@@ -3,6 +3,14 @@
 ### Authors
 
     /api/authors
+        GET - получить всех авторов
+        POST - в формате:
+            {
+                "lastName": "some_last_name",
+                "firstName": "some_first_name",
+                "patronymic": "some_patronymic"
+            }
+        добавление нового автора
 
 ### Books
     /api/books

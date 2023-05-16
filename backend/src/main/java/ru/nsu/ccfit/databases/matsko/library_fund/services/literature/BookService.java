@@ -80,6 +80,7 @@ public class BookService {
 
     @Transactional
     public BookEntity add(String bookName, List<Integer> lwIds) {
+        logger.info(() -> "inserting new book with name " + bookName);
         Integer newBookId = bookRepository.insertBook(bookName);
         for (Integer lwId : lwIds) {
             BookLWInsertRes res = bookRepository.insertLWorksToBook(newBookId, lwId);

@@ -1,6 +1,5 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.entities.literature;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
