@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
 
 import java.util.List;
@@ -35,4 +36,13 @@ public interface LWRepository extends JpaRepository<LiteraryWorkEntity, Integer>
             LIMIT :lim
             """, nativeQuery = true)
     List<LWWithCount> findPopularLW(@Param("lim") Integer limit);
+
+    @Query(value = """
+            INSERT INTO "public.LiteraryWorks"("name", category)
+            VALUES ( :lwName , :categoryId ) RETURNING lw_id;
+            """, nativeQuery = true)
+    Integer insertLW(
+            @Param("lwName") String lwName,
+            @Param("categoryId") Integer categoryId);
+
 }

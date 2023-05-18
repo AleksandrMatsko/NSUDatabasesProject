@@ -1,15 +1,18 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.literature;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.AuthorRepository;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWCategoryRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWWithCount;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Service
@@ -18,6 +21,12 @@ public class LWService {
 
     @Autowired
     private LWRepository lwRepository;
+
+    @Autowired
+    private LWCategoryRepository lwCategoryRepository;
+
+    @Autowired
+    private AuthorRepository authorRepository;
 
     public List<LiteraryWorkEntity> getAll() {
         logger.info(() -> "requesting all literary works");
@@ -44,5 +53,25 @@ public class LWService {
             }
         }
         return res;
+    }
+
+    @Transactional
+    public LiteraryWorkEntity add(String lwName, String categoryName, BaseLWCategoryEntity categoryInfo,
+                                  List<Integer> authorIds) {
+        logger.info(() -> "creating new lw with name: " + lwName);
+        LiteraryWorkEntity newLW = new LiteraryWorkEntity();
+        newLW.setName(lwName);
+        LWCategoryEntity category = lwCategoryRepository.getCategoryByName(categoryName);
+        if (category != null && categoryInfo != null) {
+            newLW.setCategory(category);
+            categoryInfo.setLiteraryWork(newLW);
+            newLW.setCategoryInfo(categoryInfo);
+        }
+        else if (category != null) {
+            throw new IllegalStateException("category info not provided");
+        }
+        List<AuthorEntity> authors = authorRepository.findAllById(authorIds);
+        newLW.setAuthors(new LinkedHashSet<>(authors));
+        return lwRepository.save(newLW);
     }
 }

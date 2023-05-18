@@ -30,7 +30,7 @@ public class LiteraryWorkEntity {
     @OneToOne(mappedBy = "literaryWork", cascade = CascadeType.ALL)
     private BaseLWCategoryEntity categoryInfo;
 
-    @JsonView(View.LWView.class)
+    // @JsonView(View.LWView.class)
     @ManyToMany(mappedBy = "literaryWorks")
     private Set<BookEntity> books;
 

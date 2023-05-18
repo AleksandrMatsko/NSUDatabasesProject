@@ -56,6 +56,17 @@
 ### LiteraryWorks
 
     /api/lws
+        POST - в формате:
+        {
+            "lwName": "Война и мир. Том первый",
+            "authors": [2],
+            "categoryName": "novel",
+            "categoryInfo": {
+                "numberChapters": 25,
+                "shortDesc": "первая часть знаменитого романа"
+            }
+        }
+        добавляет новое литературное произведение
 
     /api/lws/popular
         required query params:

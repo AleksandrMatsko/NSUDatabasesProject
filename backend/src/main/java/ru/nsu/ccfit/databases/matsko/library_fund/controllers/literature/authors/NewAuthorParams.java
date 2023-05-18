@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.controllers.literature;
+package ru.nsu.ccfit.databases.matsko.library_fund.controllers.literature.authors;
 
 public class NewAuthorParams {
     private String lastName;

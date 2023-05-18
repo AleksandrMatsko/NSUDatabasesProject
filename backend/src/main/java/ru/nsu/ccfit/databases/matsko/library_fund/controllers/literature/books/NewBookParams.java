@@ -1,4 +1,4 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.controllers.literature;
+package ru.nsu.ccfit.databases.matsko.library_fund.controllers.literature.books;
 
 import java.util.ArrayList;
 
