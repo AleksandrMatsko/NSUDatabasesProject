@@ -27,8 +27,10 @@ public class AuthorService {
     @Transactional
     public AuthorEntity addAuthor(String lastName, String firstName, String patronymic) {
         logger.info(() -> "inserting new author");
-        Integer newId = authorRepository.insertAuthor(lastName, firstName, patronymic);
-        return authorRepository.findById(newId).orElseThrow(
-                () -> new IllegalStateException("fantom insert with new author: expected author with id = " + newId));
+        AuthorEntity authorEntity = new AuthorEntity();
+        authorEntity.setLastName(lastName);
+        authorEntity.setFirstName(firstName);
+        authorEntity.setPatronymic(patronymic);
+        return authorRepository.save(authorEntity);
     }
 }
