@@ -124,18 +124,4 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
 
-    @Query(value = """
-            INSERT INTO "public.Books" ("name")
-            VALUES ( :bookName ) RETURNING book_id;
-            """, nativeQuery = true)
-    Integer insertBook(@Param("bookName") String bookName);
-
-
-    @Query(value = """
-            INSERT INTO "public.WorksInBook" (book_id, lw_id)
-            VALUES ( :bookId , :lwId ) RETURNING book_id AS bookId, lw_id AS lwId;
-            """, nativeQuery = true)
-    BookLWInsertRes insertLWorksToBook(
-            @Param("bookId") Integer bookId,
-            @Param("lwId") Integer lwId);
 }

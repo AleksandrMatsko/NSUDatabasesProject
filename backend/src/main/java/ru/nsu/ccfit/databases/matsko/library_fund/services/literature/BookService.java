@@ -5,20 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.BookLWInsertRes;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.BookRepository;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWRepository;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Service
 public class BookService {
     private final String DATE_TEMPLATE = "yyyy-MM-dd";
     private static final Logger logger = Logger.getLogger(BookService.class.getName());
+
+    @Autowired
+    private LWRepository lwRepository;
 
     @Autowired
     private BookRepository bookRepository;
@@ -81,16 +83,14 @@ public class BookService {
     @Transactional
     public BookEntity add(String bookName, List<Integer> lwIds) {
         logger.info(() -> "inserting new book with name " + bookName);
-        Integer newBookId = bookRepository.insertBook(bookName);
-        for (Integer lwId : lwIds) {
-            BookLWInsertRes res = bookRepository.insertLWorksToBook(newBookId, lwId);
-            if (!res.getBookId().equals(newBookId) || !res.getLwId().equals(lwId)) {
-                throw new IllegalStateException("bad insert: expected book_id = " + newBookId + " lw_id = " + lwId +
-                        " got book_id = " + res.getBookId() + " lw_id = " + res.getLwId());
-            }
+        List<LiteraryWorkEntity> lws = lwRepository.findAllById(lwIds);
+        if (lws.isEmpty()) {
+            throw new IllegalStateException("book must contain at least one literary work");
         }
-        return bookRepository.findById(newBookId).orElseThrow(
-                () -> new IllegalStateException("fantom insert with new book: expected book with id = " + newBookId));
+        BookEntity bookEntity = new BookEntity();
+        bookEntity.setName(bookName);
+        bookEntity.setLiteraryWorks(new HashSet<>(lws));
+        return bookRepository.save(bookEntity);
     }
 
     public BookEntity getById(Integer id) {
