@@ -1,7 +1,9 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.literature;
 
 import jakarta.transaction.Transactional;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.AuthorRepository;
@@ -32,5 +34,14 @@ public class AuthorService {
         authorEntity.setFirstName(firstName);
         authorEntity.setPatronymic(patronymic);
         return authorRepository.save(authorEntity);
+    }
+
+    @Transactional
+    public AuthorEntity update(AuthorEntity authorEntity) {
+        logger.info(() -> "updating author with id = " + authorEntity.getAuthorId());
+        if (authorRepository.existsById(authorEntity.getAuthorId())) {
+            return authorRepository.save(authorEntity);
+        }
+        throw new IllegalStateException("author with id " + authorEntity.getAuthorId() + " not found");
     }
 }

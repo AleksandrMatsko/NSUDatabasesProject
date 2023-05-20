@@ -4,23 +4,43 @@
 
     /api/authors
         GET - получить всех авторов
-        POST - в формате:
+        POST в формате:
         {
             "lastName": "some_last_name",
             "firstName": "some_first_name",
             "patronymic": "some_patronymic"
-        }
-        добавление нового автора
+        } - добавление нового автора
+
+    /api/authors/2
+        PUT в формате (AuthorEntity) (число в path - id автора):
+        {
+            "authorId": 2,
+            "lastName": "Толстой",
+            "firstName": "Лев",
+            "patronymic": "Николаевич",
+            "literaryWorks": [
+                {
+                    "lwId": 36,
+                    "name": "Война и мир. Том второй"
+                },
+                {
+                    "lwId": 34,
+                    "name": "Война и мир. Том первый"
+                },
+                {
+                    "lwId": 37
+                }
+            ]
+        } - обновление автора
 
 ### Books
     /api/books
         GET - получить все книги
-        POST - в формате:
+        POST в формате:
         {
             "name": "some_name",
             "literaryWorks": [1, 2]
-        }
-        добавление новой книги
+        } - добавление новой книги
     
     /api/books/from_reg_lib
         required query params:
@@ -61,23 +81,22 @@
             "dateReturn": "2022-10-30",
             "issuedBy": 1,
             "acceptedBy": 6
-        }
-        добавление новой записи в журнал выдачи
+        } - добавление новой записи в журнал выдачи
 
 ### LiteraryWorks
 
     /api/lws
-        POST - в формате:
+        GET - получить все
+        POST в формате:
         {
-            "lwName": "Война и мир. Том первый",
+            "lwName": "Война и мир. Том третий",
             "authors": [2],
             "categoryName": "novel",
             "categoryInfo": {
-                "numberChapters": 25,
-                "shortDesc": "первая часть знаменитого романа"
+                "numberChapters": 96,
+                "shortDesc": "третья часть знаменитого романа"
             }
-        }
-        добавляет новое литературное произведение
+        } - добавляет новое литературное произведение
 
     /api/lws/popular
         required query params:
@@ -87,7 +106,7 @@
 
     /api/librns
         GET - получить всех
-        POST - в формате:
+        POST в формате:
         {
             "lastName": "Книголюбов",
             "firstName": "Игорь",
@@ -95,8 +114,7 @@
             "hallId": 16,
             "dateHired": "2023-02-12",
             "dateRetired": null
-        }
-        добавление нового библиотекаря
+        } - добавление нового библиотекаря
 
     /api/librns
         required query params:

@@ -2,11 +2,9 @@ package ru.nsu.ccfit.databases.matsko.library_fund.services.literature;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
-import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.BookLWInsertRes;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.BookRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWRepository;
 
@@ -94,6 +92,7 @@ public class BookService {
     }
 
     public BookEntity getById(Integer id) {
+        logger.info(() -> "getting book with id = " + id);
         Optional<BookEntity> res = bookRepository.findById(id);
         return res.orElse( null);
     }

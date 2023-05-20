@@ -43,4 +43,14 @@ public class AuthorController {
         }
     }
 
+    @JsonView(View.AuthorView.class)
+    @PutMapping(value = "/{id}", consumes = {"application/json"})
+    public ResponseEntity<AuthorEntity> update(@PathVariable("id") Integer id, @RequestBody AuthorEntity toUpdate) {
+        if (id.equals(toUpdate.getAuthorId())) {
+            return ResponseEntity.ok(authorService.update(toUpdate));
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
+
+
 }
