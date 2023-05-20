@@ -52,6 +52,17 @@
 ### IssueJournal
 
     /api/ij
+        GET - получить все
+        POST - в формате:
+        {
+            "storedId": 1,
+            "userId": 9,
+            "dateIssue": "2022-10-20",
+            "dateReturn": "2022-10-30",
+            "issuedBy": 1,
+            "acceptedBy": 6
+        }
+        добавление новой записи в журнал выдачи
 
 ### LiteraryWorks
 
