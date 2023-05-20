@@ -1,12 +1,9 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.controllers.libraries;
+package ru.nsu.ccfit.databases.matsko.library_fund.controllers.libraries.librarians;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.LibrarianEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.libraries.LibrarianService;
@@ -16,10 +13,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/librns")
 public class LibrarianController {
+    private static final Logger logger = Logger.getLogger(LibrarianController.class.getName());
 
     @Autowired
     private LibrarianService librarianService;
@@ -54,5 +53,35 @@ public class LibrarianController {
         } catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+
+    @JsonView({View.LibrarianView.class})
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<LibrarianEntity> add(@RequestBody NewLibrarianParams params) {
+        if (params.validate()) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date dateHired = format.parse(params.getDateHired());
+                Date dateRetired = null;
+                if (params.getDateRetired() != null && !params.getDateRetired().isEmpty()) {
+                    dateRetired = format.parse(params.getDateRetired());
+                }
+                if (dateRetired != null && dateRetired.before(dateHired)) {
+                    return ResponseEntity.badRequest().body(null);
+                }
+                return ResponseEntity.ok(librarianService.add(
+                        params.getLastName(),
+                        params.getFirstName(),
+                        params.getPatronymic(),
+                        params.getHallId(),
+                        dateHired,
+                        dateRetired));
+            }
+            catch (ParseException e) {
+                logger.warning(e::getMessage);
+                ResponseEntity.badRequest().body(null);
+            }
+        }
+        return ResponseEntity.badRequest().body(null);
     }
 }

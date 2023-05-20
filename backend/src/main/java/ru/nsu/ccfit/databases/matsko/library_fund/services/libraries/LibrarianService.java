@@ -1,8 +1,12 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.libraries;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.HallEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.LibrarianEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.LibraryEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.libraries.HallRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.libraries.LibrarianRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.libraries.LibrarianWithNumUsers;
 
@@ -19,6 +23,9 @@ public class LibrarianService {
 
     @Autowired
     private LibrarianRepository librarianRepository;
+
+    @Autowired
+    private HallRepository hallRepository;
 
     public List<LibrarianEntity> getAll() {
         logger.info(() -> "requesting all Librarians");
@@ -48,5 +55,20 @@ public class LibrarianService {
             res.add(params);
         }
         return res;
+    }
+
+    @Transactional
+    public LibrarianEntity add(String lastName, String firstName, String patronymic, Integer hallId,
+                               Date dateHired, Date dateRetired) {
+        HallEntity hallEntity = hallRepository.findById(hallId).orElseThrow(
+                () -> new IllegalStateException("hallId for Librarian must not be null"));
+        LibrarianEntity librarian = new LibrarianEntity();
+        librarian.setLastName(lastName);
+        librarian.setFirstName(firstName);
+        librarian.setPatronymic(patronymic);
+        librarian.setHall(hallEntity);
+        librarian.setDateHired(dateHired);
+        librarian.setDateRetired(dateRetired);
+        return librarianRepository.save(librarian);
     }
 }

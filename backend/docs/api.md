@@ -75,6 +75,17 @@
 ### Librarians
 
     /api/librns
+        GET - получить всех
+        POST - в формате:
+        {
+            "lastName": "Книголюбов",
+            "firstName": "Игорь",
+            "patronymic": null,
+            "hallId": 16,
+            "dateHired": "2023-02-12",
+            "dateRetired": null
+        }
+        добавление нового библиотекаря
 
     /api/librns
         required query params:
@@ -98,6 +109,7 @@
             "building": "26",
             "numHalls": 2
         }
+        добавление новой библиотеки
 
 ### RegistrationJournal
 
