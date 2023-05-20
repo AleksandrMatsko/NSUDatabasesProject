@@ -1,11 +1,17 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.libraries;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.HallEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.StorageInfoEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.BookEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.libraries.HallRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.libraries.StorageInfoRepository;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.BookRepository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -15,6 +21,12 @@ public class StorageInfoService {
 
     @Autowired
     private StorageInfoRepository siRepository;
+
+    @Autowired
+    private BookRepository bookRepository;
+
+    @Autowired
+    private HallRepository hallRepository;
 
     public List<StorageInfoEntity> getAll() {
         logger.info(() -> "requesting all records in storage info");
@@ -35,5 +47,26 @@ public class StorageInfoService {
         List<Integer> list = new ArrayList<>(siRepository.findStoredByAuthor(authorName));
         logger.info(() -> "got " + list.size() + " records");
         return new ArrayList<>(siRepository.findAllById(list));
+    }
+
+    @Transactional
+    public StorageInfoEntity add(Integer bookId, Integer hallId, Integer bookcase, Integer shelf,
+                                 Boolean availableIssue, Integer durationIssue, Date dateReceipt, Date dateDispose) {
+        logger.info(() -> "adding new record in storage info");
+        BookEntity book = bookRepository.findById(bookId).orElseThrow(
+                () -> new IllegalStateException("stored must have relation to existing book"));
+        HallEntity hall = hallRepository.findById(hallId).orElseThrow(
+                () -> new IllegalStateException("example must be stored in existing hall"));
+        StorageInfoEntity storageInfoEntity = new StorageInfoEntity();
+        storageInfoEntity.setBook(book);
+        storageInfoEntity.setHall(hall);
+        storageInfoEntity.setBookcase(bookcase);
+        storageInfoEntity.setShelf(shelf);
+        storageInfoEntity.setAvailableIssue(availableIssue);
+        storageInfoEntity.setDurationIssue(durationIssue);
+        storageInfoEntity.setDateReceipt(dateReceipt);
+        storageInfoEntity.setDateDispose(dateDispose);
+        return siRepository.save(storageInfoEntity);
+
     }
 }

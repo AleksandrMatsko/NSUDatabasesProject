@@ -5,21 +5,21 @@
     /api/authors
         GET - получить всех авторов
         POST - в формате:
-            {
-                "lastName": "some_last_name",
-                "firstName": "some_first_name",
-                "patronymic": "some_patronymic"
-            }
+        {
+            "lastName": "some_last_name",
+            "firstName": "some_first_name",
+            "patronymic": "some_patronymic"
+        }
         добавление нового автора
 
 ### Books
     /api/books
         GET - получить все книги
         POST - в формате:
-            {
-                "name": "some_name",
-                "literaryWorks": [1, 2]
-            }
+        {
+            "name": "some_name",
+            "literaryWorks": [1, 2]
+        }
         добавление новой книги
     
     /api/books/from_reg_lib
@@ -132,6 +132,18 @@
         optional query params (only one or none of all):
             - lwtmp
             - author    // last_name template
+        POST - в формате:
+        {
+            "bookId": 20,
+            "hallId": 16,
+            "bookcase": 1,
+            "shelf": 1,
+            "availableIssue": "true",
+            "durationIssue": 14,
+            "dateReceipt": "2012-01-29",
+            "dateDispose": null
+        }
+        добавление нового физического экземпляра
 
 ### Users
 
