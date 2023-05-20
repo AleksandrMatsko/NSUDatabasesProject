@@ -89,6 +89,15 @@
 ### Libraries
 
     /api/libs
+        GET - получение всех
+        POST в формате:
+        {
+            "name": "Новосибирская областная юношеская библиотека",
+            "district": "Центральный",
+            "street": "Красный проспект",
+            "building": "26",
+            "numHalls": 2
+        }
 
 ### RegistrationJournal
 

@@ -1,11 +1,9 @@
-package ru.nsu.ccfit.databases.matsko.library_fund.controllers.libraries;
+package ru.nsu.ccfit.databases.matsko.library_fund.controllers.libraries.library;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.LibraryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.libraries.LibraryService;
@@ -23,5 +21,19 @@ public class LibraryController {
     @GetMapping("")
     public ResponseEntity<List<LibraryEntity>> getAll() {
         return ResponseEntity.ok(libraryService.getAll());
+    }
+
+    @JsonView(View.LibraryView.class)
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<LibraryEntity> add(@RequestBody NewLibraryParams params) {
+        if (params.validate()) {
+            return ResponseEntity.ok(libraryService.add(
+                    params.getName(),
+                    params.getDistrict(),
+                    params.getStreet(),
+                    params.getBuilding(),
+                    params.getNumHalls()));
+        }
+        return ResponseEntity.badRequest().body(null);
     }
 }
