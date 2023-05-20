@@ -3,22 +3,23 @@ package ru.nsu.ccfit.databases.matsko.library_fund.controllers.users;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.BaseUserCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.BookService;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.users.UserService;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
+    private static final Logger logger = Logger.getLogger(UserController.class.getName());
+
     @Autowired
     private UserService userService;
 
@@ -109,5 +110,45 @@ public class UserController {
         catch (ParseException e) {
             return ResponseEntity.badRequest().body(null);
         }
+    }
+
+    @JsonView(View.UserView.class)
+    @PostMapping(consumes = "application/json")
+    public ResponseEntity<UserEntity> add(@RequestBody UserParams params) {
+        if (!params.validateNames()) {
+            return ResponseEntity.badRequest().body(null);
+        }
+        String category = params.getCategoryName();
+        try {
+            if (category != null) {
+                for (UserCategoryEnum userCategory : UserCategoryEnum.values()) {
+                    if (userCategory.getCategoryName().equals(category)) {
+                        BaseUserCategoryEntity userCategoryEntity = userCategory.getExample(params.getCategoryInfo());
+                        return ResponseEntity.ok(userService.register(
+                                params.getLastName(),
+                                params.getFirstName(),
+                                params.getPatronymic(),
+                                params.getCategoryName(),
+                                userCategoryEntity,
+                                params.getLibrarianId()));
+                    }
+                }
+            }
+            else {
+                return ResponseEntity.ok(userService.register(
+                        params.getLastName(),
+                        params.getFirstName(),
+                        params.getPatronymic(),
+                        null,
+                        null,
+                        params.getLibrarianId()));
+            }
+            return ResponseEntity.badRequest().body(null);
+        }
+        catch (Exception e) {
+            logger.warning(e::getMessage);
+            return ResponseEntity.badRequest().body(null);
+        }
+
     }
 }

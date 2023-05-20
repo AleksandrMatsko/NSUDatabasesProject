@@ -8,19 +8,19 @@ import jakarta.persistence.Table;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 
 @Entity
-@Table(name = "public.Pensioners", schema = "public")
-public class PensionerEntityBaseUser extends BaseUserCategoryEntity {
+@Table(name = "public.Pupils", schema = "public")
+public class PupilEntity extends BaseUserCategoryEntity {
 
     @JsonView(View.UserView.class)
-    @Column(name = "discount", nullable = false)
-    private Integer discount;
+    @Column(name = "school", nullable = false)
+    private String school;
 
     @Nonnull
-    public Integer getDiscount() {
-        return discount;
+    public String getSchool() {
+        return school;
     }
 
-    public void setDiscount(@Nonnull Integer discount) {
-        this.discount = discount;
+    public void setSchool(@Nonnull String school) {
+        this.school = school;
     }
 }

@@ -9,7 +9,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 
 @Entity
 @Table(name = "public.Scientists", schema = "public")
-public class ScientistEntityBaseUser extends BaseUserCategoryEntity {
+public class ScientistEntity extends BaseUserCategoryEntity {
 
     @JsonView(View.UserView.class)
     @Column(name = "degree", nullable = false)

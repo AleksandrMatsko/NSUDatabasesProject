@@ -48,7 +48,7 @@ public class LWController {
         try {
             if (category != null) {
                 for (LWCategoriesEnum lwCategory : LWCategoriesEnum.values()) {
-                    if (lwCategory.getCategoryName().equalsIgnoreCase(category)) {
+                    if (lwCategory.getCategoryName().equals(category)) {
                         BaseLWCategoryEntity lwCategoryEntity = lwCategory.getExample(params.getCategoryInfo());
                         return ResponseEntity.ok(lwService.add(lwName, category, lwCategoryEntity, params.getAuthors()));
                     }

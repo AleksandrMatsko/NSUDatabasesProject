@@ -9,7 +9,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 
 @Entity
 @Table(name = "public.Workers", schema = "public")
-public class WorkerEntityBaseUser extends BaseUserCategoryEntity {
+public class WorkerEntity extends BaseUserCategoryEntity {
 
     @JsonView(View.UserView.class)
     @Column(name = "job", nullable = false)

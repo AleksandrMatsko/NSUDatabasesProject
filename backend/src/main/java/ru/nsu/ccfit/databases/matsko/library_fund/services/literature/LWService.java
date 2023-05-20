@@ -68,7 +68,7 @@ public class LWService {
             newLW.setCategoryInfo(categoryInfo);
         }
         else if (category != null) {
-            throw new IllegalStateException("category info not provided");
+            throw new IllegalStateException("category info for literary work not provided");
         }
         List<AuthorEntity> authors = authorRepository.findAllById(authorIds);
         newLW.setAuthors(new LinkedHashSet<>(authors));

@@ -1,12 +1,23 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.users;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.LibrarianEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.RegistrationJournalEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.BaseUserCategoryEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.libraries.LibrarianRepository;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.libraries.RJRepository;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.users.BaseUserCategoryRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.users.UserBookPair;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.users.UserCategoryRepository;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.users.UserRepository;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -17,6 +28,18 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserCategoryRepository userCategoryRepository;
+
+    @Autowired
+    private LibrarianRepository librarianRepository;
+
+    @Autowired
+    private RJRepository rjRepository;
+
+    @Autowired
+    private BaseUserCategoryRepository baseUserCategoryRepository;
 
     public List<UserEntity> getAll() {
         logger.info(() -> "requesting all users");
@@ -88,7 +111,38 @@ public class UserService {
         return new ArrayList<>(userRepository.findAllById(list));
     }
 
-    public UserEntity add(UserEntity userEntity) {
-        return userRepository.save(userEntity);
+    @Transactional
+    public UserEntity register(String lastName, String firstName, String patronymic, String categoryName,
+                               BaseUserCategoryEntity categoryInfo, Integer librarianId) throws ParseException {
+        logger.info("adding new user");
+        LibrarianEntity librarian = librarianRepository.findById(librarianId).orElseThrow(
+                () -> new IllegalStateException("existing librarian required to register user"));
+        UserEntity userEntity = new UserEntity();
+        userEntity.setLastName(lastName);
+        userEntity.setFirstName(firstName);
+        userEntity.setPatronymic(patronymic);
+        UserCategoryEntity category = userCategoryRepository.getCategoryByName(categoryName);
+        if (category != null && categoryInfo != null) {
+            userEntity.setCategory(category);
+            categoryInfo.setUser(userEntity);
+            userEntity.setCategoryInfo(categoryInfo);
+        }
+        else if (category != null) {
+            throw new IllegalStateException("category info for user not provided");
+        }
+        RegistrationJournalEntity registrationJournalEntity = new RegistrationJournalEntity();
+        registrationJournalEntity.setUser(userEntity);
+        userEntity.setRegistration(registrationJournalEntity);
+        registrationJournalEntity.setLibrarian(librarian);
+        registrationJournalEntity.setLibrary(librarian.getHall().getLibrary());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date registrationDate = format.parse(LocalDate.now().toString());
+        registrationJournalEntity.setRegistrationDate(registrationDate);
+        UserEntity res = userRepository.save(userEntity);
+        rjRepository.save(registrationJournalEntity);
+        if (categoryInfo != null) {
+            baseUserCategoryRepository.save(categoryInfo);
+        }
+        return res;
     }
 }

@@ -128,6 +128,18 @@
         optional query params (only one or none of all):
             - lwtmp
             - booktmp
+        POST - в формате:
+        {
+            "lastName": "some_last_name",
+            "firstName": "some_first_name",
+            "patronymic": "some_patronymic",
+            "librarianId": 7,
+            "categoryName": "pensioner",
+            "categoryInfo": {
+                "discount": 5
+            }
+        }
+        добавление нового пользователя
 
     /api/users
         required query params:
