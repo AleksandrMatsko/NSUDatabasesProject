@@ -41,6 +41,23 @@
             "name": "some_name",
             "literaryWorks": [1, 2]
         } - добавление новой книги
+        PUT в формате:
+        {
+            "bookId": 21,
+            "name": "Война и мир.",
+            "literaryWorks": [
+                {
+                    "lwId": 37,
+                    "name": "Война и мир. Том третий"
+                },
+                {
+                    "lwId": 34
+                },
+                {
+                    "lwId": 36
+                }
+            ]
+        } - Обновление книги
     
     /api/books/from_reg_lib
         required query params:

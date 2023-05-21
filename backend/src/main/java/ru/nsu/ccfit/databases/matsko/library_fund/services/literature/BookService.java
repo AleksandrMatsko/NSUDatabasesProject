@@ -98,12 +98,12 @@ public class BookService {
     }
 
 
-    public BookEntity updateById(BookEntity newBook) {
-        Optional<BookEntity> prevBook = bookRepository.findById(newBook.getBookId());
-        if (prevBook.isPresent()) {
+    @Transactional
+    public BookEntity update(BookEntity newBook) {
+        if (bookRepository.existsById(newBook.getBookId())) {
             return bookRepository.save(newBook);
         }
-        return null;
+        throw new IllegalStateException("book with id = " + newBook.getBookId() + " doesn't exist");
     }
 
     public List<BookEntity> getAllByIds(List<Integer> ids) {

@@ -124,7 +124,15 @@ public class BookController {
             logger.warning(e::getMessage);
             return ResponseEntity.badRequest().body(null);
         }
+    }
 
+    @JsonView(View.BookView.class)
+    @PutMapping(value = "/{id}", consumes = {"application/json"})
+    public ResponseEntity<BookEntity> update(@PathVariable("id") Integer id, @RequestBody BookEntity book) {
+        if (id.equals(book.getBookId())) {
+            return ResponseEntity.ok(bookService.update(book));
+        }
+        return ResponseEntity.badRequest().body(null);
     }
 
 }

@@ -22,7 +22,7 @@ public class BookEntity {
     private String name;
 
     @JsonView(View.BookView.class)
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(name = "public.WorksInBook",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "lw_id"))
