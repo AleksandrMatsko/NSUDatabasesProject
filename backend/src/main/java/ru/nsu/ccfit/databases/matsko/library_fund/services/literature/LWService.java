@@ -74,4 +74,13 @@ public class LWService {
         newLW.setAuthors(new LinkedHashSet<>(authors));
         return lwRepository.save(newLW);
     }
+
+    @Transactional
+    public LiteraryWorkEntity update(LiteraryWorkEntity literaryWorkEntity) {
+        logger.info(() -> "updating lw with id = " + literaryWorkEntity.getLwId());
+        if (lwRepository.existsById(literaryWorkEntity.getLwId())) {
+            return lwRepository.save(literaryWorkEntity);
+        }
+        throw new IllegalStateException("no literary work with id = " + literaryWorkEntity.getLwId());
+    }
 }

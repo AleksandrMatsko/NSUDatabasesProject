@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.LWService;
 
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 @RestController
@@ -63,6 +66,29 @@ public class LWController {
             logger.info(e::getMessage);
             return ResponseEntity.badRequest().body(null);
         }
+    }
 
+    @JsonView(View.LWView.class)
+    @PutMapping(value = "/{id}", consumes = {"application/json"})
+    public ResponseEntity<LiteraryWorkEntity> update(
+            @PathVariable("id") Integer id,
+            @RequestBody UpdateLWParams params) {
+        if (params.getLwId() != null && id.equals(params.getLwId())) {
+            for (LWCategoriesEnum lwCategory : LWCategoriesEnum.values()) {
+                if (lwCategory.getCategoryName().equals(params.getCategory().getCategoryName())) {
+                    BaseLWCategoryEntity categoryInfo = lwCategory.getExample(params.getCategoryInfo());
+                    LiteraryWorkEntity lw = new LiteraryWorkEntity();
+                    lw.setLwId(params.getLwId());
+                    lw.setName(params.getName());
+                    lw.setCategory(params.getCategory());
+                    lw.setCategoryInfo(categoryInfo);
+                    lw.setAuthors(new HashSet<>(params.getAuthors()));
+                    categoryInfo.setLwId(id);
+                    return ResponseEntity.ok(lwService.update(lw));
+                }
+            }
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.badRequest().body(null);
     }
 }

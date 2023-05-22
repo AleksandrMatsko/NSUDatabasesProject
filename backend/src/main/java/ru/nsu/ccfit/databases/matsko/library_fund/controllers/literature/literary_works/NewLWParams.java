@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class NewLWParams {
+    private Integer lwId;
     private String lwName;
     private ArrayList<Integer> authors;
     private String categoryName;
@@ -39,5 +40,13 @@ public class NewLWParams {
 
     public void setCategoryInfo(Map<String, Object> categoryInfo) {
         this.categoryInfo = categoryInfo;
+    }
+
+    public Integer getLwId() {
+        return lwId;
+    }
+
+    public void setLwId(Integer lwId) {
+        this.lwId = lwId;
     }
 }

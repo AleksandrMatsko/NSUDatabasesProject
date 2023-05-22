@@ -114,6 +114,24 @@
                 "shortDesc": "третья часть знаменитого романа"
             }
         } - добавляет новое литературное произведение
+        PUT в формате:
+        {
+            "lwId": 37,
+            "name": "Война и мир. Том третий",
+            "category": {
+                "categoryId": 1,
+                "categoryName": "novel"
+            },
+            "categoryInfo": {
+                "numberChapters": 96,
+                "shortDesc": "третья часть знаменитого романа"
+            },
+            "authors": [
+                {
+                    "authorId": 2
+                }
+            ]
+        } - обновление произведения
 
     /api/lws/popular
         required query params:

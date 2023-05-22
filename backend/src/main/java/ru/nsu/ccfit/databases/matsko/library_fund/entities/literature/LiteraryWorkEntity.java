@@ -27,7 +27,7 @@ public class LiteraryWorkEntity {
     private LWCategoryEntity category;
 
     @JsonView(View.LWView.class)
-    @OneToOne(mappedBy = "literaryWork", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "literaryWork")
     private BaseLWCategoryEntity categoryInfo;
 
     // @JsonView(View.LWView.class)

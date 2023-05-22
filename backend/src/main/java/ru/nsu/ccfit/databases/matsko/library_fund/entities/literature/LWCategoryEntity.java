@@ -26,7 +26,7 @@ public class LWCategoryEntity {
     @JsonIgnore
     private String tableName;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category")
     private Set<LiteraryWorkEntity> lwEntities;
 
     public Integer getCategoryId() {
