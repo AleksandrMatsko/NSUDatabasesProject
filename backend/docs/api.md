@@ -41,6 +41,8 @@
             "name": "some_name",
             "literaryWorks": [1, 2]
         } - добавление новой книги
+
+    /api/books/21
         PUT в формате:
         {
             "bookId": 21,
@@ -114,6 +116,8 @@
                 "shortDesc": "третья часть знаменитого романа"
             }
         } - добавляет новое литературное произведение
+
+    /api/lws/37
         PUT в формате:
         {
             "lwId": 37,
@@ -204,7 +208,7 @@
         optional query params (only one or none of all):
             - lwtmp
             - booktmp
-        POST - в формате:
+        POST в формате:
         {
             "lastName": "some_last_name",
             "firstName": "some_first_name",
@@ -214,8 +218,24 @@
             "categoryInfo": {
                 "discount": 5
             }
-        }
-        добавление нового пользователя
+        } - добавление нового пользователя
+
+    /api/users/18
+        PUT в формате 
+        {
+            "userId": 18,
+            "lastName": "Бобков",
+            "firstName": "Матвей",
+            "patronymic": null,
+            "category": {
+                "categoryId": 2,
+                "categoryName": "student"
+            },
+            "categoryInfo": {
+                "faculty": "ФФ",
+                "university": "НГУ"
+            }
+        } - обновление пользователя
 
     /api/users
         required query params:

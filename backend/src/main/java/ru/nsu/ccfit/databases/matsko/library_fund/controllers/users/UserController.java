@@ -5,6 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
+import ru.nsu.ccfit.databases.matsko.library_fund.controllers.literature.literary_works.LWCategoriesEnum;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.categories.BaseUserCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.BookService;
@@ -149,6 +152,31 @@ public class UserController {
             logger.warning(e::getMessage);
             return ResponseEntity.badRequest().body(null);
         }
+    }
 
+    @JsonView(View.UserView.class)
+    @PutMapping(value = "/{id}", consumes = "application/json")
+    public ResponseEntity<UserEntity> update(
+            @PathVariable("id") Integer id,
+            @RequestBody UpdateUserParams params) {
+        if (params.getUserId() != null && id.equals(params.getUserId())) {
+            for (UserCategoryEnum category : UserCategoryEnum.values()) {
+                if (category.getCategoryName().equals(params.getCategory().getCategoryName())) {
+                    BaseUserCategoryEntity categoryInfo = category.getExample(params.getCategoryInfo());
+                    UserEntity userEntity = new UserEntity();
+                    userEntity.setUserId(id);
+                    userEntity.setLastName(params.getLastName());
+                    userEntity.setFirstName(params.getFirstName());
+                    userEntity.setPatronymic(params.getPatronymic());
+                    userEntity.setCategory(params.getCategory());
+                    userEntity.setCategoryInfo(categoryInfo);
+                    categoryInfo.setUserId(id);
+                    categoryInfo.setUser(userEntity);
+                    return ResponseEntity.ok(userService.update(userEntity));
+                }
+            }
+            return ResponseEntity.badRequest().body(null);
+        }
+        return ResponseEntity.badRequest().body(null);
     }
 }

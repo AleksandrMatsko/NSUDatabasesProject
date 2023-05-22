@@ -145,4 +145,13 @@ public class UserService {
         }
         return res;
     }
+
+    @Transactional
+    public UserEntity update(UserEntity newUser) {
+        logger.info(() -> "updating user with id = " + newUser.getUserId());
+        if (userRepository.existsById(newUser.getUserId())) {
+            return userRepository.save(newUser);
+        }
+        throw new IllegalStateException("user with id = " + newUser.getUserId() + " not found to update");
+    }
 }
