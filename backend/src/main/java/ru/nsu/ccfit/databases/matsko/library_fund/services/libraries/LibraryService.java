@@ -42,6 +42,13 @@ public class LibraryService {
         }
         libraryEntity.setHalls(hallEntities);
         return libRepository.save(libraryEntity);
+    }
 
+    @Transactional
+    public LibraryEntity update(LibraryEntity library) {
+        if (libRepository.existsById(library.getLibraryId())) {
+            return libRepository.save(library);
+        }
+        throw new IllegalStateException("no library with id = " + library.getLibraryId() + " to update");
     }
 }

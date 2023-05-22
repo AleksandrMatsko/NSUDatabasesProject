@@ -36,4 +36,15 @@ public class LibraryController {
         }
         return ResponseEntity.badRequest().body(null);
     }
+
+    @JsonView({View.LibraryView.class})
+    @PutMapping(value = "/{id}", consumes = "application/json")
+    public ResponseEntity<LibraryEntity> update(
+            @PathVariable("id") Integer id,
+            @RequestBody LibraryEntity library) {
+        if (id.equals(library.getLibraryId())) {
+            return ResponseEntity.ok(libraryService.update(library));
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
 }
