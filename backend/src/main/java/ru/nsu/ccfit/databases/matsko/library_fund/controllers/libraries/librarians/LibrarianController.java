@@ -2,6 +2,7 @@ package ru.nsu.ccfit.databases.matsko.library_fund.controllers.libraries.librari
 
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
@@ -81,6 +82,17 @@ public class LibrarianController {
                 logger.warning(e::getMessage);
                 ResponseEntity.badRequest().body(null);
             }
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
+
+    @JsonView({View.LibrarianView.class})
+    @PutMapping(value = "/{id}", consumes = "application/json")
+    public ResponseEntity<LibrarianEntity> update(
+            @PathVariable("id") Integer id,
+            @RequestBody LibrarianEntity librarian) {
+        if (id.equals(librarian.getLibrarianId())) {
+            return ResponseEntity.ok(librarianService.update(librarian));
         }
         return ResponseEntity.badRequest().body(null);
     }

@@ -71,4 +71,12 @@ public class LibrarianService {
         librarian.setDateRetired(dateRetired);
         return librarianRepository.save(librarian);
     }
+
+    @Transactional
+    public LibrarianEntity update(LibrarianEntity librarian) {
+        if (librarianRepository.existsById(librarian.getLibrarianId())) {
+            return librarianRepository.save(librarian);
+        }
+        throw new IllegalStateException("librarian with id = " + librarian.getLibrarianId() + " not found cannot update");
+    }
 }

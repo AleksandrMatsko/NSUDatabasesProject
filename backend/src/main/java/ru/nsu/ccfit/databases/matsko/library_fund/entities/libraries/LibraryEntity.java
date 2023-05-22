@@ -33,7 +33,7 @@ public class LibraryEntity {
     private String name;
 
     @JsonView(View.LibraryView.class)
-    @OneToMany(mappedBy = "library", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "library")
     private Set<HallEntity> halls;
 
     @OneToMany(mappedBy = "library")

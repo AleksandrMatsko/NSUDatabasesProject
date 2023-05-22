@@ -193,6 +193,20 @@
             "dateRetired": null
         } - добавление нового библиотекаря
 
+    /api/librns/8
+        PUT в формате:
+        {
+            "librarianId": 8,
+            "lastName": "Книголюбов",
+            "firstName": "Игоръ",
+            "patronymic": null,
+            "dateHired": "2023-02-11",
+            "dateRetired": null,
+            "hall": {
+                "hallId": 16
+            }
+        } - обновление библиотекаря
+
     /api/librns
         required query params:
             - lib_name

@@ -55,7 +55,7 @@ public class StorageInfoEntity {
     @JoinColumn(name = "book_id", referencedColumnName = "book_id")
     private BookEntity book;
 
-    @OneToMany(mappedBy = "stored", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "stored")
     private Set<IssueJournalEntity> issues;
 
     public Integer getStoredId() {

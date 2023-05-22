@@ -22,10 +22,10 @@ public class HallEntity {
     private LibraryEntity library;
 
     @JsonView({View.LibraryView.class})
-    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hall")
     private Set<LibrarianEntity> librarians;
 
-    @OneToMany(mappedBy = "hall", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "hall")
     private Set<StorageInfoEntity> stored;
 
     public Integer getHallId() {
