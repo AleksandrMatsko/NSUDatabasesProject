@@ -11,6 +11,7 @@ import java.util.Date;
 @Table(name = "public.IssueJournal", schema = "public")
 public class IssueJournalEntity {
 
+    @JsonView({View.IJView.class})
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "issue_id")

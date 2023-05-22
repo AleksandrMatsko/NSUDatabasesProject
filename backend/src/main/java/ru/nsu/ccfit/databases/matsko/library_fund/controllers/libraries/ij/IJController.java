@@ -47,4 +47,15 @@ public class IJController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @JsonView({View.IJView.class})
+    @PutMapping(value = "/{id}", consumes = {"application/json"})
+    public ResponseEntity<IssueJournalEntity> update(
+            @PathVariable("id") Integer id,
+            @RequestBody IssueJournalEntity issueJournalEntity) {
+        if (id.equals(issueJournalEntity.getIssueId())) {
+            return ResponseEntity.ok(ijService.update(issueJournalEntity));
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
 }

@@ -65,4 +65,13 @@ public class IJService {
         }
         return ijRepository.save(issueJournalEntity);
     }
+
+    @Transactional
+    public IssueJournalEntity update(IssueJournalEntity ij) {
+        logger.info(() -> "updating ij record with id = " + ij.getIssueId());
+        if (ijRepository.existsById(ij.getIssueId())) {
+            return ijRepository.save(ij);
+        }
+        throw new IllegalStateException("issue journal record with id = " + ij.getIssueId() + " not found to update");
+    }
 }

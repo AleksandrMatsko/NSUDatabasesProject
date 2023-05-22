@@ -102,6 +102,44 @@
             "acceptedBy": 6
         } - добавление новой записи в журнал выдачи
 
+    /api/ij/9
+        PUT в формате:
+        {
+            "issueId": 9,
+            "stored": {
+                "storedId": 1,
+                "availableIssue": true,
+                "durationIssue": 14,
+                "book": {
+                    "bookId": 1,
+                    "name": "Сборник стихов А.С. Пушкина"
+                }
+            },
+            "dateIssue": "2022-10-20",
+            "dateReturn": "2022-10-31",
+            "user": {
+                "userId": 9,
+                "lastName": "Архипов",
+                "firstName": "Игорь",
+                "patronymic": "Анатольевич",
+                "category": {
+                    "categoryName": "student"
+                }
+            },
+            "issuedBy": {
+                "librarianId": 1,
+                "lastName": "Книжников",
+                "firstName": "Андрей",
+                "patronymic": null
+            },
+            "acceptedBy": {
+                "librarianId": 6,
+                "lastName": "Орлова",
+                "firstName": "Анна",
+                "patronymic": "Владимировна"
+            }
+        } - обновление записи в журнале выдачи
+
 ### LiteraryWorks
 
     /api/lws
