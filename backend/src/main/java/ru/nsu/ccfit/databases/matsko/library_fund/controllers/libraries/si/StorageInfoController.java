@@ -64,4 +64,15 @@ public class StorageInfoController {
         }
     }
 
+    @JsonView(View.SIView.class)
+    @PutMapping(value = "/{id}", consumes = {"application/json"})
+    public ResponseEntity<StorageInfoEntity> update(
+            @PathVariable("id") Integer id,
+            @RequestBody StorageInfoEntity storageInfoEntity) {
+        if (id.equals(storageInfoEntity.getStoredId())) {
+            return ResponseEntity.ok(siService.update(storageInfoEntity));
+        }
+        return ResponseEntity.badRequest().body(null);
+    }
+
 }

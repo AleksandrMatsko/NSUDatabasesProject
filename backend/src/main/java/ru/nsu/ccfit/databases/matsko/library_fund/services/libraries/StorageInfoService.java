@@ -67,6 +67,13 @@ public class StorageInfoService {
         storageInfoEntity.setDateReceipt(dateReceipt);
         storageInfoEntity.setDateDispose(dateDispose);
         return siRepository.save(storageInfoEntity);
+    }
 
+    @Transactional
+    public StorageInfoEntity update(StorageInfoEntity storageInfoEntity) {
+        if (siRepository.existsById(storageInfoEntity.getStoredId())) {
+            return siRepository.save(storageInfoEntity);
+        }
+        throw new IllegalStateException("no stored with id = " + storageInfoEntity.getStoredId() + " to update");
     }
 }

@@ -265,7 +265,7 @@
         optional query params (only one or none of all):
             - lwtmp
             - author    // last_name template
-        POST - в формате:
+        POST в формате:
         {
             "bookId": 20,
             "hallId": 16,
@@ -275,8 +275,26 @@
             "durationIssue": 14,
             "dateReceipt": "2012-01-29",
             "dateDispose": null
-        }
-        добавление нового физического экземпляра
+        } - добавление нового физического экземпляра
+
+    /api/si/43
+        PUT в формате:
+        {
+            "storedId": 43,
+            "hall": {
+                "hallId": 16
+            },
+            "bookcase": 1,
+            "shelf": 2,
+            "availableIssue": true,
+            "durationIssue": 14,
+            "dateReceipt": "2012-01-29",
+            "dateDispose": null,
+            "book": {
+                "bookId": 20,
+                "name": "Горе от ума"
+            }
+        } - обновление записи о хранимом экземпляре
 
 ### Users
 
