@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import './utils/theme.dart';
+import 'menu.dart';
+import 'authors.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,121 +17,41 @@ class MyApp extends StatelessWidget {
       title: 'Library Fund',
       theme: basicTheme(),
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      home: const MyInfoWidget(title: "Библиотечный фонд"),
+      //home: const MyMainWidget(title: "Библиотечный фонд"),
+      routes: {
+        "/": (context) => const MainScreen(title: "Библиотечный фонд"),
+        "/authors": (context) => const AuthorsOptionsScreen(),
+        "/authors/getAll": (context) => const AuthorsAllScreen(),
+      },
+      initialRoute: "/",
     );
   }
 }
 
-class MyInfoWidget extends StatefulWidget {
-  const MyInfoWidget({super.key, required this.title});
-
+class MainScreen extends StatelessWidget {
   final String title;
-
-  @override
-  State<MyInfoWidget> createState() => _MyInfoWidgetState();
-}
-
-class _MyInfoWidgetState extends State<MyInfoWidget> {
-  String _widgetKey = "main";
-  List<String> _widgetKeys = ["main", "authors", "books"];
-
-  void authorPressed() {
-    setState(() {
-      _widgetKey = "authors";
-    });
-  }
-
-  void bookPressed() {
-    setState(() {
-      _widgetKey = "books";
-    });
-  }
+  const MainScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        title: Text(
-          widget.title,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-      ),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            alignment: Alignment.bottomLeft,
-            width: 100,
-            height: 200,
-            child: ListView(
-              itemExtent: 50,
-              children: [
-                TextButton(
-                  onPressed: authorPressed,
-                  child: const Text("Авторы"),
-                ),
-                TextButton(onPressed: bookPressed, child: const Text("Книги")),
-              ],
-            ),
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
-          switch (_widgetKeys.indexOf(_widgetKey)) {
-            1 => const AuthorsInfoWidget(),
-            _ => Text(
-                _widgetKey,
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-          },
-        ],
-      ),
-    );
-  }
-}
-
-class AuthorsInfoWidget extends StatefulWidget {
-  final String _widgetKey = "authors";
-
-  const AuthorsInfoWidget({super.key});
-
-  String getKey() {
-    return _widgetKey;
-  }
-
-  @override
-  State<StatefulWidget> createState() => _AuthorInfoWidgetState();
-}
-
-class _AuthorInfoWidgetState extends State<AuthorsInfoWidget> {
-  void getAllPressed() {
-    setState(() {
-      return;
-    });
-  }
-
-  void addOnePressed() {
-    setState(() {
-      return;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      width: 300,
-      height: 100,
-      child: ListView(
-        itemExtent: 50,
-        children: [
-          OutlinedButton(
-              onPressed: getAllPressed,
-              child: const Text("Получить всех авторов")),
-          OutlinedButton(
-              onPressed: addOnePressed, child: const Text("Добавить автора")),
-        ],
-      ),
-    );
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: const Text("Проект бо курсу базы данных."));
   }
 }
