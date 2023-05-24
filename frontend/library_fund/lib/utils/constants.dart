@@ -9,3 +9,6 @@ const appSecondaryColor = Color.fromARGB(255, 117, 3, 137);
 const appBackgroundColor = Colors.orange;
 
 const appFontFamily = "Roboto";
+
+const host = "localhost";
+const port = 8082;

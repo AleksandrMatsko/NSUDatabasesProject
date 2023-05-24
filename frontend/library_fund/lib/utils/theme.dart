@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 
-import "./constats.dart";
+import 'constants.dart';
 
 ThemeData basicTheme() => ThemeData(
       brightness: Brightness.light,
