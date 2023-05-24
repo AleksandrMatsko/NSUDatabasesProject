@@ -169,9 +169,18 @@ class SingleAuthorInfo extends StatelessWidget {
                     )),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                IconButton(onPressed: () {}, icon: const Icon(Icons.delete)),
                 IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.edit_note_sharp)),
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.delete,
+                      color: appSecondaryColor,
+                    )),
+                IconButton(
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.edit_note_sharp,
+                      color: appSecondaryColor,
+                    )),
               ])
             ]));
   }

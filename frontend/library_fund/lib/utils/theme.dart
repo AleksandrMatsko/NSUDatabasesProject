@@ -10,7 +10,7 @@ ThemeData basicTheme() => ThemeData(
           fontFamily: appFontFamily,
           fontSize: appMediumTextSize,
           fontWeight: FontWeight.w800,
-          color: Colors.black,
+          color: appSecondaryColor,
         ),
         headlineMedium: TextStyle(
             fontFamily: appFontFamily,

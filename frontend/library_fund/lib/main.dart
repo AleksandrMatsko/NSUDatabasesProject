@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         "/": (context) => const MainScreen(title: "Библиотечный фонд"),
         "/authors": (context) => const AuthorsOptionsScreen(),
         "/authors/getAll": (context) => const AuthorsAllScreen(),
+        //"/authors/addOne"
       },
       initialRoute: "/",
     );
