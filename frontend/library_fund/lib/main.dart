@@ -16,8 +16,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Library Fund',
       theme: basicTheme(),
-      //home: const MyHomePage(title: 'Flutter Demo Home Page'),
-      //home: const MyMainWidget(title: "Библиотечный фонд"),
       routes: {
         "/": (context) => const MainScreen(title: "Библиотечный фонд"),
         "/authors": (context) => const AuthorsOptionsScreen(),

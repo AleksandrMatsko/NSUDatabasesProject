@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 import 'package:dio/dio.dart';
-import 'dart:convert';
 
 class AuthorRepository {
   final _baseUrl = "http://$host:$port/api/";

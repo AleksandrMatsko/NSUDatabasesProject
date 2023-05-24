@@ -15,7 +15,7 @@ ThemeData basicTheme() => ThemeData(
         headlineMedium: TextStyle(
             fontFamily: appFontFamily,
             fontSize: appMediumTextSize,
-            fontWeight: FontWeight.w100,
+            fontWeight: FontWeight.w500,
             color: appSecondaryColor),
         bodyLarge: TextStyle(
           fontFamily: appFontFamily,

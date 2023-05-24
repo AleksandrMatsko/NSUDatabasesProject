@@ -6,7 +6,7 @@ const appBodyTextSize = 20.0;
 
 const appPrimaryColor = Color.fromARGB(255, 255, 85, 142);
 const appSecondaryColor = Color.fromARGB(255, 117, 3, 137);
-const appBackgroundColor = Colors.orange;
+const appBackgroundColor = Color.fromARGB(255, 255, 163, 186);
 
 const appFontFamily = "Roboto";
 
