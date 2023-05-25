@@ -20,8 +20,14 @@ class Menu extends StatelessWidget {
               onPressed: () =>
                   Navigator.pushReplacementNamed(context, "/authors"),
               child: const Text("Авторы")),
+          OutlinedButton(
+              onPressed: () =>
+                  Navigator.pushReplacementNamed(context, "/books"),
+              child: const Text("Книги")),
         ],
       ),
     );
   }
 }
+
+enum RequestWithParamsState { askingUser, showingInfo, errorInput }

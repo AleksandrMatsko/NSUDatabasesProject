@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'menu.dart';
 import 'repositories/author_repository.dart';
+import 'repositories/dtos.dart';
 import 'utils/constants.dart';
 
 class AuthorsOptionsScreen extends StatelessWidget {
@@ -35,7 +36,7 @@ class AuthorsOptionsScreen extends StatelessWidget {
                     Navigator.pushReplacementNamed(context, "/authors/getAll"),
                 child: const Text("Получить всех авторов")),
             OutlinedButton(
-                onPressed: () {}, child: const Text("Добавить новых авторов")),
+                onPressed: () {}, child: const Text("Добавить нового автора")),
           ],
         ));
   }
@@ -45,26 +46,24 @@ class AuthorsAllScreen extends StatefulWidget {
   const AuthorsAllScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => AuthorsAllScreenState();
+  State<StatefulWidget> createState() => _AuthorsAllScreenState();
 }
 
-class AuthorsAllScreenState extends State<AuthorsAllScreen> {
+class _AuthorsAllScreenState extends State<AuthorsAllScreen> {
   final _authorRepository = AuthorRepository();
 
   late Future<List<Author>> _authors;
 
-  AuthorsAllScreenState();
+  _AuthorsAllScreenState();
 
   @override
   void initState() {
     super.initState();
-    _authors = _authorRepository.getAuthorsList();
+    _authors = _authorRepository.getAllAuthors();
   }
 
   @override
   Widget build(BuildContext context) {
-    var authors = AuthorRepository().getAuthorsList();
-    debugPrint(authors.toString());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,

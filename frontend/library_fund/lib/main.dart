@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:library_fund/books.dart';
 import './utils/theme.dart';
 import 'menu.dart';
 import 'authors.dart';
@@ -21,6 +22,10 @@ class MyApp extends StatelessWidget {
         "/authors": (context) => const AuthorsOptionsScreen(),
         "/authors/getAll": (context) => const AuthorsAllScreen(),
         //"/authors/addOne"
+        "/books": (context) => const BookOptionsScreen(),
+        "/books/getAll": (context) => const BooksAllScreen(),
+        "/books/fromRegLib": (context) => const BooksFromLib(regLib: true),
+        "/books/notFromRegLib": (context) => const BooksFromLib(regLib: false),
       },
       initialRoute: "/",
     );

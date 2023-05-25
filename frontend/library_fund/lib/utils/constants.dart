@@ -12,3 +12,12 @@ const appFontFamily = "Roboto";
 
 const host = "localhost";
 const port = 8082;
+
+const dateTemplate = "yyyy-MM-dd";
+
+const errorStyle = TextStyle(
+  fontFamily: appFontFamily,
+  fontSize: 26.0,
+  fontWeight: FontWeight.w600,
+  color: Colors.red,
+);
