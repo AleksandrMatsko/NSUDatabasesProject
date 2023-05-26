@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'menu.dart';
 import 'repositories/registration_journal_repository.dart';
