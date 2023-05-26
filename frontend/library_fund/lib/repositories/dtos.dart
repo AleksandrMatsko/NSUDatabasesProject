@@ -434,17 +434,46 @@ class User {
   String firstName;
   String? patronymic;
   ShortUserCategory? category;
+  UserCategoryInfo? categoryInfo;
 
   User(this.userId, this.lastName, this.firstName, this.patronymic,
-      this.category);
+      this.category, this.categoryInfo);
 
   factory User.fromJson(dynamic json) {
-    ShortUserCategory? category;
-    if (json["category"] != null) {
-      category = ShortUserCategory.fromJson(json["category"]);
+    ShortUserCategory? userCategory;
+    UserCategoryInfo? userCategoryInfo;
+    var userCategoryData = json["category"];
+    var userCategoryInfoData = json["categoryInfo"];
+    if (userCategoryData != null) {
+      userCategory = ShortUserCategory.fromJson(userCategoryData);
+      if (userCategoryInfoData != null) {
+        switch (userCategory.categoryName) {
+          case ("scientist"):
+            userCategoryInfo = Scientist.fromJson(userCategoryInfoData);
+          case ("student"):
+            userCategoryInfo = Student.fromJson(userCategoryInfoData);
+          case ("worker"):
+            userCategoryInfo = Worker.fromJson(userCategoryInfoData);
+          case ("teacher"):
+            userCategoryInfo = Teacher.fromJson(userCategoryInfoData);
+          case ("pupil"):
+            userCategoryInfo = Pupil.fromJson(userCategoryInfoData);
+          case ("pensioner"):
+            userCategoryInfo = Pensioner.fromJson(userCategoryInfoData);
+          default:
+            {
+              userCategory = null;
+            }
+        }
+      }
     }
-    return User(json["userId"] as int, json["lastName"] as String,
-        json["firstName"] as String, json["patronymic"] as String?, category);
+    return User(
+        json["userId"] as int,
+        json["lastName"] as String,
+        json["firstName"] as String,
+        json["patronymic"] as String?,
+        userCategory,
+        userCategoryInfo);
   }
 }
 

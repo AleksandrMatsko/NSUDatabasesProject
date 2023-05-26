@@ -11,13 +11,13 @@ import java.util.Set;
 @Table(name = "public.Books", schema = "public")
 public class BookEntity {
 
-    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class, View.LWView.class})
+    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class, View.LWView.class, View.UserView.class})
     @Id
     @Column(name = "book_id", updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer bookId;
 
-    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class, View.LWView.class})
+    @JsonView({View.BookView.class, View.IJView.class, View.SIView.class, View.LWView.class, View.UserView.class})
     @Column(name = "name", nullable = false)
     private String name;
 
