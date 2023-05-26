@@ -3,7 +3,8 @@ import 'package:library_fund/books.dart';
 import './utils/theme.dart';
 import 'menu.dart';
 import 'authors.dart';
-import 'rejistration_journal.dart';
+import 'registration_journal.dart';
+import 'issue_journal.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,6 +31,8 @@ class MyApp extends StatelessWidget {
         "/books/place": (context) => const BookPlaceScreen(),
         "/books/flow": (context) => const BookFlowScreen(),
         "/rj": (context) => const RJAllScreen(),
+        "/ij": (context) => const IJOptionsScreen(),
+        "/ij/getAll": (context) => const IJAllScreen(),
       },
       initialRoute: "/",
     );

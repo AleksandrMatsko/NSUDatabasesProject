@@ -120,3 +120,43 @@ class RegistrationJournal {
         ShortLibrary.fromJson(json["library"]));
   }
 }
+
+class ShortStorageInfo {
+  int storedId;
+  int durationIssue;
+
+  ShortStorageInfo(this.storedId, this.durationIssue);
+
+  factory ShortStorageInfo.fromJson(dynamic json) {
+    return ShortStorageInfo(
+        json["storedId"] as int, json["durationIssue"] as int);
+  }
+}
+
+class IssueJournal {
+  int issueId;
+  ShortStorageInfo stored;
+  String dateIssue;
+  String? dateReturn;
+  ShortUser user;
+  ShortLibrarian issuedBy;
+  ShortLibrarian? acceptedBy;
+
+  IssueJournal(this.issueId, this.stored, this.dateIssue, this.dateReturn,
+      this.user, this.issuedBy, this.acceptedBy);
+
+  factory IssueJournal.fromJson(dynamic json) {
+    ShortLibrarian? librn;
+    if (json["acceptedBy"] != null) {
+      librn = ShortLibrarian.fromJson(json["acceptedBy"]);
+    }
+    return IssueJournal(
+        json["issueId"] as int,
+        ShortStorageInfo.fromJson(json["stored"]),
+        json["dateIssue"] as String,
+        json["dateReturn"] as String?,
+        ShortUser.fromJson(json["user"]),
+        ShortLibrarian.fromJson(json["issuedBy"]),
+        librn);
+  }
+}
