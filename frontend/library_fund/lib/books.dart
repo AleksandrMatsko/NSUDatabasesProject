@@ -50,7 +50,8 @@ class BookOptionsScreen extends StatelessWidget {
                 child: const Text(
                     "Получить список литературы, которая в настоящий момент выдана с определенной полки некоторой библиотеки")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/books/flow"),
                 child: const Text(
                     "Получить перечень указанной литературы, которая поступила (была списана) в течение некоторого периода")),
             OutlinedButton(
@@ -282,6 +283,157 @@ class _BooksFromLibState extends State<BooksFromLib> {
                   showCursor: true,
                   style: Theme.of(context).textTheme.bodyLarge,
                   onChanged: (value) => _onUserLastNameSubmitted(value),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTimeRange? dateTimeRange =
+                            await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTimeRange != null) {
+                          _selectedDateTimeRange = dateTimeRange;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать период")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<List<Book>>(
+              future: _books,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    children: snapshot.data!
+                        .map((a) => SingleBookInfo(book: a))
+                        .toList(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Text("Ошибка: ${snapshot.error?.toString()}");
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
+  }
+}
+
+class BookFlowScreen extends StatefulWidget {
+  const BookFlowScreen({super.key});
+
+  @override
+  State<BookFlowScreen> createState() => _BookFlowScreenState();
+}
+
+class _BookFlowScreenState extends State<BookFlowScreen> {
+  final _bookRepository = BookRepository();
+  var _state = RequestWithParamsState.askingUser;
+  late Future<List<Book>> _books;
+  var _selectedDateTimeRange =
+      DateTimeRange(start: DateTime.now(), end: DateTime.now());
+  late String _errorMessage;
+  bool _isReceipt = true;
+
+  void _userReady() {
+    setState(() {
+      var startDate = _selectedDateTimeRange.start;
+      var endDate = _selectedDateTimeRange.end;
+      if (startDate.isAfter(endDate)) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Начало периода должно быть раньше конца периода";
+        return;
+      }
+
+      _state = RequestWithParamsState.showingInfo;
+      _books = _bookRepository.getBooksFlow(_isReceipt, startDate, endDate);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Поступившие (списанные) книги",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ChoiceChip(
+                        label: Text(
+                          "Полученные",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        selected: _isReceipt,
+                        onSelected: (selected) {
+                          setState(() {
+                            _isReceipt = true;
+                          });
+                        },
+                        selectedColor: appBackgroundColor,
+                        disabledColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            side: const BorderSide(color: appBackgroundColor))),
+                    ChoiceChip(
+                        label: Text(
+                          "Списанные",
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        selected: !_isReceipt,
+                        onSelected: (selected) {
+                          setState(() {
+                            _isReceipt = false;
+                          });
+                        },
+                        selectedColor: appBackgroundColor,
+                        disabledColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                            side: const BorderSide(color: appBackgroundColor))),
+                  ],
                 ),
                 Padding(
                     padding: const EdgeInsets.symmetric(

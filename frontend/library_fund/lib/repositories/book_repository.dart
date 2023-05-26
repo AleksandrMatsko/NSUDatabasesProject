@@ -10,6 +10,10 @@ class BookRepository {
 
   final _dio = Dio();
 
+  List<Book> responseToList(List<dynamic> data) {
+    return data.map((e) => Book.fromJson(e)).toList();
+  }
+
   Future<List<Book>> getAllBooks() async {
     final response = await _dio.get(
       _baseUrl,
@@ -18,7 +22,7 @@ class BookRepository {
       }),
     );
     final data = response.data as List;
-    return data.map((e) => Book.fromJson(e)).toList();
+    return responseToList(data);
   }
 
   Future<List<Book>> getBooksFromLib(bool regLib, String userLastName,
@@ -45,6 +49,28 @@ class BookRepository {
           "end": end
         });
     final data = response.data as List;
-    return data.map((e) => Book.fromJson(e)).toList();
+    return responseToList(data);
+  }
+
+  Future<List<Book>> getBooksFlow(
+      bool isReceipt, DateTime startDate, DateTime endDate) async {
+    initializeDateFormatting();
+    DateFormat formatter = DateFormat(dateTemplate);
+    String start = formatter.format(startDate);
+    String end = formatter.format(endDate);
+    String url;
+    if (isReceipt) {
+      url = "$_baseUrl/receipt";
+    } else {
+      url = "$_baseUrl/dispose";
+    }
+    final response = await _dio.get(url,
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+          },
+        ),
+        queryParameters: {"start": start, "end": end});
+    return responseToList(response.data as List);
   }
 }
