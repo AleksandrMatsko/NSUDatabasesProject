@@ -259,6 +259,195 @@ class ShortUser {
   }
 }
 
+enum UserCategories { student, scientist, worker, teacher, pupil, pensioner }
+
+abstract class UserCategoryInfo {
+  UserCategoryInfo();
+  UserCategoryInfo.fromJson(dynamic json);
+
+  Map<String, dynamic> getTranslated();
+  UserCategories getCategory();
+}
+
+class Student extends UserCategoryInfo {
+  final category = UserCategories.student;
+  late String faculty;
+  late String university;
+
+  Student() : super();
+
+  factory Student.fromJson(dynamic json) {
+    var user = Student();
+    user.faculty = json["faculty"] as String;
+    user.university = json["university"] as String;
+    return user;
+  }
+
+  @override
+  UserCategories getCategory() {
+    return category;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {
+      "факультет": faculty,
+      "университет": university,
+    };
+  }
+}
+
+class Scientist extends UserCategoryInfo {
+  final category = UserCategories.scientist;
+  late String degree;
+
+  Scientist() : super();
+
+  factory Scientist.fromJson(dynamic json) {
+    var user = Scientist();
+    user.degree = json["degree"] as String;
+    return user;
+  }
+
+  @override
+  UserCategories getCategory() {
+    return category;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {
+      "учёная степень": degree,
+    };
+  }
+}
+
+class Worker extends UserCategoryInfo {
+  final category = UserCategories.worker;
+  late String job;
+  late String company;
+
+  Worker() : super();
+
+  factory Worker.fromJson(dynamic json) {
+    var user = Worker();
+    user.job = json["job"] as String;
+    user.company = json["company"] as String;
+    return user;
+  }
+
+  @override
+  UserCategories getCategory() {
+    return category;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {
+      "должность": job,
+      "компания": company,
+    };
+  }
+}
+
+class Teacher extends UserCategoryInfo {
+  final category = UserCategories.teacher;
+  late String school;
+  late String subject;
+
+  Teacher() : super();
+
+  factory Teacher.fromJson(dynamic json) {
+    var user = Teacher();
+    user.school = json["school"] as String;
+    user.subject = json["subject"] as String;
+    return user;
+  }
+
+  @override
+  UserCategories getCategory() {
+    return category;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {
+      "школа": school,
+      "преподаёт предмет": subject,
+    };
+  }
+}
+
+class Pupil extends UserCategoryInfo {
+  final category = UserCategories.pupil;
+  late String school;
+
+  Pupil() : super();
+
+  factory Pupil.fromJson(dynamic json) {
+    var user = Pupil();
+    user.school = json["school"] as String;
+    return user;
+  }
+
+  @override
+  UserCategories getCategory() {
+    return category;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {
+      "школа": school,
+    };
+  }
+}
+
+class Pensioner extends UserCategoryInfo {
+  final category = UserCategories.pensioner;
+  late int discount;
+
+  Pensioner() : super();
+
+  factory Pensioner.fromJson(dynamic json) {
+    var user = Pensioner();
+    user.discount = json["discount"] as int;
+    return user;
+  }
+
+  @override
+  UserCategories getCategory() {
+    return category;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {
+      "размер скидки (в %)": discount,
+    };
+  }
+}
+
+class User {
+  int userId;
+  String lastName;
+  String firstName;
+  String? patronymic;
+  ShortUserCategory? category;
+
+  User(this.userId, this.lastName, this.firstName, this.patronymic,
+      this.category);
+
+  factory User.fromJson(dynamic json) {
+    ShortUserCategory? category;
+    if (json["category"] != null) {
+      category = ShortUserCategory.fromJson(json["category"]);
+    }
+    return User(json["userId"] as int, json["lastName"] as String,
+        json["firstName"] as String, json["patronymic"] as String?, category);
+  }
+}
+
 class ShortLibrarian {
   int librarianId;
   String lastName;
@@ -274,6 +463,42 @@ class ShortLibrarian {
         json["lastName"] as String,
         json["firstName"] as String,
         json["patronymic"] as String?);
+  }
+}
+
+class Librarian {
+  int librarianId;
+  String lastName;
+  String firstName;
+  String? patronymic;
+  String dateHired;
+  String? dateRetired;
+  LibrnHall hall;
+
+  Librarian(this.librarianId, this.lastName, this.firstName, this.patronymic,
+      this.dateHired, this.dateRetired, this.hall);
+
+  factory Librarian.fromJson(dynamic json) {
+    return Librarian(
+        json["librarianId"] as int,
+        json["lastName"] as String,
+        json["firstName"] as String,
+        json["patronymic"] as String?,
+        json["dateHired"] as String,
+        json["dateRetired"] as String?,
+        LibrnHall.fromJson(json["hall"]));
+  }
+}
+
+class LibrnHall {
+  int hallId;
+  ShortLibrary library;
+
+  LibrnHall(this.hallId, this.library);
+
+  factory LibrnHall.fromJson(dynamic json) {
+    return LibrnHall(
+        json["hallId"] as int, ShortLibrary.fromJson(json["library"]));
   }
 }
 
