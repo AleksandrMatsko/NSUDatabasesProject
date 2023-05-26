@@ -73,4 +73,21 @@ class BookRepository {
         queryParameters: {"start": start, "end": end});
     return responseToList(response.data as List);
   }
+
+  Future<List<Book>> getBooksByPlace(
+      String lib, int hallId, int bookcase, int shelf) async {
+    final response = await _dio.get("$_baseUrl/place",
+        options: Options(
+          headers: {
+            "Accept": "application/json",
+          },
+        ),
+        queryParameters: {
+          "lib": lib,
+          "hall": hallId,
+          "bookcase": bookcase,
+          "shelf": shelf
+        });
+    return responseToList(response.data as List);
+  }
 }

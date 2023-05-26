@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
         "/books/getAll": (context) => const BooksAllScreen(),
         "/books/fromRegLib": (context) => const BooksFromLib(regLib: true),
         "/books/notFromRegLib": (context) => const BooksFromLib(regLib: false),
+        "/books/place": (context) => const BookPlaceScreen(),
         "/books/flow": (context) => const BookFlowScreen(),
       },
       initialRoute: "/",

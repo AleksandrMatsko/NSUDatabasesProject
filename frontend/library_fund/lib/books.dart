@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'menu.dart';
 import 'repositories/book_repository.dart';
 import 'repositories/dtos.dart';
@@ -46,7 +47,8 @@ class BookOptionsScreen extends StatelessWidget {
                 child: const Text(
                     "Получить перечень изданий, которыми в течение некоторого времени пользовался указанный читатель из фонда библиотеки, где он не зарегистрирован")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/books/place"),
                 child: const Text(
                     "Получить список литературы, которая в настоящий момент выдана с определенной полки некоторой библиотеки")),
             OutlinedButton(
@@ -455,6 +457,167 @@ class _BookFlowScreenState extends State<BookFlowScreen> {
                         Text("Задать период")
                       ]),
                     )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<List<Book>>(
+              future: _books,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    children: snapshot.data!
+                        .map((a) => SingleBookInfo(book: a))
+                        .toList(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Text("Ошибка: ${snapshot.error?.toString()}");
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
+  }
+}
+
+class BookPlaceScreen extends StatefulWidget {
+  const BookPlaceScreen({super.key});
+
+  @override
+  State<BookPlaceScreen> createState() => _BookPlaceScreenState();
+}
+
+class _BookPlaceScreenState extends State<BookPlaceScreen> {
+  final _bookRepository = BookRepository();
+  var _state = RequestWithParamsState.askingUser;
+  late Future<List<Book>> _books;
+  late String _errorMessage;
+  String? _libName;
+  String? _hallId;
+  String? _bookcase;
+  String? _shelf;
+
+  void _userReady() {
+    setState(() {
+      if (_libName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано название библиотеки";
+      }
+      if (_hallId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id зала";
+      }
+      if (_bookcase == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан номер шкафа";
+      }
+      if (_shelf == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан номер полки";
+      }
+
+      _state = RequestWithParamsState.showingInfo;
+      _books = _bookRepository.getBooksByPlace(_libName!, int.parse(_hallId!),
+          int.parse(_bookcase!), int.parse(_shelf!));
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Книги с определённого места",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text(
+                  "Название библиотеки",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _libName = value;
+                  },
+                ),
+                Text(
+                  "id зала",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _hallId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Text(
+                  "номер книжного шкафа",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _bookcase = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Text(
+                  "номер полки",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _shelf = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
                 Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 15),
