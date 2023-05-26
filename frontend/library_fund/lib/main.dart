@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:library_fund/books.dart';
 import 'package:library_fund/libraries.dart';
 import 'package:library_fund/literary_works.dart';
+import 'package:library_fund/storage_info.dart';
 import './utils/theme.dart';
 import 'menu.dart';
 import 'authors.dart';
@@ -40,6 +41,10 @@ class MyApp extends StatelessWidget {
         "/lws/popular": (context) => const PopularLWScreen(),
         "/libs": (context) => const LibraryOptionsScreen(),
         "/libs/getAll": (context) => const LibrariesAllScreen(),
+        "/si": (context) => const SIOptionsScreen(),
+        "/si/getAll": (context) => const SIAllScreen(),
+        "/si/byLw": (context) => const SIByTemplate(isLwTmp: true),
+        "/si/byAuthor": (context) => const SIByTemplate(isLwTmp: false)
       },
       initialRoute: "/",
     );

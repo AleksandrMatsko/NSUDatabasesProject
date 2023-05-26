@@ -204,6 +204,17 @@ class Author {
   }
 }
 
+class ShortBook {
+  int bookId;
+  String name;
+
+  ShortBook(this.bookId, this.name);
+
+  factory ShortBook.fromJson(dynamic json) {
+    return ShortBook(json["bookId"] as int, json["name"] as String);
+  }
+}
+
 class Book {
   int bookId;
   String name;
@@ -340,6 +351,43 @@ class ShortStorageInfo {
   factory ShortStorageInfo.fromJson(dynamic json) {
     return ShortStorageInfo(
         json["storedId"] as int, json["durationIssue"] as int);
+  }
+}
+
+class StorageInfo {
+  int storedId;
+  int hallId;
+  int bookcase;
+  int shelf;
+  bool availableIssue;
+  int durationIssue;
+  String dateReceipt;
+  String? dateDispose;
+  ShortBook book;
+
+  StorageInfo(
+      this.storedId,
+      this.hallId,
+      this.bookcase,
+      this.shelf,
+      this.availableIssue,
+      this.durationIssue,
+      this.dateReceipt,
+      this.dateDispose,
+      this.book);
+
+  factory StorageInfo.fromJson(dynamic json) {
+    var hallObj = json["hall"] as Map<String, dynamic>;
+    return StorageInfo(
+        json["storedId"] as int,
+        hallObj["hallId"] as int,
+        json["bookcase"] as int,
+        json["shelf"] as int,
+        json["availableIssue"] as bool,
+        json["durationIssue"] as int,
+        json["dateReceipt"] as String,
+        json["dateDispose"] as String?,
+        ShortBook.fromJson(json["book"]));
   }
 }
 

@@ -79,8 +79,8 @@ class _BooksAllScreenState extends State<BooksAllScreen> {
 
   @override
   void initState() {
-    super.initState();
     _books = _bookRepository.getAllBooks();
+    super.initState();
   }
 
   @override
@@ -224,7 +224,7 @@ class _BooksFromLibState extends State<BooksFromLib> {
 
   _BooksFromLibState({required this.regLib});
 
-  void _onUserLastNameSubmitted(dynamic value) {
+  void _onUserLastNameChanged(dynamic value) {
     _userLastName = value;
   }
 
@@ -243,9 +243,9 @@ class _BooksFromLibState extends State<BooksFromLib> {
         return;
       }
 
-      _state = RequestWithParamsState.showingInfo;
       _books = _bookRepository.getBooksFromLib(
           regLib, _userLastName!, startDate, endDate);
+      _state = RequestWithParamsState.showingInfo;
     });
   }
 
@@ -284,7 +284,7 @@ class _BooksFromLibState extends State<BooksFromLib> {
                 TextFormField(
                   showCursor: true,
                   style: Theme.of(context).textTheme.bodyLarge,
-                  onChanged: (value) => _onUserLastNameSubmitted(value),
+                  onChanged: (value) => _onUserLastNameChanged(value),
                 ),
                 Padding(
                     padding: const EdgeInsets.symmetric(
