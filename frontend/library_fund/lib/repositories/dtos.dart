@@ -266,6 +266,42 @@ class ShortLibrarian {
   }
 }
 
+class LibHall {
+  int hallId;
+  List<ShortLibrarian> librarians;
+
+  LibHall(this.hallId, this.librarians);
+
+  factory LibHall.fromJson(dynamic json) {
+    var librarianObjs = json["librarians"] as List;
+    return LibHall(json["hallId"],
+        librarianObjs.map((e) => ShortLibrarian.fromJson(e)).toList());
+  }
+}
+
+class Library {
+  int libraryId;
+  String name;
+  String district;
+  String street;
+  String building;
+  List<LibHall> halls;
+
+  Library(this.libraryId, this.name, this.district, this.street, this.building,
+      this.halls);
+
+  factory Library.fromJson(dynamic json) {
+    var hallObj = json["halls"] as List;
+    return Library(
+        json["libraryId"],
+        json["name"],
+        json["district"],
+        json["street"],
+        json["building"],
+        hallObj.map((e) => LibHall.fromJson(e)).toList());
+  }
+}
+
 class ShortLibrary {
   int libraryId;
   String name;

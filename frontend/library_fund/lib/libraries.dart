@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'menu.dart';
-import 'repositories/author_repository.dart';
+import 'repositories/library_repository.dart';
 import 'repositories/dtos.dart';
 import 'utils/constants.dart';
 
-class AuthorsOptionsScreen extends StatelessWidget {
-  const AuthorsOptionsScreen({super.key});
+class LibraryOptionsScreen extends StatelessWidget {
+  const LibraryOptionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +13,7 @@ class AuthorsOptionsScreen extends StatelessWidget {
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           title: Text(
-            "Авторы",
+            "Библиотеки",
             style: Theme.of(context).textTheme.titleLarge,
           ),
           actions: [
@@ -33,32 +33,30 @@ class AuthorsOptionsScreen extends StatelessWidget {
           children: [
             OutlinedButton(
                 onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/authors/getAll"),
-                child: const Text("Получить всех авторов")),
+                    Navigator.pushReplacementNamed(context, "/libs/getAll"),
+                child: const Text("Получить все библиотеки")),
             OutlinedButton(
-                onPressed: () {}, child: const Text("Добавить нового автора")),
+                onPressed: () {},
+                child: const Text("Добавить новую библиотеку")),
           ],
         ));
   }
 }
 
-class AuthorsAllScreen extends StatefulWidget {
-  const AuthorsAllScreen({super.key});
+class LibrariesAllScreen extends StatefulWidget {
+  const LibrariesAllScreen({super.key});
 
   @override
-  State<StatefulWidget> createState() => _AuthorsAllScreenState();
+  State<LibrariesAllScreen> createState() => _LibrariesAllScreenState();
 }
 
-class _AuthorsAllScreenState extends State<AuthorsAllScreen> {
-  final _authorRepository = AuthorRepository();
-
-  late Future<List<Author>> _authors;
-
-  _AuthorsAllScreenState();
+class _LibrariesAllScreenState extends State<LibrariesAllScreen> {
+  final _libRepository = LibraryRepository();
+  late Future<List<Library>> _libs;
 
   @override
   void initState() {
-    _authors = _authorRepository.getAllAuthors();
+    _libs = _libRepository.getAll();
     super.initState();
   }
 
@@ -82,8 +80,8 @@ class _AuthorsAllScreenState extends State<AuthorsAllScreen> {
               icon: const Icon(Icons.menu_rounded))
         ],
       ),
-      body: FutureBuilder<List<Author>>(
-        future: _authors,
+      body: FutureBuilder<List<Library>>(
+        future: _libs,
         builder: (context, snapshot) {
           var isReady = snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done;
@@ -92,7 +90,7 @@ class _AuthorsAllScreenState extends State<AuthorsAllScreen> {
             return ListView(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
               children: snapshot.data!
-                  .map((a) => SingleAuthorInfo(author: a))
+                  .map((lib) => SingleLibraryInfo(lib: lib))
                   .toList(),
             );
           }
@@ -108,10 +106,39 @@ class _AuthorsAllScreenState extends State<AuthorsAllScreen> {
   }
 }
 
-class SingleAuthorInfo extends StatelessWidget {
-  final Author _author;
+class SingleLibraryInfo extends StatelessWidget {
+  final Library _library;
 
-  const SingleAuthorInfo({super.key, required author}) : _author = author;
+  const SingleLibraryInfo({super.key, required lib}) : _library = lib;
+
+  Widget _hallInfo(BuildContext context, LibHall h) {
+    return Container(
+        decoration: BoxDecoration(
+            border: Border.all(color: appSecondaryColor),
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.circular(20)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            width: 600,
+            child: Text("id зала: ${h.hallId}",
+                style: Theme.of(context).textTheme.bodyLarge),
+          ),
+          Container(
+              alignment: Alignment.center,
+              width: 600,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                child: Column(
+                    children: h.librarians
+                        .map((librn) => Text(
+                            "librarianId: ${librn.librarianId}    ${librn.lastName} ${librn.firstName} ${librn.patronymic ?? ""}",
+                            style: Theme.of(context).textTheme.bodyLarge))
+                        .toList()),
+              ))
+        ]));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,6 +146,7 @@ class SingleAuthorInfo extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         color: appBackgroundColor,
         child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -132,40 +160,37 @@ class SingleAuthorInfo extends StatelessWidget {
                     physics: const NeverScrollableScrollPhysics(),
                     children: [
                       Text(
-                        "id: ${_author.authorId}   ",
+                        "id: ${_library.libraryId}   ${_library.name}",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
+                  )),
+              Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(20),
+                  height: 100,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(10.0),
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      Text(
+                        "адрес:   ",
                         style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       Text(
-                          "${_author.lastName} ${_author.firstName} ${_author.patronymic ?? ""}",
-                          style: Theme.of(context).textTheme.headlineMedium),
+                          "${_library.district} район, ул. ${_library.street} д. ${_library.building}",
+                          style: Theme.of(context).textTheme.bodyLarge),
                     ],
                   )),
-              Text("Произведения:",
-                  style: Theme.of(context).textTheme.bodyLarge),
-              Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                child: Container(
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.all(15.0),
-                    width: 800,
-                    child: Column(
-                      children: _author.literaryWorks
-                          .map((lw) => Row(
-                                children: [
-                                  Text("lwId: ${lw.lwId}   ",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyLarge),
-                                  Text(
-                                    lw.name,
-                                    style:
-                                        Theme.of(context).textTheme.bodyLarge,
-                                  )
-                                ],
-                              ))
-                          .toList(),
-                    )),
+              Container(
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.all(10),
+                height: 65 * (_library.halls.length + 1),
+                child: Column(
+                  children:
+                      _library.halls.map((h) => _hallInfo(context, h)).toList(),
+                ),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(
