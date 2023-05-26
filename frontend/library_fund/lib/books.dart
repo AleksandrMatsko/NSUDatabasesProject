@@ -518,18 +518,22 @@ class _BookPlaceScreenState extends State<BookPlaceScreen> {
       if (_libName == null) {
         _state = RequestWithParamsState.errorInput;
         _errorMessage = "Не указано название библиотеки";
+        return;
       }
       if (_hallId == null) {
         _state = RequestWithParamsState.errorInput;
         _errorMessage = "Не указан id зала";
+        return;
       }
       if (_bookcase == null) {
         _state = RequestWithParamsState.errorInput;
         _errorMessage = "Не указан номер шкафа";
+        return;
       }
       if (_shelf == null) {
         _state = RequestWithParamsState.errorInput;
         _errorMessage = "Не указан номер полки";
+        return;
       }
 
       _state = RequestWithParamsState.showingInfo;

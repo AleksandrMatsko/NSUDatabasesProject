@@ -9,6 +9,180 @@ class ShortLW {
   }
 }
 
+class LWCategory {
+  int categoryId;
+  String categoryName;
+
+  LWCategory(this.categoryId, this.categoryName);
+
+  factory LWCategory.fromJson(dynamic json) {
+    return LWCategory(
+        json["categoryId"] as int, json["categoryName"] as String);
+  }
+}
+
+enum LWCategories { novel, scientificArticle, textbook, poem }
+
+abstract class LWCategoryInfo {
+  LWCategoryInfo();
+  LWCategoryInfo.fromJson(dynamic json);
+
+  Map<String, dynamic> getTranslated();
+  LWCategories getCategory();
+}
+
+class Novel extends LWCategoryInfo {
+  final LWCategories category = LWCategories.novel;
+  late int numberChapters;
+  late String? shortDesc;
+
+  Novel() : super();
+
+  factory Novel.fromJson(dynamic json) {
+    var novel = Novel();
+    novel.numberChapters = json["numberChapters"];
+    novel.shortDesc = json["shortDesc"];
+    return novel;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {"количество глав": numberChapters, "краткое описание": shortDesc};
+  }
+
+  @override
+  LWCategories getCategory() {
+    return category;
+  }
+}
+
+class ScientificArticle extends LWCategoryInfo {
+  final LWCategories category = LWCategories.scientificArticle;
+  late String dateIssue;
+
+  ScientificArticle() : super();
+
+  factory ScientificArticle.fromJson(dynamic json) {
+    var article = ScientificArticle();
+    article.dateIssue = json["dateIssue"];
+    return article;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {"дата выхода": dateIssue};
+  }
+
+  @override
+  LWCategories getCategory() {
+    return category;
+  }
+}
+
+class Textbook extends LWCategoryInfo {
+  final LWCategories category = LWCategories.textbook;
+  late String subject;
+  late String complexityLevel;
+
+  Textbook() : super();
+
+  factory Textbook.fromJson(dynamic json) {
+    var textbook = Textbook();
+    textbook.subject = json["subject"];
+    textbook.complexityLevel = json["complexityLevel"];
+    return textbook;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {"предмет": subject, "уровень сложности": complexityLevel};
+  }
+
+  @override
+  LWCategories getCategory() {
+    return category;
+  }
+}
+
+class Poem extends LWCategoryInfo {
+  final LWCategories category = LWCategories.poem;
+  late String verseSize;
+  late String rhymingMethod;
+
+  Poem() : super();
+
+  factory Poem.fromJson(dynamic json) {
+    var poem = Poem();
+    poem.verseSize = json["verseSize"];
+    poem.rhymingMethod = json["rhymingMethod"];
+    return poem;
+  }
+
+  @override
+  Map<String, dynamic> getTranslated() {
+    return {"размер стиха": verseSize, "способ рифмовки": rhymingMethod};
+  }
+
+  @override
+  LWCategories getCategory() {
+    return category;
+  }
+}
+
+class LiteraryWork {
+  int lwId;
+  String name;
+  LWCategory? category;
+  LWCategoryInfo? categoryInfo;
+  List<ShortAuthor> authors;
+
+  LiteraryWork(
+      this.lwId, this.name, this.category, this.categoryInfo, this.authors);
+
+  factory LiteraryWork.fromJson(dynamic json) {
+    LWCategory? lwCategory;
+    LWCategoryInfo? lwCategoryInfo;
+    var lwCategoryData = json["category"];
+    var lwCategoryInfoData = json["categoryInfo"];
+    if (lwCategoryData != null) {
+      lwCategory = LWCategory.fromJson(lwCategoryData);
+      if (lwCategoryInfoData != null) {
+        switch (lwCategory.categoryName) {
+          case ("novel"):
+            lwCategoryInfo = Novel.fromJson(lwCategoryInfoData);
+          case ("poem"):
+            lwCategoryInfo = Poem.fromJson(lwCategoryInfoData);
+          case ("scientific article"):
+            lwCategoryInfo = ScientificArticle.fromJson(lwCategoryInfoData);
+          case ("textbook"):
+            lwCategoryInfo = Textbook.fromJson(lwCategoryInfoData);
+          default:
+            {
+              lwCategory = null;
+            }
+        }
+      }
+    }
+    var authorObj = json["authors"] as List;
+    return LiteraryWork(json["lwId"] as int, json["name"] as String, lwCategory,
+        lwCategoryInfo, authorObj.map((e) => ShortAuthor.fromJson(e)).toList());
+  }
+}
+
+class ShortAuthor {
+  int authorId;
+  String lastName;
+  String firstName;
+  String? patronymic;
+
+  ShortAuthor(this.authorId, this.lastName, this.firstName, this.patronymic);
+
+  factory ShortAuthor.fromJson(dynamic json) {
+    return ShortAuthor(json["authorId"] as int, json["lastName"] as String,
+        json["firstName"] as String, json["patronymic"] as String?);
+  }
+}
+
 class Author {
   int authorId;
   String lastName;

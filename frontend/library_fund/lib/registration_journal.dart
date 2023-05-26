@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'menu.dart';
 import 'repositories/registration_journal_repository.dart';
 import 'repositories/dtos.dart';
-import 'utils/constants.dart';
 
 class RJAllScreen extends StatefulWidget {
   const RJAllScreen({super.key});

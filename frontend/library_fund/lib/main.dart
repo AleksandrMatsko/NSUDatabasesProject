@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:library_fund/books.dart';
+import 'package:library_fund/literary_works.dart';
 import './utils/theme.dart';
 import 'menu.dart';
 import 'authors.dart';
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
         "/rj": (context) => const RJAllScreen(),
         "/ij": (context) => const IJOptionsScreen(),
         "/ij/getAll": (context) => const IJAllScreen(),
+        "/lws": (context) => const LWOptionsScreen(),
+        "/lws/getAll": (context) => const LWAllScreen(),
+        "/lws/popular": (context) => const PopularLWScreen(),
       },
       initialRoute: "/",
     );
