@@ -67,7 +67,7 @@ class _IJAllScreenState extends State<IJAllScreen> {
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         Text(
-          "максимальный срок выдачи (нед.)",
+          "максимальный срок выдачи (в днях)",
           style: Theme.of(context).textTheme.bodyLarge,
         ),
         Text(
