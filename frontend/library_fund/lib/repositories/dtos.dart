@@ -43,3 +43,80 @@ class Book {
         lwObjectsJson.map((obj) => ShortLW.fromJson(obj)).toList());
   }
 }
+
+class ShortUserCategory {
+  String categoryName;
+
+  ShortUserCategory(this.categoryName);
+
+  factory ShortUserCategory.fromJson(dynamic json) {
+    return ShortUserCategory(json["categoryName"] as String);
+  }
+}
+
+class ShortUser {
+  int userId;
+  String lastName;
+  String firstName;
+  String? patronymic;
+  ShortUserCategory? category;
+
+  ShortUser(this.userId, this.lastName, this.firstName, this.patronymic,
+      this.category);
+
+  factory ShortUser.fromJson(dynamic json) {
+    ShortUserCategory? category;
+    if (json["category"] != null) {
+      category = ShortUserCategory.fromJson(json["category"]);
+    }
+    return ShortUser(json["userId"] as int, json["lastName"] as String,
+        json["firstName"] as String, json["patronymic"] as String?, category);
+  }
+}
+
+class ShortLibrarian {
+  int librarianId;
+  String lastName;
+  String firstName;
+  String? patronymic;
+
+  ShortLibrarian(
+      this.librarianId, this.lastName, this.firstName, this.patronymic);
+
+  factory ShortLibrarian.fromJson(dynamic json) {
+    return ShortLibrarian(
+        json["librarianId"] as int,
+        json["lastName"] as String,
+        json["firstName"] as String,
+        json["patronymic"] as String?);
+  }
+}
+
+class ShortLibrary {
+  int libraryId;
+  String name;
+
+  ShortLibrary(this.libraryId, this.name);
+
+  factory ShortLibrary.fromJson(dynamic json) {
+    return ShortLibrary(json["libraryId"] as int, json["name"] as String);
+  }
+}
+
+class RegistrationJournal {
+  String registrationDate;
+  ShortUser user;
+  ShortLibrarian librarian;
+  ShortLibrary library;
+
+  RegistrationJournal(
+      this.registrationDate, this.user, this.librarian, this.library);
+
+  factory RegistrationJournal.fromJson(dynamic json) {
+    return RegistrationJournal(
+        json["registrationDate"] as String,
+        ShortUser.fromJson(json["user"]),
+        ShortLibrarian.fromJson(json["librarian"]),
+        ShortLibrary.fromJson(json["library"]));
+  }
+}

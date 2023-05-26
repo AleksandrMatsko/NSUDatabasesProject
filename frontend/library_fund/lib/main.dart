@@ -3,6 +3,7 @@ import 'package:library_fund/books.dart';
 import './utils/theme.dart';
 import 'menu.dart';
 import 'authors.dart';
+import 'rejistration_journal.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         "/books/notFromRegLib": (context) => const BooksFromLib(regLib: false),
         "/books/place": (context) => const BookPlaceScreen(),
         "/books/flow": (context) => const BookFlowScreen(),
+        "/rj": (context) => const RJAllScreen(),
       },
       initialRoute: "/",
     );
