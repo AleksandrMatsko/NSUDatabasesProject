@@ -214,7 +214,7 @@ class _BooksFromLibState extends State<BooksFromLib> {
   final _bookRepository = BookRepository();
   var _state = RequestWithParamsState.askingUser;
   late Future<List<Book>> _books;
-  late String _userLastName;
+  String? _userLastName;
   late String _errorMessage;
   var _selectedDateTimeRange =
       DateTimeRange(start: DateTime.now(), end: DateTime.now());
@@ -234,20 +234,31 @@ class _BooksFromLibState extends State<BooksFromLib> {
         _errorMessage = "Начало периода должно быть раньше конца периода";
         return;
       }
+      if (_userLastName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Фамилия читателя не введена";
+        return;
+      }
 
       _state = RequestWithParamsState.showingInfo;
       _books = _bookRepository.getBooksFromLib(
-          regLib, _userLastName, startDate, endDate);
+          regLib, _userLastName!, startDate, endDate);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    String title;
+    if (regLib) {
+      title = "Книги из библиотеки, где читатель зарегистрирован";
+    } else {
+      title = "Книги из всех библиотек, кроме той где читатель зарегистрирован";
+    }
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.primary,
           title: Text(
-            "Все книги",
+            title,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           actions: [
@@ -263,36 +274,43 @@ class _BooksFromLibState extends State<BooksFromLib> {
         ),
         body: switch (_state) {
           RequestWithParamsState.askingUser => ListView(
-              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
               children: [
                 Text("Фамилия читателя",
                     style: Theme.of(context).textTheme.bodyLarge),
                 TextFormField(
                   showCursor: true,
                   style: Theme.of(context).textTheme.bodyLarge,
-                  onFieldSubmitted: (value) => _onUserLastNameSubmitted(value),
+                  onChanged: (value) => _onUserLastNameSubmitted(value),
                 ),
-                FilledButton(
-                  onPressed: () async {
-                    final DateTimeRange? dateTimeRange =
-                        await showDateRangePicker(
-                            context: context,
-                            firstDate: DateTime(1990),
-                            lastDate: DateTime.now());
-                    if (dateTimeRange != null) {
-                      _selectedDateTimeRange = dateTimeRange;
-                    }
-                  },
-                  child: const Row(children: [
-                    Icon(Icons.calendar_today),
-                    Text("Задать период")
-                  ]),
-                ),
-                FilledButton(
-                    onPressed: _userReady,
-                    child: const Row(
-                      children: [Icon(Icons.search), Text("Искать")],
-                    ))
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTimeRange? dateTimeRange =
+                            await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTimeRange != null) {
+                          _selectedDateTimeRange = dateTimeRange;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать период")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
               ],
             ),
           RequestWithParamsState.showingInfo => FutureBuilder<List<Book>>(
