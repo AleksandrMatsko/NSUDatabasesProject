@@ -52,10 +52,16 @@ class MyApp extends StatelessWidget {
         "/librns/report": (context) => const LibrariansReportScreen(),
         "/librns/byPlace": (context) => const LibrarianByPlaceScreen(),
         "/users": (context) => const UserOptionsScreen(),
-        "/users/getAll": (context) => const UsersAllScreen(),
+        "/users/getAll": (context) => const UsersAllScreen(
+              isOverdue: false,
+            ),
         "/users/getByLwTmp": (context) => const UsersByTemplate(isLwTmp: true),
         "/users/getByBookTmp": (context) =>
             const UsersByTemplate(isLwTmp: false),
+        "/users/overdue": (context) => const UsersAllScreen(isOverdue: true),
+        "/users/byLwTmpAndPeriod": (context) => const UsersByLwAndPeriod(),
+        "/users/byLibrarian": (context) => const UsersByLibrarian(),
+        "/users/notVisit": (context) => const UsersNotVisitScreen(),
       },
       initialRoute: "/",
     );

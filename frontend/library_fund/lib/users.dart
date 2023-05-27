@@ -47,19 +47,23 @@ class UserOptionsScreen extends StatelessWidget {
                 child: const Text(
                     "Получить список читателей, на руках у которых находится указанное издание (книга, журнал и т.д)")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushReplacementNamed(
+                    context, "/users/byLwTmpAndPeriod"),
                 child: const Text(
                     "Получить перечень читателей, которые в течение указанного промежутка времени получали издание с некоторым произведением, и название этого издания")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushReplacementNamed(
+                    context, "/users/byLibrarian"),
                 child: const Text(
                     "Выдать список читателей, которые в течение обозначенного периода были обслужены указанным библиотекарем")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/users/overdue"),
                 child: const Text(
                     "Получить список читателей с просроченным сроком литературы.")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/users/notVisit"),
                 child: const Text(
                     "Получить список читателей, не посещавших библиотеку в течение указанного времени")),
             OutlinedButton(
@@ -71,30 +75,44 @@ class UserOptionsScreen extends StatelessWidget {
 }
 
 class UsersAllScreen extends StatefulWidget {
-  const UsersAllScreen({super.key});
+  final bool isOverdue;
+  const UsersAllScreen({super.key, required this.isOverdue});
 
   @override
-  State<UsersAllScreen> createState() => _UsersAllScreenState();
+  State<UsersAllScreen> createState() => _UsersAllScreenState(isOverdue);
 }
 
 class _UsersAllScreenState extends State<UsersAllScreen> {
+  final bool isOverdue;
   final _userRepository = UserRepository();
+
+  _UsersAllScreenState(this.isOverdue);
 
   late Future<List<User>> _users;
 
   @override
   void initState() {
-    _users = _userRepository.getAll();
+    if (isOverdue) {
+      _users = _userRepository.getOverdue();
+    } else {
+      _users = _userRepository.getAll();
+    }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    String title;
+    if (isOverdue) {
+      title = "Читатели с просроченным сроком литературы";
+    } else {
+      title = "Все читатели";
+    }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
-          "Все читатели",
+          title,
           style: Theme.of(context).textTheme.titleLarge,
         ),
         actions: [
@@ -148,7 +166,7 @@ class SingleUserInfo extends StatelessWidget {
     if (_book == null) {
       return const Text("");
     }
-    return Text("встречаетсв: ${_book!.name} (id книги: ${_book!.bookId})",
+    return Text("встречается в: ${_book!.name} (id книги: ${_book!.bookId})",
         style: Theme.of(context).textTheme.bodyLarge);
   }
 
@@ -305,6 +323,389 @@ class _UsersByTemplateState extends State<UsersByTemplate> {
                   style: Theme.of(context).textTheme.bodyLarge,
                   onChanged: (value) => _onTmpChanged(value),
                 ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<List<User>>(
+              future: _users,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    children: snapshot.data!
+                        .map((u) => SingleUserInfo(
+                              user: u,
+                              book: null,
+                            ))
+                        .toList(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Text("Ошибка: ${snapshot.error?.toString()}");
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
+  }
+}
+
+class UsersByLwAndPeriod extends StatefulWidget {
+  const UsersByLwAndPeriod({super.key});
+
+  @override
+  State<UsersByLwAndPeriod> createState() => _UsersByLwAndPeriodState();
+}
+
+class _UsersByLwAndPeriodState extends State<UsersByLwAndPeriod> {
+  final _userRepository = UserRepository();
+  var _state = RequestWithParamsState.askingUser;
+  late Future<List<Map<String, dynamic>>> _users;
+  String? _lwtmp;
+  late String _errorMessage;
+  var _selectedDateTimeRange =
+      DateTimeRange(start: DateTime.now(), end: DateTime.now());
+
+  void _onLwTmpChanged(dynamic value) {
+    _lwtmp = value;
+  }
+
+  void _userReady() {
+    setState(() {
+      var startDate = _selectedDateTimeRange.start;
+      var endDate = _selectedDateTimeRange.end;
+      if (startDate.isAfter(endDate)) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Начало периода должно быть раньше конца периода";
+        return;
+      }
+      if (_lwtmp == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Название произведения не введено";
+        return;
+      }
+
+      _users = _userRepository.getByLWTmp(_lwtmp!, startDate, endDate);
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Перечень читателей, которые в течение указанного промежутка времени получали издание с некоторым произведением, и название этого издания",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Название произведения",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) => _onLwTmpChanged(value),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTimeRange? dateTimeRange =
+                            await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTimeRange != null) {
+                          _selectedDateTimeRange = dateTimeRange;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать период")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo =>
+            FutureBuilder<List<Map<String, dynamic>>>(
+                future: _users,
+                builder: (context, snapshot) {
+                  var isReady = snapshot.hasData &&
+                      snapshot.connectionState == ConnectionState.done;
+
+                  if (isReady) {
+                    return ListView(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 15),
+                      children: snapshot.data!
+                          .map((e) => SingleUserInfo(
+                                user: e["user"],
+                                book: e["book"],
+                              ))
+                          .toList(),
+                    );
+                  }
+
+                  if (snapshot.hasError) {
+                    return Text("Ошибка: ${snapshot.error?.toString()}");
+                  }
+
+                  return const Center(child: CircularProgressIndicator());
+                }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
+  }
+}
+
+class UsersByLibrarian extends StatefulWidget {
+  const UsersByLibrarian({super.key});
+
+  @override
+  State<UsersByLibrarian> createState() => _UsersByLibrarianState();
+}
+
+class _UsersByLibrarianState extends State<UsersByLibrarian> {
+  final _userRepository = UserRepository();
+  var _state = RequestWithParamsState.askingUser;
+  late Future<List<User>> _users;
+  String? _librnLastName;
+  late String _errorMessage;
+  var _selectedDateTimeRange =
+      DateTimeRange(start: DateTime.now(), end: DateTime.now());
+
+  void _onLwTmpChanged(dynamic value) {
+    _librnLastName = value;
+  }
+
+  void _userReady() {
+    setState(() {
+      var startDate = _selectedDateTimeRange.start;
+      var endDate = _selectedDateTimeRange.end;
+      if (startDate.isAfter(endDate)) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Начало периода должно быть раньше конца периода";
+        return;
+      }
+      if (_librnLastName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Фамилия библиотекаря не введена";
+        return;
+      }
+
+      _users = _userRepository.getByLibrn(_librnLastName!, startDate, endDate);
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Список читателей, которые в течение обозначенного периода были обслужены указанным библиотекарем",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Фамилия библиотекаря",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) => _onLwTmpChanged(value),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTimeRange? dateTimeRange =
+                            await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTimeRange != null) {
+                          _selectedDateTimeRange = dateTimeRange;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать период")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<List<User>>(
+              future: _users,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    children: snapshot.data!
+                        .map((u) => SingleUserInfo(
+                              user: u,
+                              book: null,
+                            ))
+                        .toList(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Text("Ошибка: ${snapshot.error?.toString()}");
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
+  }
+}
+
+class UsersNotVisitScreen extends StatefulWidget {
+  const UsersNotVisitScreen({super.key});
+
+  @override
+  State<UsersNotVisitScreen> createState() => _UsersNotVisitScreenState();
+}
+
+class _UsersNotVisitScreenState extends State<UsersNotVisitScreen> {
+  final _userRepository = UserRepository();
+  var _state = RequestWithParamsState.askingUser;
+  late Future<List<User>> _users;
+  late String _errorMessage;
+  var _selectedDateTimeRange =
+      DateTimeRange(start: DateTime.now(), end: DateTime.now());
+
+  void _userReady() {
+    setState(() {
+      var startDate = _selectedDateTimeRange.start;
+      var endDate = _selectedDateTimeRange.end;
+      if (startDate.isAfter(endDate)) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Начало периода должно быть раньше конца периода";
+        return;
+      }
+
+      _users = _userRepository.getNotVisit(startDate, endDate);
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Список читателей, не посещавших библиотеку в течение указанного времени",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTimeRange? dateTimeRange =
+                            await showDateRangePicker(
+                          context: context,
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTimeRange != null) {
+                          _selectedDateTimeRange = dateTimeRange;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать период")
+                      ]),
+                    )),
                 Padding(
                     padding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 15),
