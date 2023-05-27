@@ -4,6 +4,7 @@ import 'package:library_fund/librarians.dart';
 import 'package:library_fund/libraries.dart';
 import 'package:library_fund/literary_works.dart';
 import 'package:library_fund/storage_info.dart';
+import 'package:library_fund/users.dart';
 import './utils/theme.dart';
 import 'menu.dart';
 import 'authors.dart';
@@ -50,6 +51,8 @@ class MyApp extends StatelessWidget {
         "/librns/getAll": (context) => const LibrarariansAllScreen(),
         "/librns/report": (context) => const LibrariansReportScreen(),
         "/librns/byPlace": (context) => const LibrarianByPlaceScreen(),
+        "/users": (context) => const UserOptionsScreen(),
+        "/users/getAll": (context) => const UsersAllScreen(),
       },
       initialRoute: "/",
     );

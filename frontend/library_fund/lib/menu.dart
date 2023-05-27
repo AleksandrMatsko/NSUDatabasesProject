@@ -40,7 +40,10 @@ class Menu extends StatelessWidget {
           OutlinedButton(
               onPressed: () => Navigator.pushReplacementNamed(context, "/ij"),
               child: const Text("Журнал выдачи")),
-          OutlinedButton(onPressed: () {}, child: const Text("Читатели")),
+          OutlinedButton(
+              onPressed: () =>
+                  Navigator.pushReplacementNamed(context, "/users"),
+              child: const Text("Читатели")),
           OutlinedButton(
               onPressed: () => Navigator.pushReplacementNamed(context, "/rj"),
               child: const Text("Журнал регистрации")),
