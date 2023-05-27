@@ -37,11 +37,13 @@ class UserOptionsScreen extends StatelessWidget {
                     Navigator.pushReplacementNamed(context, "/users/getAll"),
                 child: const Text("Получить всех читателей")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushReplacementNamed(
+                    context, "/users/getByLwTmp"),
                 child: const Text(
                     "Выдать перечень читателей, на руках у которых находится указанное произведение")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () => Navigator.pushReplacementNamed(
+                    context, "/users/getByBookTmp"),
                 child: const Text(
                     "Получить список читателей, на руках у которых находится указанное издание (книга, журнал и т.д)")),
             OutlinedButton(
@@ -223,5 +225,124 @@ class SingleUserInfo extends StatelessWidget {
                     )),
               ])
             ]));
+  }
+}
+
+class UsersByTemplate extends StatefulWidget {
+  final bool isLwTmp;
+  const UsersByTemplate({super.key, required this.isLwTmp});
+
+  @override
+  State<UsersByTemplate> createState() =>
+      _UsersByTemplateState(isLwTmp: isLwTmp);
+}
+
+class _UsersByTemplateState extends State<UsersByTemplate> {
+  final bool isLwTmp;
+  final _userRepository = UserRepository();
+  late Future<List<User>> _users;
+  var _state = RequestWithParamsState.askingUser;
+  String? _template;
+  late String _errorMessage;
+
+  _UsersByTemplateState({required this.isLwTmp});
+
+  void _onTmpChanged(dynamic value) {
+    _template = value;
+  }
+
+  void _userReady() {
+    setState(() {
+      if (_template == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Шаблон не введён";
+        return;
+      }
+
+      _users = _userRepository.getByTmp(isLwTmp, _template!);
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String title;
+    String paramName;
+    if (isLwTmp) {
+      title =
+          "Перечень читателей, на руках у которых находится указанное произведение";
+      paramName = "Название произведения";
+    } else {
+      title =
+          "Список читателей, на руках у которых находится указанное издание";
+      paramName = "Название издания (книги)";
+    }
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text(paramName, style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) => _onTmpChanged(value),
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<List<User>>(
+              future: _users,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    children: snapshot.data!
+                        .map((u) => SingleUserInfo(
+                              user: u,
+                              book: null,
+                            ))
+                        .toList(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Text("Ошибка: ${snapshot.error?.toString()}");
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }

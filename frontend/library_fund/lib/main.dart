@@ -53,6 +53,9 @@ class MyApp extends StatelessWidget {
         "/librns/byPlace": (context) => const LibrarianByPlaceScreen(),
         "/users": (context) => const UserOptionsScreen(),
         "/users/getAll": (context) => const UsersAllScreen(),
+        "/users/getByLwTmp": (context) => const UsersByTemplate(isLwTmp: true),
+        "/users/getByBookTmp": (context) =>
+            const UsersByTemplate(isLwTmp: false),
       },
       initialRoute: "/",
     );

@@ -21,6 +21,24 @@ class UserRepository {
     return data.map((element) => User.fromJson(element)).toList();
   }
 
+  Future<List<User>> getByTmp(isLwTmp, String tmp) async {
+    Map<String, dynamic> queryParams = {};
+    if (isLwTmp) {
+      queryParams.putIfAbsent("lwtmp", () => tmp);
+    } else {
+      queryParams.putIfAbsent("booktmp", () => tmp);
+    }
+    final response = await _dio.get(
+      _baseUrl,
+      options: Options(headers: {
+        "Accept": "application/json",
+      }),
+      queryParameters: queryParams,
+    );
+    final data = response.data as List;
+    return data.map((element) => User.fromJson(element)).toList();
+  }
+
   Future<List<Map<String, dynamic>>> getByLWTmp(
       String lwTmp, DateTime startDate, DateTime endDate) async {
     initializeDateFormatting();
