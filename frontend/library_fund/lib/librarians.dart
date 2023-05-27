@@ -42,7 +42,7 @@ class LibrarianOptionsScreen extends StatelessWidget {
                 child: const Text("Получить данные о выработке библиотекарей")),
             OutlinedButton(
                 onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/librns/place"),
+                    Navigator.pushReplacementNamed(context, "/librns/byPlace"),
                 child: const Text(
                     "Выдать список библиотекарей, работающих в указанном читальном зале некоторой библиотеки")),
             OutlinedButton(
@@ -174,7 +174,7 @@ class SingleLibrarianInfo extends StatelessWidget {
                     padding: const EdgeInsets.all(15.0),
                     width: 800,
                     child: Text(
-                        "зал с id: ${_librarian.hall.hallId},    библиотека: ${_librarian.hall.library.name}",
+                        "зал с id: ${_librarian.hall.hallId}, \nбиблиотека: ${_librarian.hall.library.name}",
                         style: Theme.of(context).textTheme.bodyLarge)),
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -305,6 +305,131 @@ class _LibrariansReportScreenState extends State<LibrariansReportScreen> {
 
                   return const Center(child: CircularProgressIndicator());
                 }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
+  }
+}
+
+class LibrarianByPlaceScreen extends StatefulWidget {
+  const LibrarianByPlaceScreen({super.key});
+
+  @override
+  State<LibrarianByPlaceScreen> createState() => _LibrarianByPlaceScreenState();
+}
+
+class _LibrarianByPlaceScreenState extends State<LibrarianByPlaceScreen> {
+  final _librarianRepository = LibrarianRepository();
+  var _state = RequestWithParamsState.askingUser;
+  late Future<List<Librarian>> _librn;
+  late String _errorMessage;
+  String? _libName;
+  String? _hallId;
+
+  void _userReady() {
+    setState(() {
+      if (_libName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано название библиотеки";
+        return;
+      }
+      if (_hallId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id зала";
+        return;
+      }
+
+      _librn = _librarianRepository.getByPlace(_libName!, int.parse(_hallId!));
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Библиотекари работающие в указанном зале, указанной библиотеки",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text(
+                  "Название библиотеки",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _libName = value;
+                  },
+                ),
+                Text(
+                  "id зала",
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _hallId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Icon(Icons.search), Text("Искать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<List<Librarian>>(
+              future: _librn,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return ListView(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    children: snapshot.data!
+                        .map((librn) => SingleLibrarianInfo(
+                              librn: librn,
+                              count: null,
+                            ))
+                        .toList(),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Text("Ошибка: ${snapshot.error?.toString()}");
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
           RequestWithParamsState.errorInput => Center(
               child: Text(_errorMessage, style: errorStyle),
             )

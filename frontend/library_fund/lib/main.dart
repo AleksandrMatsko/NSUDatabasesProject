@@ -49,6 +49,7 @@ class MyApp extends StatelessWidget {
         "/librns": (context) => const LibrarianOptionsScreen(),
         "/librns/getAll": (context) => const LibrarariansAllScreen(),
         "/librns/report": (context) => const LibrariansReportScreen(),
+        "/librns/byPlace": (context) => const LibrarianByPlaceScreen(),
       },
       initialRoute: "/",
     );
