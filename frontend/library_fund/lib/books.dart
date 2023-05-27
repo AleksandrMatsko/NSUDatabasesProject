@@ -536,9 +536,9 @@ class _BookPlaceScreenState extends State<BookPlaceScreen> {
         return;
       }
 
-      _state = RequestWithParamsState.showingInfo;
       _books = _bookRepository.getBooksByPlace(_libName!, int.parse(_hallId!),
           int.parse(_bookcase!), int.parse(_shelf!));
+      _state = RequestWithParamsState.showingInfo;
     });
   }
 
