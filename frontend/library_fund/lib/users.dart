@@ -516,7 +516,7 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
                 var isReady = snapshot.hasData &&
                     snapshot.connectionState == ConnectionState.done;
 
-                if (isReady) {
+                if (isReady && snapshot.data!) {
                   return Container(
                     alignment: Alignment.center,
                     child: Column(children: [
@@ -533,11 +533,20 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
                   );
                 }
 
+                if (!snapshot.data!) {
+                  return const Center(
+                      child: Text(
+                    "Ошибка: что-то пошло не так",
+                    style: errorStyle,
+                  ));
+                }
+
                 if (snapshot.hasError) {
-                  return Text(
+                  return Center(
+                      child: Text(
                     "Ошибка: ${snapshot.error?.toString()}",
                     style: errorStyle,
-                  );
+                  ));
                 }
 
                 return const Center(child: CircularProgressIndicator());

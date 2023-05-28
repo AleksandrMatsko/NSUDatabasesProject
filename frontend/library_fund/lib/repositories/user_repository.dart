@@ -25,23 +25,23 @@ class UserRepository {
   Future<bool> create(User user, int librarianId) async {
     var body = user.toJsonCreate();
     body.putIfAbsent("librarianId", () => librarianId);
-    try {
-      final response = await _dio.post(
-        _baseUrl,
-        data: body,
-        options: Options(headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        }),
-      );
-      if (response.statusCode != null && response.statusCode! ~/ 100 == 2) {
-        debugPrint(response.data.toString());
-        return true;
-      }
-      return false;
-    } catch (e) {
-      return false;
+    //try {
+    final response = await _dio.post(
+      _baseUrl,
+      data: body,
+      options: Options(headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }),
+    );
+    if (response.statusCode != null && response.statusCode! ~/ 100 == 2) {
+      debugPrint(response.data.toString());
+      return true;
     }
+    return false;
+    //} catch (e) {
+    //  return false;
+    //}
   }
 
   Future<List<User>> getByTmp(isLwTmp, String tmp) async {
