@@ -67,10 +67,485 @@ class UserOptionsScreen extends StatelessWidget {
                 child: const Text(
                     "Получить список читателей, не посещавших библиотеку в течение указанного времени")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/users/addOne"),
                 child: const Text("Добавить нового читателя")),
           ],
         ));
+  }
+}
+
+class UserCreateScreen extends StatefulWidget {
+  const UserCreateScreen({super.key});
+
+  @override
+  State<UserCreateScreen> createState() => _UserCreateScreenState();
+}
+
+class _UserCreateScreenState extends State<UserCreateScreen> {
+  final _userRepository = UserRepository();
+  late Future<bool> _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  String? _lastName;
+  String? _firstName;
+  String? _patronymic;
+  String? _librarianId;
+
+  var _category = UserCategories.none;
+  Map<String, String?> _formParams = {};
+
+  UserCategoryInfo? _getCategoryInfo() {
+    if (_formParams.isEmpty) {
+      return null;
+    }
+    switch (_category) {
+      case (UserCategories.scientist):
+        {
+          return Scientist.fromJson(_formParams);
+        }
+      case (UserCategories.student):
+        {
+          return Student.fromJson(_formParams);
+        }
+      case (UserCategories.worker):
+        {
+          return Worker.fromJson(_formParams);
+        }
+      case (UserCategories.teacher):
+        {
+          return Teacher.fromJson(_formParams);
+        }
+      case (UserCategories.pupil):
+        {
+          return Pupil.fromJson(_formParams);
+        }
+      case (UserCategories.pensioner):
+        {
+          return Pensioner.fromJson(_formParams);
+        }
+      default:
+        {
+          return null;
+        }
+    }
+  }
+
+  Widget _getFormByCategory(BuildContext context, UserCategories category) {
+    switch (_category) {
+      case (UserCategories.scientist):
+        {
+          _formParams = {
+            "degree": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Учёная степень",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["degree"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      case (UserCategories.student):
+        {
+          _formParams = {
+            "faculty": null,
+            "university": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Университет",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["university"] = value;
+                },
+              ),
+              Text(
+                "Факультет",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["faculty"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      case (UserCategories.worker):
+        {
+          _formParams = {
+            "job": null,
+            "company": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Компания",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["company"] = value;
+                },
+              ),
+              Text(
+                "Должность",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["job"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      case (UserCategories.teacher):
+        {
+          _formParams = {
+            "school": null,
+            "subject": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Школа",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["school"] = value;
+                },
+              ),
+              Text(
+                "Преподаваемый предмет",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["subject"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      case (UserCategories.pupil):
+        {
+          _formParams = {
+            "school": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Школа",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["school"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      case (UserCategories.pensioner):
+        {
+          _formParams = {
+            "discount": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Скидка",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["discount"] = value;
+                },
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+              ),
+            ],
+          );
+        }
+      default:
+        {
+          _formParams = {};
+          return const Text("");
+        }
+    }
+  }
+
+  ChoiceChip getChoiceChip(
+      String desc, Function isSelected, Function onSelected) {
+    return ChoiceChip(
+        label: Text(
+          desc,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        selected: isSelected(),
+        onSelected: (selected) => onSelected(selected),
+        selectedColor: appBackgroundColor,
+        disabledColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: const BorderSide(color: appBackgroundColor)));
+  }
+
+  Widget _getCategoryInputWidget(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              getChoiceChip("нет", () => _category == UserCategories.none,
+                  (selected) {
+                setState(() {
+                  _category = UserCategories.none;
+                });
+              }),
+              getChoiceChip(
+                  "учёный", () => _category == UserCategories.scientist,
+                  (selected) {
+                setState(() {
+                  _category = UserCategories.scientist;
+                });
+              }),
+              getChoiceChip(
+                  "студент", () => _category == UserCategories.student,
+                  (bool selected) {
+                setState(() {
+                  _category = UserCategories.student;
+                });
+              }),
+              getChoiceChip("рабочий", () => _category == UserCategories.worker,
+                  (bool selected) {
+                setState(() {
+                  _category = UserCategories.worker;
+                });
+              }),
+              getChoiceChip(
+                  "учитель", () => _category == UserCategories.teacher,
+                  (bool selected) {
+                setState(() {
+                  _category = UserCategories.teacher;
+                });
+              }),
+              getChoiceChip("школьник", () => _category == UserCategories.pupil,
+                  (bool selected) {
+                setState(() {
+                  _category = UserCategories.pupil;
+                });
+              }),
+              getChoiceChip(
+                  "пенсионер", () => _category == UserCategories.pensioner,
+                  (bool selected) {
+                setState(() {
+                  _category = UserCategories.pensioner;
+                });
+              }),
+            ],
+          ),
+          _getFormByCategory(context, _category),
+        ],
+      ),
+    );
+  }
+
+  void _userReady() {
+    setState(() {
+      if (_lastName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана фамилия читателя";
+        return;
+      }
+      if (_firstName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано имя читателя";
+        return;
+      }
+      if (_librarianId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано id библиотекаря";
+        return;
+      }
+      UserCategoryInfo? categoryInfo;
+      try {
+        categoryInfo = _getCategoryInfo();
+      } catch (e) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не верно указаны данные для категории";
+        return;
+      }
+      ShortUserCategory? category;
+      if (categoryInfo != null) {
+        category = ShortUserCategory(categoryInfo.getCategoryName());
+      }
+      var user = User(
+          -1, _lastName!, _firstName!, _patronymic, category, categoryInfo);
+
+      _success = _userRepository.create(user, int.parse(_librarianId!));
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Добавление читателя",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Фамилия читателя",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _lastName = value;
+                  },
+                ),
+                Text("Имя читателя",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _firstName = value;
+                  },
+                ),
+                Text("Отчество читателя",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _patronymic = value;
+                  },
+                ),
+                Text("id библиотекаря",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _librarianId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    "Выбор категории",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+                _getCategoryInputWidget(context),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Добавить")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<bool>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Читатель добавлен",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, "/users"),
+                          child: const Text("Меню читателей")),
+                    ]),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  );
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }
 
@@ -170,6 +645,34 @@ class SingleUserInfo extends StatelessWidget {
         style: Theme.of(context).textTheme.bodyLarge);
   }
 
+  Widget _showCategoryNameIfCategory(BuildContext context) {
+    if (_user.category == null) {
+      return const Text("");
+    }
+    String title = "";
+    switch (_user.categoryInfo!.getCategory()) {
+      case (UserCategories.scientist):
+        title = "учёный";
+      case (UserCategories.student):
+        title = "студент";
+      case (UserCategories.worker):
+        title = "рабочий";
+      case (UserCategories.teacher):
+        title = "учитель";
+      case (UserCategories.pupil):
+        title = "школьник";
+      case (UserCategories.pensioner):
+        title = "пенсионер";
+      case (UserCategories.none):
+        "";
+    }
+    if (title == "") {
+      return const Text("");
+    }
+    return Text("Категория: $title",
+        style: Theme.of(context).textTheme.bodyLarge);
+  }
+
   Widget _showIfCategory(BuildContext context) {
     if (_user.category == null) {
       return const Text("");
@@ -227,6 +730,7 @@ class SingleUserInfo extends StatelessWidget {
                           child: _showIfBook(context)),
                     ],
                   )),
+              _showCategoryNameIfCategory(context),
               _showIfCategory(context),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(

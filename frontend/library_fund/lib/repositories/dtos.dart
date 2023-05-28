@@ -21,7 +21,7 @@ class LWCategory {
   }
 }
 
-enum LWCategories { novel, scientificArticle, textbook, poem }
+enum LWCategories { none, novel, scientificArticle, textbook, poem }
 
 abstract class LWCategoryInfo {
   LWCategoryInfo();
@@ -259,7 +259,15 @@ class ShortUser {
   }
 }
 
-enum UserCategories { student, scientist, worker, teacher, pupil, pensioner }
+enum UserCategories {
+  none,
+  student,
+  scientist,
+  worker,
+  teacher,
+  pupil,
+  pensioner
+}
 
 abstract class UserCategoryInfo {
   UserCategoryInfo();
@@ -267,6 +275,8 @@ abstract class UserCategoryInfo {
 
   Map<String, dynamic> getTranslated();
   UserCategories getCategory();
+  Map<String, dynamic> toJson();
+  String getCategoryName();
 }
 
 class Student extends UserCategoryInfo {
@@ -295,6 +305,16 @@ class Student extends UserCategoryInfo {
       "университет": university,
     };
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {"faculty": faculty, "university": university};
+  }
+
+  @override
+  String getCategoryName() {
+    return "student";
+  }
 }
 
 class Scientist extends UserCategoryInfo {
@@ -319,6 +339,18 @@ class Scientist extends UserCategoryInfo {
     return {
       "учёная степень": degree,
     };
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "degree": degree,
+    };
+  }
+
+  @override
+  String getCategoryName() {
+    return "scientist";
   }
 }
 
@@ -348,6 +380,19 @@ class Worker extends UserCategoryInfo {
       "компания": company,
     };
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "job": job,
+      "company": company,
+    };
+  }
+
+  @override
+  String getCategoryName() {
+    return "worker";
+  }
 }
 
 class Teacher extends UserCategoryInfo {
@@ -376,6 +421,19 @@ class Teacher extends UserCategoryInfo {
       "преподаёт предмет": subject,
     };
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "school": school,
+      "subject": subject,
+    };
+  }
+
+  @override
+  String getCategoryName() {
+    return "teacher";
+  }
 }
 
 class Pupil extends UserCategoryInfo {
@@ -401,6 +459,18 @@ class Pupil extends UserCategoryInfo {
       "школа": school,
     };
   }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "school": school,
+    };
+  }
+
+  @override
+  String getCategoryName() {
+    return "pupil";
+  }
 }
 
 class Pensioner extends UserCategoryInfo {
@@ -425,6 +495,18 @@ class Pensioner extends UserCategoryInfo {
     return {
       "размер скидки (в %)": discount,
     };
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "discount": discount,
+    };
+  }
+
+  @override
+  String getCategoryName() {
+    return "pensioner";
   }
 }
 
@@ -474,6 +556,22 @@ class User {
         json["patronymic"] as String?,
         userCategory,
         userCategoryInfo);
+  }
+
+  Map<String, dynamic> toJsonCreate() {
+    String? categoryName;
+    Map<String, dynamic>? info;
+    if (category != null && categoryInfo != null) {
+      categoryName = category!.categoryName;
+      info = categoryInfo!.toJson();
+    }
+    return {
+      "lastName": lastName,
+      "firstName": firstName,
+      "patronymic": patronymic,
+      "categoryName": categoryName,
+      "categoryInfo": info,
+    };
   }
 }
 

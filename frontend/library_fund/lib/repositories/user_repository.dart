@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
@@ -19,6 +20,28 @@ class UserRepository {
     );
     final data = response.data as List;
     return data.map((element) => User.fromJson(element)).toList();
+  }
+
+  Future<bool> create(User user, int librarianId) async {
+    var body = user.toJsonCreate();
+    body.putIfAbsent("librarianId", () => librarianId);
+    try {
+      final response = await _dio.post(
+        _baseUrl,
+        data: body,
+        options: Options(headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        }),
+      );
+      if (response.statusCode != null && response.statusCode! ~/ 100 == 2) {
+        debugPrint(response.data.toString());
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<List<User>> getByTmp(isLwTmp, String tmp) async {

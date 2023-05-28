@@ -62,6 +62,7 @@ class MyApp extends StatelessWidget {
         "/users/byLwTmpAndPeriod": (context) => const UsersByLwAndPeriod(),
         "/users/byLibrarian": (context) => const UsersByLibrarian(),
         "/users/notVisit": (context) => const UsersNotVisitScreen(),
+        "/users/addOne": (context) => const UserCreateScreen(),
       },
       initialRoute: "/",
     );
