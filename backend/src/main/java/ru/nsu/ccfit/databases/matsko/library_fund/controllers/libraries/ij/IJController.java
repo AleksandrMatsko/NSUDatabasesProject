@@ -33,14 +33,19 @@ public class IJController {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             Date dateIssue = format.parse(ijParams.getDateIssue());
-            Date dateReturn = format.parse(ijParams.getDateReturn());
+            Date dateReturn = null;
+            Integer acceptedBy = null;
+            if (ijParams.getDateReturn() != null && ijParams.getAcceptedBy() != null) {
+                dateReturn = format.parse(ijParams.getDateReturn());
+                acceptedBy = ijParams.getAcceptedBy();
+            }
             return ResponseEntity.ok(ijService.add(
                     ijParams.getStoredId(),
                     ijParams.getUserId(),
                     dateIssue,
                     dateReturn,
                     ijParams.getIssuedBy(),
-                    ijParams.getAcceptedBy()));
+                    acceptedBy));
         }
         catch (Exception e) {
             logger.warning(e::getMessage);

@@ -60,7 +60,7 @@ public class IJService {
             issueJournalEntity.setDateReturn(dateReturn);
             issueJournalEntity.setAcceptedBy(acceptedLibrarian);
         }
-        else {
+        else if ((dateReturn != null && acceptedBy == null) || (dateReturn == null && acceptedBy != null)) {
             throw new IllegalStateException("not enough info about accepting book");
         }
         return ijRepository.save(issueJournalEntity);

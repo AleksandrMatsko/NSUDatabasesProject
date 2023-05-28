@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
         "/rj": (context) => const RJAllScreen(),
         "/ij": (context) => const IJOptionsScreen(),
         "/ij/getAll": (context) => const IJAllScreen(),
+        "/ij/addOne": (context) => const IJAddScreen(),
         "/lws": (context) => const LWOptionsScreen(),
         "/lws/getAll": (context) => const LWAllScreen(),
         "/lws/popular": (context) => const PopularLWScreen(),
