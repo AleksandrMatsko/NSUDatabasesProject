@@ -57,9 +57,159 @@ class BookOptionsScreen extends StatelessWidget {
                 child: const Text(
                     "Получить перечень указанной литературы, которая поступила (была списана) в течение некоторого периода")),
             OutlinedButton(
-                onPressed: () {}, child: const Text("Добавить новую книгу")),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/books/addOne"),
+                child: const Text("Добавить новую книгу")),
           ],
         ));
+  }
+}
+
+class BookAddScreen extends StatefulWidget {
+  const BookAddScreen({super.key});
+
+  @override
+  State<BookAddScreen> createState() => _BookAddScreenState();
+}
+
+class _BookAddScreenState extends State<BookAddScreen> {
+  final _bookRepository = BookRepository();
+  late Future<bool> _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  String? _name;
+  String? _lwIdsOneLine;
+
+  void _userReady() {
+    setState(() {
+      if (_name == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано название книги";
+        return;
+      }
+      if (_lwIdsOneLine == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage =
+            "Не указаны литературные произведения, входящие в книгу";
+        return;
+      }
+
+      _lwIdsOneLine = _lwIdsOneLine!.replaceAll(RegExp(r"[^0-9\s]"), "");
+      List<String> stringLwIds = _lwIdsOneLine!.split(" ");
+      List<int> lwIds = stringLwIds.map((e) => int.parse(e)).toList();
+      if (lwIds.isEmpty) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage =
+            "Не указаны литературные произведения, входящие в книгу";
+        return;
+      }
+
+      _success = _bookRepository.create({
+        "name": _name!,
+        "literaryWorks": lwIds,
+      });
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Добавление книги",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Название книги",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _name = value;
+                  },
+                ),
+                Text(
+                    "id литературных произведений, входящих в книгу (числа через пробел)",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _lwIdsOneLine = value;
+                  },
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Добавить")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<bool>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady && snapshot.data!) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Книга добавлена",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, "/books"),
+                          child: const Text("Меню книг")),
+                    ]),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  ));
+                }
+
+                if (isReady && !snapshot.data!) {
+                  return const Center(
+                      child: Text(
+                    "Ошибка: что-то пошло не так",
+                    style: errorStyle,
+                  ));
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }
 

@@ -533,7 +533,7 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
                   );
                 }
 
-                if (!snapshot.data!) {
+                if (isReady && !snapshot.data!) {
                   return const Center(
                       child: Text(
                     "Ошибка: что-то пошло не так",

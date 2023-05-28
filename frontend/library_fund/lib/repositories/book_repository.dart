@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
@@ -89,5 +90,21 @@ class BookRepository {
           "shelf": shelf
         });
     return responseToList(response.data as List);
+  }
+
+  Future<bool> create(Map<String, dynamic> body) async {
+    final response = await _dio.post(
+      _baseUrl,
+      data: body,
+      options: Options(headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }),
+    );
+    if (response.statusCode != null && response.statusCode! ~/ 100 == 2) {
+      debugPrint(response.data.toString());
+      return true;
+    }
+    return false;
   }
 }

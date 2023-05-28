@@ -162,7 +162,7 @@ class _AuthorAddScreenState extends State<AuthorAddScreen> {
                   );
                 }
 
-                if (snapshot.data == null || !snapshot.data!) {
+                if (isReady && !snapshot.data!) {
                   return const Center(
                       child: Text(
                     "Ошибка: что-то пошло не так",

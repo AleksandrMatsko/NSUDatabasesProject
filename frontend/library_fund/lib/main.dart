@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
         "/books/notFromRegLib": (context) => const BooksFromLib(regLib: false),
         "/books/place": (context) => const BookPlaceScreen(),
         "/books/flow": (context) => const BookFlowScreen(),
+        "/books/addOne": (context) => const BookAddScreen(),
         "/rj": (context) => const RJAllScreen(),
         "/ij": (context) => const IJOptionsScreen(),
         "/ij/getAll": (context) => const IJAllScreen(),
