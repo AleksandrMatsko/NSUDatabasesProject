@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'dtos.dart';
@@ -16,5 +18,21 @@ class AuthorRepository {
     );
     final data = response.data as List;
     return data.map((element) => Author.fromJson(element)).toList();
+  }
+
+  Future<bool> create(ShortAuthor author) async {
+    final response = await _dio.post(
+      _baseUrl,
+      data: author.toJsonCreate(),
+      options: Options(headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }),
+    );
+    if (response.statusCode != null && response.statusCode! ~/ 100 == 2) {
+      debugPrint(response.data.toString());
+      return true;
+    }
+    return false;
   }
 }

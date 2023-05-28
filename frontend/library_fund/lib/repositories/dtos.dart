@@ -181,6 +181,14 @@ class ShortAuthor {
     return ShortAuthor(json["authorId"] as int, json["lastName"] as String,
         json["firstName"] as String, json["patronymic"] as String?);
   }
+
+  Map<String, dynamic> toJsonCreate() {
+    return {
+      "lastName": lastName,
+      "firstName": firstName,
+      "patronymic": patronymic
+    };
+  }
 }
 
 class Author {

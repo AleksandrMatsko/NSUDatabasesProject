@@ -470,7 +470,7 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
                     _firstName = value;
                   },
                 ),
-                Text("Отчество читателя",
+                Text("Отчество читателя (при наличии)",
                     style: Theme.of(context).textTheme.bodyLarge),
                 TextFormField(
                   showCursor: true,

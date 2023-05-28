@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         "/": (context) => const MainScreen(title: "Библиотечный фонд"),
         "/authors": (context) => const AuthorsOptionsScreen(),
         "/authors/getAll": (context) => const AuthorsAllScreen(),
-        //"/authors/addOne"
+        "/authors/addOne": (context) => const AuthorAddScreen(),
         "/books": (context) => const BookOptionsScreen(),
         "/books/getAll": (context) => const BooksAllScreen(),
         "/books/fromRegLib": (context) => const BooksFromLib(regLib: true),

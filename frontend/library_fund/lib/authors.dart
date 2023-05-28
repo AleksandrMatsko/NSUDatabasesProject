@@ -36,9 +36,154 @@ class AuthorsOptionsScreen extends StatelessWidget {
                     Navigator.pushReplacementNamed(context, "/authors/getAll"),
                 child: const Text("Получить всех авторов")),
             OutlinedButton(
-                onPressed: () {}, child: const Text("Добавить нового автора")),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/authors/addOne"),
+                child: const Text("Добавить нового автора")),
           ],
         ));
+  }
+}
+
+class AuthorAddScreen extends StatefulWidget {
+  const AuthorAddScreen({super.key});
+
+  @override
+  State<AuthorAddScreen> createState() => _AuthorAddScreenState();
+}
+
+class _AuthorAddScreenState extends State<AuthorAddScreen> {
+  final _authorRepository = AuthorRepository();
+  late Future<bool> _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  String? _lastName;
+  String? _firstName;
+  String? _patronymic;
+
+  void _userReady() {
+    setState(() {
+      if (_lastName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана фамилия автора";
+        return;
+      }
+      if (_firstName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано имя автора";
+        return;
+      }
+      var author = ShortAuthor(0, _lastName!, _firstName!, _patronymic);
+      _success = _authorRepository.create(author);
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Добавление автора",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Фамилия автора",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _lastName = value;
+                  },
+                ),
+                Text("Имя автора",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _firstName = value;
+                  },
+                ),
+                Text("Отчество автора (при наличии)",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _patronymic = value;
+                  },
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Добавить")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<bool>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady && snapshot.data!) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Автор добавлен",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () => Navigator.pushReplacementNamed(
+                              context, "/authors"),
+                          child: const Text("Меню авторов")),
+                    ]),
+                  );
+                }
+
+                if (snapshot.data == null || !snapshot.data!) {
+                  return const Center(
+                      child: Text(
+                    "Ошибка: что-то пошло не так",
+                    style: errorStyle,
+                  ));
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  ));
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }
 
