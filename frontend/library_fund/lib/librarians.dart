@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'menu.dart';
 import 'repositories/librarian_repository.dart';
 import 'repositories/dtos.dart';
@@ -46,10 +48,234 @@ class LibrarianOptionsScreen extends StatelessWidget {
                 child: const Text(
                     "Выдать список библиотекарей, работающих в указанном читальном зале некоторой библиотеки")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/librns/addOne"),
                 child: const Text("Добавить нового библиотекаря")),
           ],
         ));
+  }
+}
+
+class LibrarianAddScreen extends StatefulWidget {
+  const LibrarianAddScreen({super.key});
+
+  @override
+  State<LibrarianAddScreen> createState() => _LibrarianAddScreenState();
+}
+
+class _LibrarianAddScreenState extends State<LibrarianAddScreen> {
+  final _librnRepository = LibrarianRepository();
+  late Future<bool> _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  String? _lastName;
+  String? _firstName;
+  String? _patronymic;
+  String? _hallId;
+  DateTime? _dateHired;
+  DateTime? _dateRetired;
+
+  void _userReady() {
+    setState(() {
+      if (_lastName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана фамилия библиотекаря";
+        return;
+      }
+      if (_firstName == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано имя библиотекаря";
+        return;
+      }
+      if (_hallId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id зала";
+        return;
+      }
+      if (_dateHired == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана дата найма";
+        return;
+      }
+
+      initializeDateFormatting();
+      DateFormat formatter = DateFormat(dateTemplate);
+      String hireDate = formatter.format(_dateHired!);
+      String? retireDate;
+      if (_dateRetired != null) {
+        retireDate = formatter.format(_dateRetired!);
+      }
+
+      _success = _librnRepository.create({
+        "lastName": _lastName!,
+        "firstName": _firstName!,
+        "patronymic": _patronymic,
+        "hallId": int.parse(_hallId!),
+        "dateHired": hireDate,
+        "dateRetired": retireDate,
+      });
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Добавление библиотекаря",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Фамилия библиотекаря",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _lastName = value;
+                  },
+                ),
+                Text("Имя библиотекаря",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _firstName = value;
+                  },
+                ),
+                Text("Отчество библиотекаря (при наличии)",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _patronymic = value;
+                  },
+                ),
+                Text("id зала", style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _hallId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTime? dateTime = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTime != null) {
+                          _dateHired = dateTime;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать дату найма")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTime? dateTime = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTime != null) {
+                          _dateHired = dateTime;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать дату увольнения")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Добавить")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<bool>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady && snapshot.data!) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Библиотекарь добавлен",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () => Navigator.pushReplacementNamed(
+                              context, "/librns"),
+                          child: const Text("Меню библиотекарей")),
+                    ]),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  ));
+                }
+
+                if (isReady && !snapshot.data!) {
+                  return const Center(
+                      child: Text(
+                    "Ошибка: что-то пошло не так",
+                    style: errorStyle,
+                  ));
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }
 

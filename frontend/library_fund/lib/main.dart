@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
         "/librns/getAll": (context) => const LibrarariansAllScreen(),
         "/librns/report": (context) => const LibrariansReportScreen(),
         "/librns/byPlace": (context) => const LibrarianByPlaceScreen(),
+        "/librns/addOne": (context) => const LibrarianAddScreen(),
         "/users": (context) => const UserOptionsScreen(),
         "/users/getAll": (context) => const UsersAllScreen(
               isOverdue: false,
