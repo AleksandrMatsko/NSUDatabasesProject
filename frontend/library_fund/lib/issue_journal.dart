@@ -206,7 +206,7 @@ class _IJAddScreenState extends State<IJAddScreen> {
                           lastDate: DateTime.now(),
                         );
                         if (dateTime != null) {
-                          _dateIssue = dateTime;
+                          _dateReturn = dateTime;
                         }
                       },
                       child: const Row(children: [

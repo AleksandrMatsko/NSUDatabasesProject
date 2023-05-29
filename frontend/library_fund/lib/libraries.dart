@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'menu.dart';
 import 'repositories/library_repository.dart';
 import 'repositories/dtos.dart';
@@ -36,10 +37,197 @@ class LibraryOptionsScreen extends StatelessWidget {
                     Navigator.pushReplacementNamed(context, "/libs/getAll"),
                 child: const Text("Получить все библиотеки")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/libs/addOne"),
                 child: const Text("Добавить новую библиотеку")),
           ],
         ));
+  }
+}
+
+class LibraryAddScreen extends StatefulWidget {
+  const LibraryAddScreen({super.key});
+
+  @override
+  State<LibraryAddScreen> createState() => _LibraryAddScreenState();
+}
+
+class _LibraryAddScreenState extends State<LibraryAddScreen> {
+  final _libRepository = LibraryRepository();
+  late Future<bool> _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  String? _name;
+  String? _district;
+  String? _street;
+  String? _building;
+  String? _numHalls;
+
+  void _userReady() {
+    setState(() {
+      if (_name == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано название библиотеки";
+        return;
+      }
+      if (_district == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан район расположения";
+        return;
+      }
+      if (_street == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана улица";
+        return;
+      }
+      if (_building == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан номер дома";
+        return;
+      }
+      if (_numHalls == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано число залов";
+        return;
+      }
+
+      _success = _libRepository.create({
+        "name": _name!,
+        "district": _district!,
+        "street": _street!,
+        "building": _building!,
+        "numHalls": int.parse(_numHalls!),
+      });
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Добавление библиотеки",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Название библиотеки",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _name = value;
+                  },
+                ),
+                Text("Район", style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _district = value;
+                  },
+                ),
+                Text("Улица", style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _street = value;
+                  },
+                ),
+                Text("Номер дома",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _building = value;
+                  },
+                ),
+                Text("Количество залов",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _numHalls = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Добавить")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<bool>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady && snapshot.data!) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Библиотека добавлена",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, "/libs"),
+                          child: const Text("Меню библиотек")),
+                    ]),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  ));
+                }
+
+                if (isReady && !snapshot.data!) {
+                  return const Center(
+                      child: Text(
+                    "Ошибка: что-то пошло не так",
+                    style: errorStyle,
+                  ));
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }
 
@@ -66,7 +254,7 @@ class _LibrariesAllScreenState extends State<LibrariesAllScreen> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
-          "Все авторы",
+          "Все библиотеки",
           style: Theme.of(context).textTheme.titleLarge,
         ),
         actions: [

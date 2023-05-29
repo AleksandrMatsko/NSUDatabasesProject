@@ -213,7 +213,7 @@ class _LibrarianAddScreenState extends State<LibrarianAddScreen> {
                           lastDate: DateTime.now(),
                         );
                         if (dateTime != null) {
-                          _dateHired = dateTime;
+                          _dateRetired = dateTime;
                         }
                       },
                       child: const Row(children: [
