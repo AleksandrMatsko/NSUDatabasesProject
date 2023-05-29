@@ -93,7 +93,7 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
   String? _librarianId;
 
   var _category = UserCategories.none;
-  Map<String, String?> _formParams = {};
+  Map<String, dynamic> _formParams = {};
 
   UserCategoryInfo? _getCategoryInfo() {
     if (_formParams.isEmpty) {
@@ -122,6 +122,8 @@ class _UserCreateScreenState extends State<UserCreateScreen> {
         }
       case (UserCategories.pensioner):
         {
+          var strNum = _formParams.remove("discount");
+          _formParams["discount"] = int.parse(strNum!);
           return Pensioner.fromJson(_formParams);
         }
       default:

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class ShortLW {
   int lwId;
   String name;
@@ -29,6 +31,8 @@ abstract class LWCategoryInfo {
 
   Map<String, dynamic> getTranslated();
   LWCategories getCategory();
+  String getCategoryName();
+  Map<String, dynamic> toJson();
 }
 
 class Novel extends LWCategoryInfo {
@@ -40,7 +44,8 @@ class Novel extends LWCategoryInfo {
 
   factory Novel.fromJson(dynamic json) {
     var novel = Novel();
-    novel.numberChapters = json["numberChapters"];
+    debugPrint(json.toString());
+    novel.numberChapters = json["numberChapters"] as int;
     novel.shortDesc = json["shortDesc"];
     return novel;
   }
@@ -53,6 +58,19 @@ class Novel extends LWCategoryInfo {
   @override
   LWCategories getCategory() {
     return category;
+  }
+
+  @override
+  String getCategoryName() {
+    return "novel";
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "numberChapters": numberChapters,
+      "shortDesc": shortDesc,
+    };
   }
 }
 
@@ -76,6 +94,18 @@ class ScientificArticle extends LWCategoryInfo {
   @override
   LWCategories getCategory() {
     return category;
+  }
+
+  @override
+  String getCategoryName() {
+    return "scientific article";
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "dateIssue": dateIssue,
+    };
   }
 }
 
@@ -102,6 +132,19 @@ class Textbook extends LWCategoryInfo {
   LWCategories getCategory() {
     return category;
   }
+
+  @override
+  String getCategoryName() {
+    return "textbook";
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "subject": subject,
+      "complexityLevel": complexityLevel,
+    };
+  }
 }
 
 class Poem extends LWCategoryInfo {
@@ -126,6 +169,19 @@ class Poem extends LWCategoryInfo {
   @override
   LWCategories getCategory() {
     return category;
+  }
+
+  @override
+  String getCategoryName() {
+    return "poem";
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      "rhymingMethod": rhymingMethod,
+      "verseSize": verseSize,
+    };
   }
 }
 
@@ -166,6 +222,20 @@ class LiteraryWork {
     var authorObj = json["authors"] as List;
     return LiteraryWork(json["lwId"] as int, json["name"] as String, lwCategory,
         lwCategoryInfo, authorObj.map((e) => ShortAuthor.fromJson(e)).toList());
+  }
+
+  Map<String, dynamic> toJsonCreate() {
+    String? categoryName;
+    Map<String, dynamic>? info;
+    if (category != null && categoryInfo != null) {
+      categoryName = category!.categoryName;
+      info = categoryInfo!.toJson();
+    }
+    return {
+      "lwName": name,
+      "categoryName": categoryName,
+      "categoryInfo": info,
+    };
   }
 }
 

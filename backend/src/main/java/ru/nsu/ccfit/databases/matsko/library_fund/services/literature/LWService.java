@@ -7,10 +7,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEnti
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
-import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.AuthorRepository;
-import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWCategoryRepository;
-import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWRepository;
-import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.LWWithCount;
+import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.*;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -27,6 +24,9 @@ public class LWService {
 
     @Autowired
     private AuthorRepository authorRepository;
+
+    @Autowired
+    private BaseLWCategoryRepository baseLWCategoryRepository;
 
     public List<LiteraryWorkEntity> getAll() {
         logger.info(() -> "requesting all literary works");
@@ -72,7 +72,11 @@ public class LWService {
         }
         List<AuthorEntity> authors = authorRepository.findAllById(authorIds);
         newLW.setAuthors(new LinkedHashSet<>(authors));
-        return lwRepository.save(newLW);
+        var res = lwRepository.save(newLW);
+        if (categoryInfo != null) {
+            baseLWCategoryRepository.save(categoryInfo);
+        }
+        return res;
     }
 
     @Transactional

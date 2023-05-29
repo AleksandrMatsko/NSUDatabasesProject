@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'menu.dart';
 import 'repositories/literary_work_repository.dart';
 import 'repositories/dtos.dart';
@@ -42,10 +44,416 @@ class LWOptionsScreen extends StatelessWidget {
                 child: const Text(
                     "Получить популярные литературные произведения")),
             OutlinedButton(
-                onPressed: () {},
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, "/lws/addOne"),
                 child: const Text("Добавить новое литературное произведение")),
           ],
         ));
+  }
+}
+
+class LWCreateScreen extends StatefulWidget {
+  const LWCreateScreen({super.key});
+
+  @override
+  State<LWCreateScreen> createState() => _LWCreateScreenState();
+}
+
+class _LWCreateScreenState extends State<LWCreateScreen> {
+  final _lwRepository = LWRepository();
+  late Future<bool> _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  String? _name;
+  String? _authorIdsOneLine;
+
+  var _category = LWCategories.none;
+  Map<String, dynamic> _formParams = {};
+
+  LWCategoryInfo? _getCategoryInfo() {
+    if (_formParams.isEmpty) {
+      return null;
+    }
+    switch (_category) {
+      case (LWCategories.novel):
+        {
+          var strNum = _formParams.remove("numberChapters");
+          _formParams["numberChapters"] = int.parse(strNum!);
+          return Novel.fromJson(_formParams);
+        }
+      case (LWCategories.scientificArticle):
+        {
+          return ScientificArticle.fromJson(_formParams);
+        }
+      case (LWCategories.textbook):
+        {
+          return Textbook.fromJson(_formParams);
+        }
+      case (LWCategories.poem):
+        {
+          return Poem.fromJson(_formParams);
+        }
+      default:
+        {
+          return null;
+        }
+    }
+  }
+
+  Widget _getFormByCategory(BuildContext context, LWCategories category) {
+    switch (category) {
+      case (LWCategories.scientificArticle):
+        {
+          initializeDateFormatting();
+          DateFormat formatter = DateFormat(dateTemplate);
+          _formParams = {
+            "dateIssue": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: FilledButton(
+                    onPressed: () async {
+                      final DateTime? dateTime = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1990),
+                        lastDate: DateTime.now(),
+                      );
+                      if (dateTime != null) {
+                        _formParams["dateIssue"] = formatter.format(dateTime);
+                      }
+                    },
+                    child: const Row(children: [
+                      Icon(Icons.calendar_today),
+                      Text("Задать дату получения")
+                    ]),
+                  )),
+            ],
+          );
+        }
+      case (LWCategories.novel):
+        {
+          _formParams = {
+            "numberChapters": null,
+            "shortDesc": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Количество глав",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["numberChapters"] = value;
+                },
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  FilteringTextInputFormatter.digitsOnly
+                ],
+              ),
+              Text(
+                "Краткое описание",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["shortDesc"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      case (LWCategories.textbook):
+        {
+          _formParams = {
+            "subject": null,
+            "complexityLevel": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Предмет",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["subject"] = value;
+                },
+              ),
+              Text(
+                "Уровень сложности",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["complexityLevel"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      case (LWCategories.poem):
+        {
+          _formParams = {
+            "rhymingMethod": null,
+            "verseSize": null,
+          };
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Способ рифмовки",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["rhymingMethod"] = value;
+                },
+              ),
+              Text(
+                "Стихотворный размер",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              TextFormField(
+                showCursor: true,
+                style: Theme.of(context).textTheme.bodyLarge,
+                onChanged: (value) {
+                  _formParams["verseSize"] = value;
+                },
+              ),
+            ],
+          );
+        }
+      default:
+        {
+          _formParams = {};
+          return const Text("");
+        }
+    }
+  }
+
+  ChoiceChip getChoiceChip(
+      String desc, Function isSelected, Function onSelected) {
+    return ChoiceChip(
+        label: Text(
+          desc,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+        selected: isSelected(),
+        onSelected: (selected) => onSelected(selected),
+        selectedColor: appBackgroundColor,
+        disabledColor: Colors.white,
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5),
+            side: const BorderSide(color: appBackgroundColor)));
+  }
+
+  Widget _getCategoryInputWidget(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              getChoiceChip("нет", () => _category == LWCategories.none,
+                  (selected) {
+                setState(() {
+                  _category = LWCategories.none;
+                });
+              }),
+              getChoiceChip("роман", () => _category == LWCategories.novel,
+                  (selected) {
+                setState(() {
+                  _category = LWCategories.novel;
+                });
+              }),
+              getChoiceChip("научная статья",
+                  () => _category == LWCategories.scientificArticle,
+                  (bool selected) {
+                setState(() {
+                  _category = LWCategories.scientificArticle;
+                });
+              }),
+              getChoiceChip("учебник", () => _category == LWCategories.textbook,
+                  (bool selected) {
+                setState(() {
+                  _category = LWCategories.textbook;
+                });
+              }),
+              getChoiceChip("поэма", () => _category == LWCategories.poem,
+                  (bool selected) {
+                setState(() {
+                  _category = LWCategories.poem;
+                });
+              }),
+            ],
+          ),
+          _getFormByCategory(context, _category),
+        ],
+      ),
+    );
+  }
+
+  void _userReady() {
+    setState(() {
+      if (_name == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указано название литературного произведения";
+        return;
+      }
+      if (_authorIdsOneLine == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан автор или авторы произведения";
+        return;
+      }
+
+      _authorIdsOneLine =
+          _authorIdsOneLine!.replaceAll(RegExp(r"[^0-9\s]"), "");
+      List<String> stringAuthorIds = _authorIdsOneLine!.split(" ");
+      List<int> authorIds = stringAuthorIds.map((e) => int.parse(e)).toList();
+
+      LWCategoryInfo? categoryInfo;
+      try {
+        categoryInfo = _getCategoryInfo();
+      } catch (e) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не верно указаны данные для категории";
+        return;
+      }
+      LWCategory? category;
+      if (categoryInfo != null) {
+        category = LWCategory(-1, categoryInfo.getCategoryName());
+      }
+      var lw = LiteraryWork(-1, _name!, category, categoryInfo, []);
+
+      _success = _lwRepository.create(lw, authorIds);
+      _state = RequestWithParamsState.showingInfo;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Добавление литературного произведения",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("Название литературного произведения",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _name = value;
+                  },
+                ),
+                Text("id авторов (числа через пробел)",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _authorIdsOneLine = value;
+                  },
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Text(
+                    "Выбор категории",
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+                _getCategoryInputWidget(context),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Добавить")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<bool>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady && snapshot.data!) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Литературное произведение добавлено",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, "/lws"),
+                          child: const Text("Меню произведений")),
+                    ]),
+                  );
+                }
+
+                if (isReady && !snapshot.data!) {
+                  return const Center(
+                      child: Text(
+                    "Ошибка: что-то пошло не так",
+                    style: errorStyle,
+                  ));
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  ));
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }
 

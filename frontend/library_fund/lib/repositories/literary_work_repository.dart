@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../utils/constants.dart';
 import 'package:dio/dio.dart';
 import 'dtos.dart';
@@ -16,6 +18,25 @@ class LWRepository {
     );
     final data = response.data as List;
     return data.map((element) => LiteraryWork.fromJson(element)).toList();
+  }
+
+  Future<bool> create(LiteraryWork user, List<int> authorIds) async {
+    var body = user.toJsonCreate();
+    body.putIfAbsent("authors", () => authorIds);
+    debugPrint(body.toString());
+    final response = await _dio.post(
+      _baseUrl,
+      data: body,
+      options: Options(headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      }),
+    );
+    if (response.statusCode != null && response.statusCode! ~/ 100 == 2) {
+      debugPrint(response.data.toString());
+      return true;
+    }
+    return false;
   }
 
   Future<List<Map<String, dynamic>>> getPopular(int limit) async {

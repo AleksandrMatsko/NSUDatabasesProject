@@ -43,6 +43,7 @@ class MyApp extends StatelessWidget {
         "/lws": (context) => const LWOptionsScreen(),
         "/lws/getAll": (context) => const LWAllScreen(),
         "/lws/popular": (context) => const PopularLWScreen(),
+        "/lws/addOne": (context) => const LWCreateScreen(),
         "/libs": (context) => const LibraryOptionsScreen(),
         "/libs/getAll": (context) => const LibrariesAllScreen(),
         "/libs/addOne": (context) => const LibraryAddScreen(),

@@ -25,7 +25,6 @@ class UserRepository {
   Future<bool> create(User user, int librarianId) async {
     var body = user.toJsonCreate();
     body.putIfAbsent("librarianId", () => librarianId);
-    //try {
     final response = await _dio.post(
       _baseUrl,
       data: body,
@@ -39,9 +38,6 @@ class UserRepository {
       return true;
     }
     return false;
-    //} catch (e) {
-    //  return false;
-    //}
   }
 
   Future<List<User>> getByTmp(isLwTmp, String tmp) async {
