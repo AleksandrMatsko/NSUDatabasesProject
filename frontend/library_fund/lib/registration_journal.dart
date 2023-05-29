@@ -20,66 +20,91 @@ class _RJAllScreenState extends State<RJAllScreen> {
     _rj = _rjRepository.getAll();
   }
 
-  List<TableRow> _getTableRows(var context, var snapshot) {
-    List<TableRow> tmp = [
-      TableRow(children: [
-        Text(
+  List<DataColumn> _getRJColumns(BuildContext context) {
+    return <DataColumn>[
+      DataColumn(
+        label: Text(
           "id читателя",
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "фамилия читателя",
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "дата регистрации",
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "id библиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "фамилия библиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
         ),
-        Text(
-          "id библиотеки",
-          style: Theme.of(context).textTheme.bodyLarge,
-        )
-      ])
+      ),
+      DataColumn(
+          label: Text(
+        "id библиотеки",
+        style: Theme.of(context).textTheme.bodyLarge,
+      )),
     ];
+  }
+
+  List<DataRow> _getRJRows(BuildContext, var snapshot) {
+    List<DataRow> res = [];
     for (var rj in snapshot!.data) {
-      tmp.add(TableRow(
-        children: [
-          Text(
-            "${rj.user.userId}",
-            style: Theme.of(context).textTheme.bodyLarge,
+      res.add(DataRow(
+        cells: [
+          DataCell(
+            Text(
+              "${rj.user.userId}",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            rj.user.lastName,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              rj.user.lastName,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            rj.registrationDate,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              rj.registrationDate,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            "${rj.librarian.librarianId}",
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              "${rj.librarian.librarianId}",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            rj.librarian.lastName,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              rj.librarian.lastName,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            "${rj.library.libraryId}",
-            style: Theme.of(context).textTheme.bodyLarge,
-          )
+          DataCell(
+            Text(
+              "${rj.library.libraryId}",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
         ],
       ));
     }
-    return tmp;
+    return res;
   }
 
   @override
@@ -109,11 +134,12 @@ class _RJAllScreenState extends State<RJAllScreen> {
               snapshot.connectionState == ConnectionState.done;
 
           if (isReady) {
-            return Table(
-              border: TableBorder.all(),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: _getTableRows(context, snapshot),
-            );
+            return ListView(children: [
+              DataTable(
+                columns: _getRJColumns(context),
+                rows: _getRJRows(context, snapshot),
+              )
+            ]);
           }
 
           if (snapshot.hasError) {

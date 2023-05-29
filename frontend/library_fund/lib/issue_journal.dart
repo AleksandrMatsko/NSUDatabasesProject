@@ -302,59 +302,97 @@ class _IJAllScreenState extends State<IJAllScreen> {
     _ij = _ijRepository.getAll();
   }
 
-  List<TableRow> _getTableRows(var context, var snapshot) {
-    List<TableRow> tmp = [
-      TableRow(children: [
-        Text(
+  List<DataColumn> _getIJColumns(BuildContext context) {
+    return <DataColumn>[
+      DataColumn(
+        label: Text(
           "инвентарный номер",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "максимальный срок выдачи (в днях)",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "дата выдачи",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "дата возврата",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "id читателя",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "фамилия читателя",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "id выдавшего библиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "фамилия выдавшего библиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "id принявшего библиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "фамилия принявшего библиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-        Text(
+      ),
+      DataColumn(
+        label: Text(
           "",
           style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
         ),
-      ])
+      ),
     ];
+  }
+
+  List<DataRow> _getIJRows(BuildContext context, var snapshot) {
+    List<DataRow> res = [];
     for (var ij in snapshot!.data) {
       String acceptedById = "";
       String acceptedByLastName = "";
@@ -367,64 +405,88 @@ class _IJAllScreenState extends State<IJAllScreen> {
         dateReturn = ij.dateReturn;
       }
 
-      tmp.add(TableRow(
-        children: [
-          Text(
-            "${ij.stored.storedId}",
-            style: Theme.of(context).textTheme.bodyLarge,
+      res.add(DataRow(
+        cells: [
+          DataCell(
+            Text(
+              "${ij.stored.storedId}",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            "${ij.stored.durationIssue}",
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              "${ij.stored.durationIssue}",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            ij.dateIssue,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              ij.dateIssue,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            dateReturn,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              dateReturn,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            "${ij.user.userId}",
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              "${ij.user.userId}",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            ij.user.lastName,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              ij.user.lastName,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            "${ij.issuedBy.librarianId}",
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              "${ij.issuedBy.librarianId}",
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            ij.issuedBy.lastName,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              ij.issuedBy.lastName,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            acceptedById,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              acceptedById,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          Text(
-            acceptedByLastName,
-            style: Theme.of(context).textTheme.bodyLarge,
+          DataCell(
+            Text(
+              acceptedByLastName,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
           ),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.delete,
-                color: appSecondaryColor,
-              )),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.edit_note_sharp,
-                color: appSecondaryColor,
-              )),
+          DataCell(
+            IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.delete,
+                  color: appSecondaryColor,
+                )),
+          ),
+          DataCell(
+            IconButton(
+                onPressed: () {},
+                icon: const Icon(
+                  Icons.edit_note_sharp,
+                  color: appSecondaryColor,
+                )),
+          ),
         ],
       ));
     }
-    return tmp;
+    return res;
   }
 
   @override
@@ -454,11 +516,14 @@ class _IJAllScreenState extends State<IJAllScreen> {
               snapshot.connectionState == ConnectionState.done;
 
           if (isReady) {
-            return Table(
-              border: TableBorder.all(),
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-              children: _getTableRows(context, snapshot),
-            );
+            return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: _getIJColumns(context),
+                      rows: _getIJRows(context, snapshot),
+                    )));
           }
 
           if (snapshot.hasError) {
