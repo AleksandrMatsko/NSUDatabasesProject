@@ -176,4 +176,10 @@ public class UserController {
         }
         return ResponseEntity.badRequest().body(null);
     }
+
+    @DeleteMapping("")
+    public ResponseEntity<Map<String, Object>> delete(@RequestParam("id") Integer id) {
+        userService.delete(id);
+        return ResponseEntity.ok((Map<String, Object>) (new HashMap<>()).put("res", "user deleted"));
+    }
 }

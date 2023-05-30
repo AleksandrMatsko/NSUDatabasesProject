@@ -74,4 +74,10 @@ public class IJService {
         }
         throw new IllegalStateException("issue journal record with id = " + ij.getIssueId() + " not found to update");
     }
+
+    @Transactional
+    public void delete(Integer id) {
+        logger.info(() -> "deleting issue with id: " + id);
+        ijRepository.deleteIssueById(id);
+    }
 }

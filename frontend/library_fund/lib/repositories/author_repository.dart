@@ -35,4 +35,14 @@ class AuthorRepository {
     }
     return false;
   }
+
+  Future<Map<String, dynamic>?> deleteById(int id) async {
+    final response = await _dio.delete(_baseUrl,
+        options: Options(headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        }),
+        queryParameters: {"id": id});
+    return response.data;
+  }
 }

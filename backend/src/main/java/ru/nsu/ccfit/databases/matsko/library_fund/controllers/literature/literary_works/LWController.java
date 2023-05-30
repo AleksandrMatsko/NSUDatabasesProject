@@ -10,10 +10,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWo
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.LWService;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 @RestController
@@ -90,5 +87,11 @@ public class LWController {
             return ResponseEntity.badRequest().body(null);
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Map<String, Object>> delete(@RequestParam("id") Integer id) {
+        lwService.delete(id);
+        return ResponseEntity.ok((Map<String, Object>) (new HashMap<>()).put("res", "lw deleted"));
     }
 }

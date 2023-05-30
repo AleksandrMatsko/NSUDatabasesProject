@@ -10,7 +10,9 @@ import ru.nsu.ccfit.databases.matsko.library_fund.services.libraries.IJService;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -62,5 +64,12 @@ public class IJController {
             return ResponseEntity.ok(ijService.update(issueJournalEntity));
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+
+    @DeleteMapping("")
+    public ResponseEntity<Map<String, Object>> delete(@RequestParam("id") Integer id) {
+        ijService.delete(id);
+        return ResponseEntity.ok((Map<String, Object>) (new HashMap<>()).put("res", "issue deleted"));
     }
 }

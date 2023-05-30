@@ -44,4 +44,11 @@ public interface StorageInfoRepository extends JpaRepository<StorageInfoEntity, 
             ON SI.book_id = books.book_id
             """, nativeQuery = true)
     List<Integer> findStoredByAuthor(@Param("authorName") String authorName);
+
+    @Query(value = """
+            DELETE FROM public."public.StorageInfo"
+            	WHERE stored_id = :id RETURNING stored_id;
+            """, nativeQuery = true)
+    Integer deleteStoredById(@Param("id") Integer id);
+
 }

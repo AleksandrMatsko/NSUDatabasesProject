@@ -10,7 +10,9 @@ import ru.nsu.ccfit.databases.matsko.library_fund.services.libraries.StorageInfo
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -73,6 +75,12 @@ public class StorageInfoController {
             return ResponseEntity.ok(siService.update(storageInfoEntity));
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Map<String, Object>> delete(@RequestParam("id") Integer id) {
+        siService.delete(id);
+        return ResponseEntity.ok((Map<String, Object>) (new HashMap<>()).put("res", "stored deleted"));
     }
 
 }

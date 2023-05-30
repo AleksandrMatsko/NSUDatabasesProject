@@ -35,17 +35,14 @@ class LWOptionsScreen extends StatelessWidget {
           itemExtent: 50,
           children: [
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/lws/getAll"),
+                onPressed: () => Navigator.pushNamed(context, "/lws/getAll"),
                 child: const Text("Получить все литературные произведения")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/lws/popular"),
+                onPressed: () => Navigator.pushNamed(context, "/lws/popular"),
                 child: const Text(
                     "Получить популярные литературные произведения")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/lws/addOne"),
+                onPressed: () => Navigator.pushNamed(context, "/lws/addOne"),
                 child: const Text("Добавить новое литературное произведение")),
           ],
         ));
@@ -525,8 +522,9 @@ class _LWAllScreenState extends State<LWAllScreen> {
 
 class SingleLWInfo extends StatelessWidget {
   final LiteraryWork _lw;
+  final _lwRepository = LWRepository();
   final int? count;
-  const SingleLWInfo({super.key, required lw, required this.count}) : _lw = lw;
+  SingleLWInfo({super.key, required lw, required this.count}) : _lw = lw;
 
   Widget _showIfCount(BuildContext context) {
     if (count == null) {
@@ -621,7 +619,10 @@ class SingleLWInfo extends StatelessWidget {
               _showIfCategory(context),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _lwRepository.deleteById(_lw.lwId);
+                      Navigator.pushReplacementNamed(context, "/lws");
+                    },
                     icon: const Icon(
                       Icons.delete,
                       color: appSecondaryColor,

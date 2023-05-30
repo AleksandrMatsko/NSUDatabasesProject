@@ -76,4 +76,10 @@ public class StorageInfoService {
         }
         throw new IllegalStateException("no stored with id = " + storageInfoEntity.getStoredId() + " to update");
     }
+
+    @Transactional
+    public void delete(Integer id) {
+        logger.info(() -> "deleting stored with id: " + id);
+        siRepository.deleteStoredById(id);
+    }
 }

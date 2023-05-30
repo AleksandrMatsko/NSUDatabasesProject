@@ -33,11 +33,11 @@ class AuthorsOptionsScreen extends StatelessWidget {
           children: [
             OutlinedButton(
                 onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/authors/getAll"),
+                    Navigator.pushNamed(context, "/authors/getAll"),
                 child: const Text("Получить всех авторов")),
             OutlinedButton(
                 onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/authors/addOne"),
+                    Navigator.pushNamed(context, "/authors/addOne"),
                 child: const Text("Добавить нового автора")),
           ],
         ));
@@ -243,7 +243,11 @@ class _AuthorsAllScreenState extends State<AuthorsAllScreen> {
           }
 
           if (snapshot.hasError) {
-            return Text("Ошибка: ${snapshot.error?.toString()}");
+            return Center(
+                child: Text(
+              "Ошибка: ${snapshot.error?.toString()}",
+              style: errorStyle,
+            ));
           }
 
           return const Center(child: CircularProgressIndicator());
@@ -255,8 +259,9 @@ class _AuthorsAllScreenState extends State<AuthorsAllScreen> {
 
 class SingleAuthorInfo extends StatelessWidget {
   final Author _author;
+  final _authorRepository = AuthorRepository();
 
-  const SingleAuthorInfo({super.key, required author}) : _author = author;
+  SingleAuthorInfo({super.key, required author}) : _author = author;
 
   @override
   Widget build(BuildContext context) {
@@ -314,7 +319,10 @@ class SingleAuthorInfo extends StatelessWidget {
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _authorRepository.deleteById(_author.authorId);
+                      Navigator.pushReplacementNamed(context, "/authors");
+                    },
                     icon: const Icon(
                       Icons.delete,
                       color: appSecondaryColor,

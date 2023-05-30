@@ -124,4 +124,9 @@ public interface BookRepository extends JpaRepository<BookEntity, Integer> {
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
 
+    @Query(value = """
+            DELETE FROM public."public.Books"
+            	WHERE book_id = :id RETURNING book_id ;
+            """, nativeQuery = true)
+    Integer deleteBookById(@Param("id") Integer id);
 }

@@ -109,4 +109,11 @@ public class BookService {
     public List<BookEntity> getAllByIds(List<Integer> ids) {
         return new ArrayList<>(bookRepository.findAllById(ids));
     }
+
+    @Transactional
+    public void delete(Integer id) {
+        logger.info(() -> "deleting book with id: " + id);
+        bookRepository.deleteBookById(id);
+    }
+
 }

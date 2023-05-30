@@ -79,4 +79,10 @@ public class LibrarianService {
         }
         throw new IllegalStateException("librarian with id = " + librarian.getLibrarianId() + " not found cannot update");
     }
+
+    @Transactional
+    public void delete(Integer id) {
+        logger.info(() -> "deleting librarian with id: " + id);
+        librarianRepository.deleteLibrarianById(id);
+    }
 }

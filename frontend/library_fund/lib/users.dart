@@ -33,42 +33,39 @@ class UserOptionsScreen extends StatelessWidget {
           itemExtent: 50,
           children: [
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/users/getAll"),
+                onPressed: () => Navigator.pushNamed(context, "/users/getAll"),
                 child: const Text("Получить всех читателей")),
             OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(
-                    context, "/users/getByLwTmp"),
+                onPressed: () =>
+                    Navigator.pushNamed(context, "/users/getByLwTmp"),
                 child: const Text(
                     "Выдать перечень читателей, на руках у которых находится указанное произведение")),
             OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(
-                    context, "/users/getByBookTmp"),
+                onPressed: () =>
+                    Navigator.pushNamed(context, "/users/getByBookTmp"),
                 child: const Text(
                     "Получить список читателей, на руках у которых находится указанное издание (книга, журнал и т.д)")),
             OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(
-                    context, "/users/byLwTmpAndPeriod"),
+                onPressed: () =>
+                    Navigator.pushNamed(context, "/users/byLwTmpAndPeriod"),
                 child: const Text(
                     "Получить перечень читателей, которые в течение указанного промежутка времени получали издание с некоторым произведением, и название этого издания")),
             OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(
-                    context, "/users/byLibrarian"),
+                onPressed: () =>
+                    Navigator.pushNamed(context, "/users/byLibrarian"),
                 child: const Text(
                     "Выдать список читателей, которые в течение обозначенного периода были обслужены указанным библиотекарем")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/users/overdue"),
+                onPressed: () => Navigator.pushNamed(context, "/users/overdue"),
                 child: const Text(
                     "Получить список читателей с просроченным сроком литературы.")),
             OutlinedButton(
                 onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/users/notVisit"),
+                    Navigator.pushNamed(context, "/users/notVisit"),
                 child: const Text(
                     "Получить список читателей, не посещавших библиотеку в течение указанного времени")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/users/addOne"),
+                onPressed: () => Navigator.pushNamed(context, "/users/addOne"),
                 child: const Text("Добавить нового читателя")),
           ],
         ));
@@ -643,8 +640,10 @@ class _UsersAllScreenState extends State<UsersAllScreen> {
 
 class SingleUserInfo extends StatelessWidget {
   final User _user;
+  final _userRepository = UserRepository();
   final ShortBook? _book;
-  const SingleUserInfo({super.key, required user, required book})
+
+  SingleUserInfo({super.key, required user, required book})
       : _user = user,
         _book = book;
 
@@ -745,7 +744,10 @@ class SingleUserInfo extends StatelessWidget {
               _showIfCategory(context),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _userRepository.deleteById(_user.userId);
+                      Navigator.pushReplacementNamed(context, "/users");
+                    },
                     icon: const Icon(
                       Icons.delete,
                       color: appSecondaryColor,

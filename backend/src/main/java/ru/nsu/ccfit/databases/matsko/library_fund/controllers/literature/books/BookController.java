@@ -10,9 +10,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.BookServic
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @RestController
@@ -133,6 +131,12 @@ public class BookController {
             return ResponseEntity.ok(bookService.update(book));
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Map<String, Object>> delete(@RequestParam("id") Integer id) {
+        bookService.delete(id);
+        return ResponseEntity.ok((Map<String, Object>) (new HashMap<>()).put("res", "book deleted"));
     }
 
 }

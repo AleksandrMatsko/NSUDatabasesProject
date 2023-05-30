@@ -44,9 +44,8 @@ class Novel extends LWCategoryInfo {
 
   factory Novel.fromJson(dynamic json) {
     var novel = Novel();
-    debugPrint(json.toString());
     novel.numberChapters = json["numberChapters"] as int;
-    novel.shortDesc = json["shortDesc"];
+    novel.shortDesc = json["shortDesc"] as String?;
     return novel;
   }
 

@@ -66,4 +66,10 @@ public interface LibrarianRepository extends JpaRepository<LibrarianEntity, Inte
     List<Integer> findByLibraryAndHall(
             @Param("libraryName") String libraryName,
             @Param("hallId") Integer hallId);
+
+    @Query(value = """
+            DELETE FROM public."public.Librarians"
+            	WHERE librarian_id = :id RETURNING librarian_id;
+            """, nativeQuery = true)
+    Integer deleteLibrarianById(@Param("id") Integer id);
 }

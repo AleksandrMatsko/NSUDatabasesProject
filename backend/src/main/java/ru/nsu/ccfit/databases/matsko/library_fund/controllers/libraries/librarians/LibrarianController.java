@@ -11,9 +11,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.services.libraries.LibrarianSe
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @RestController
@@ -95,5 +93,11 @@ public class LibrarianController {
             return ResponseEntity.ok(librarianService.update(librarian));
         }
         return ResponseEntity.badRequest().body(null);
+    }
+
+    @DeleteMapping("")
+    public ResponseEntity<Map<String, Object>> delete(@RequestParam("id") Integer id) {
+        librarianService.delete(id);
+        return ResponseEntity.ok((Map<String, Object>) (new HashMap<>()).put("res", "librarian deleted"));
     }
 }

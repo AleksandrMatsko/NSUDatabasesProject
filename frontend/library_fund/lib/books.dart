@@ -33,32 +33,28 @@ class BookOptionsScreen extends StatelessWidget {
           itemExtent: 50,
           children: [
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/books/getAll"),
+                onPressed: () => Navigator.pushNamed(context, "/books/getAll"),
                 child: const Text("Получить все книги")),
             OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(
-                    context, "/books/fromRegLib"),
+                onPressed: () =>
+                    Navigator.pushNamed(context, "/books/fromRegLib"),
                 child: const Text(
                     "Выдать список изданий, которые в течение некоторого времени получал указанный читатель из фонда библиотеки, где он зарегистрирован")),
             OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(
-                    context, "/books/notFromRegLib"),
+                onPressed: () =>
+                    Navigator.pushNamed(context, "/books/notFromRegLib"),
                 child: const Text(
                     "Получить перечень изданий, которыми в течение некоторого времени пользовался указанный читатель из фонда библиотеки, где он не зарегистрирован")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/books/place"),
+                onPressed: () => Navigator.pushNamed(context, "/books/place"),
                 child: const Text(
                     "Получить список литературы, которая в настоящий момент выдана с определенной полки некоторой библиотеки")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/books/flow"),
+                onPressed: () => Navigator.pushNamed(context, "/books/flow"),
                 child: const Text(
                     "Получить перечень указанной литературы, которая поступила (была списана) в течение некоторого периода")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/books/addOne"),
+                onPressed: () => Navigator.pushNamed(context, "/books/addOne"),
                 child: const Text("Добавить новую книгу")),
           ],
         ));
@@ -280,8 +276,9 @@ class _BooksAllScreenState extends State<BooksAllScreen> {
 
 class SingleBookInfo extends StatelessWidget {
   final Book _book;
+  final _bookRepository = BookRepository();
 
-  const SingleBookInfo({super.key, required book}) : _book = book;
+  SingleBookInfo({super.key, required book}) : _book = book;
 
   @override
   Widget build(BuildContext context) {
@@ -338,7 +335,10 @@ class SingleBookInfo extends StatelessWidget {
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _bookRepository.deleteById(_book.bookId);
+                      Navigator.pushReplacementNamed(context, "/books");
+                    },
                     icon: const Icon(
                       Icons.delete,
                       color: appSecondaryColor,

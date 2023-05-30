@@ -16,7 +16,7 @@ public class NovelEntity extends BaseLWCategoryEntity {
     private Integer numberChapters;
 
     @JsonView({View.LWView.class})
-    @Column(name = "short_desc", nullable = false)
+    @Column(name = "short_desc", nullable = true)
     private String shortDesc;
 
     @Nonnull

@@ -35,21 +35,18 @@ class LibrarianOptionsScreen extends StatelessWidget {
           itemExtent: 50,
           children: [
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/librns/getAll"),
+                onPressed: () => Navigator.pushNamed(context, "/librns/getAll"),
                 child: const Text("Получить всех библиотекарей")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/librns/report"),
+                onPressed: () => Navigator.pushNamed(context, "/librns/report"),
                 child: const Text("Получить данные о выработке библиотекарей")),
             OutlinedButton(
                 onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/librns/byPlace"),
+                    Navigator.pushNamed(context, "/librns/byPlace"),
                 child: const Text(
                     "Выдать список библиотекарей, работающих в указанном читальном зале некоторой библиотеки")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/librns/addOne"),
+                onPressed: () => Navigator.pushNamed(context, "/librns/addOne"),
                 child: const Text("Добавить нового библиотекаря")),
           ],
         ));
@@ -347,9 +344,10 @@ class _LibrarariansAllScreenState extends State<LibrarariansAllScreen> {
 
 class SingleLibrarianInfo extends StatelessWidget {
   final Librarian _librarian;
+  final _libnrRepository = LibrarianRepository();
   final int? count;
 
-  const SingleLibrarianInfo({super.key, required librn, required this.count})
+  SingleLibrarianInfo({super.key, required librn, required this.count})
       : _librarian = librn;
 
   Widget _showIfCount(BuildContext context) {
@@ -390,6 +388,23 @@ class SingleLibrarianInfo extends StatelessWidget {
                           child: _showIfCount(context)),
                     ],
                   )),
+              Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(20),
+                  height: 100,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.all(15.0),
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      Text(
+                        "дата найма: ${_librarian.dateHired}   ",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      Text("дата увольнения: ${_librarian.dateRetired ?? ""}",
+                          style: Theme.of(context).textTheme.bodyLarge),
+                    ],
+                  )),
               Text("Место работы:",
                   style: Theme.of(context).textTheme.bodyLarge),
               Card(
@@ -405,7 +420,10 @@ class SingleLibrarianInfo extends StatelessWidget {
               ),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      _libnrRepository.deleteById(_librarian.librarianId);
+                      Navigator.pushReplacementNamed(context, "/librns");
+                    },
                     icon: const Icon(
                       Icons.delete,
                       color: appSecondaryColor,

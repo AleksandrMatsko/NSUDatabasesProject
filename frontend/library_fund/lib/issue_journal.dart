@@ -35,12 +35,10 @@ class IJOptionsScreen extends StatelessWidget {
           itemExtent: 50,
           children: [
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/ij/getAll"),
+                onPressed: () => Navigator.pushNamed(context, "/ij/getAll"),
                 child: const Text("Получить все записи")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/ij/addOne"),
+                onPressed: () => Navigator.pushNamed(context, "/ij/addOne"),
                 child: const Text("Добавить новогую запись")),
           ],
         ));
@@ -313,7 +311,7 @@ class _IJAllScreenState extends State<IJAllScreen> {
       ),
       DataColumn(
         label: Text(
-          "максимальный срок выдачи (в днях)",
+          "максимальный срок\nвыдачи (в днях)",
           style: Theme.of(context).textTheme.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
@@ -348,28 +346,28 @@ class _IJAllScreenState extends State<IJAllScreen> {
       ),
       DataColumn(
         label: Text(
-          "id выдавшего библиотекаря",
+          "id выдавшего\nбиблиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
       ),
       DataColumn(
         label: Text(
-          "фамилия выдавшего библиотекаря",
+          "фамилия выдавшего\nбиблиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
       ),
       DataColumn(
         label: Text(
-          "id принявшего библиотекаря",
+          "id принявшего\nбиблиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
       ),
       DataColumn(
         label: Text(
-          "фамилия принявшего библиотекаря",
+          "фамилия принявшего\nбиблиотекаря",
           style: Theme.of(context).textTheme.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
@@ -391,7 +389,8 @@ class _IJAllScreenState extends State<IJAllScreen> {
     ];
   }
 
-  List<DataRow> _getIJRows(BuildContext context, var snapshot) {
+  List<DataRow> _getIJRows(
+      BuildContext context, var snapshot, IJRepository ijRepository) {
     List<DataRow> res = [];
     for (var ij in snapshot!.data) {
       String acceptedById = "";
@@ -469,7 +468,10 @@ class _IJAllScreenState extends State<IJAllScreen> {
           ),
           DataCell(
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  ijRepository.deleteById(ij.issueId);
+                  Navigator.pushReplacementNamed(context, "/ij");
+                },
                 icon: const Icon(
                   Icons.delete,
                   color: appSecondaryColor,
@@ -522,7 +524,7 @@ class _IJAllScreenState extends State<IJAllScreen> {
                     scrollDirection: Axis.horizontal,
                     child: DataTable(
                       columns: _getIJColumns(context),
-                      rows: _getIJRows(context, snapshot),
+                      rows: _getIJRows(context, snapshot, _ijRepository),
                     )));
           }
 

@@ -8,7 +8,9 @@ import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.AuthorService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
@@ -52,5 +54,9 @@ public class AuthorController {
         return ResponseEntity.badRequest().body(null);
     }
 
-
+    @DeleteMapping("")
+    public ResponseEntity<Map<String, Object>> delete(@RequestParam("id") Integer id) {
+        authorService.delete(id);
+        return ResponseEntity.ok((Map<String, Object>) (new HashMap<>()).put("res", "author deleted"));
+    }
 }

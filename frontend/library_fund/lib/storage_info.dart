@@ -35,22 +35,18 @@ class SIOptionsScreen extends StatelessWidget {
           itemExtent: 50,
           children: [
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/si/getAll"),
+                onPressed: () => Navigator.pushNamed(context, "/si/getAll"),
                 child: const Text("Получить все хранимые экземпляры")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/si/byLw"),
+                onPressed: () => Navigator.pushNamed(context, "/si/byLw"),
                 child: const Text(
                     "Получить список инвентарных номеров и названий из библиотечного фонда, в которых содержится указанное произведение")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/si/byAuthor"),
+                onPressed: () => Navigator.pushNamed(context, "/si/byAuthor"),
                 child: const Text(
                     "Выдать список инвентарных номеров и названий из библиотечного фонда, в которых содержатся произведения указанного автора")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/si/addOne"),
+                onPressed: () => Navigator.pushNamed(context, "/si/addOne"),
                 child: const Text("Добавить новый экземпляр")),
           ],
         ));
@@ -376,12 +372,14 @@ class _SIAllScreenState extends State<SIAllScreen> {
               snapshot.connectionState == ConnectionState.done;
 
           if (isReady) {
-            return ListView(children: [
-              DataTable(
-                columns: getSITableColumns(context),
-                rows: getSITableRows(context, snapshot),
-              )
-            ]);
+            return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: getSITableColumns(context),
+                      rows: getSITableRows(context, snapshot, _siRepository),
+                    )));
           }
 
           if (snapshot.hasError) {
@@ -401,54 +399,91 @@ List<DataColumn> getSITableColumns(BuildContext context) {
       label: Text(
         "id экземпляра",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
     DataColumn(
       label: Text(
         "id зала",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
     DataColumn(
       label: Text(
         "номер шкафа",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
     DataColumn(
       label: Text(
         "номер полки",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
     DataColumn(
       label: Text(
-        "можно ли выносить из библиотеки",
+        "id книги",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
     DataColumn(
       label: Text(
-        "максимальный срок выдачи (в днях)",
+        "название книги",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+    DataColumn(
+      label: Text(
+        "можно ли выносить\nиз библиотеки",
+        style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+    DataColumn(
+      label: Text(
+        "максимальный срок\nвыдачи (в днях)",
+        style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
     DataColumn(
       label: Text(
         "дата поступления",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
     ),
     DataColumn(
       label: Text(
         "дата списания",
         style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
       ),
-    )
+    ),
+    DataColumn(
+      label: Text(
+        "",
+        style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+    DataColumn(
+      label: Text(
+        "",
+        style: Theme.of(context).textTheme.bodyLarge,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
   ];
 }
 
-List<DataRow> getSITableRows(BuildContext context, var snapshot) {
+List<DataRow> getSITableRows(
+    BuildContext context, var snapshot, SIRepository siRepository) {
   List<DataRow> res = [];
   for (var si in snapshot!.data!) {
     var availableIssueWord = "";
@@ -484,6 +519,19 @@ List<DataRow> getSITableRows(BuildContext context, var snapshot) {
       ),
       DataCell(
         Text(
+          "${si.book.bookId}",
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ),
+      DataCell(
+        Text(
+          "${si.book.name}",
+          style: Theme.of(context).textTheme.bodyLarge,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      DataCell(
+        Text(
           availableIssueWord,
           style: Theme.of(context).textTheme.bodyLarge,
         ),
@@ -504,6 +552,25 @@ List<DataRow> getSITableRows(BuildContext context, var snapshot) {
         "${si.dateDispose ?? ""}",
         style: Theme.of(context).textTheme.bodyLarge,
       )),
+      DataCell(
+        IconButton(
+            onPressed: () {
+              siRepository.deleteById(si.storedId);
+              Navigator.pushReplacementNamed(context, "/si");
+            },
+            icon: const Icon(
+              Icons.delete,
+              color: appSecondaryColor,
+            )),
+      ),
+      DataCell(
+        IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.edit_note_sharp,
+              color: appSecondaryColor,
+            )),
+      ),
     ]));
   }
   return res;
@@ -603,12 +670,15 @@ class _SIByTemplateState extends State<SIByTemplate> {
                       snapshot.connectionState == ConnectionState.done;
 
                   if (isReady) {
-                    return ListView(children: [
-                      DataTable(
-                        columns: getSITableColumns(context),
-                        rows: getSITableRows(context, snapshot),
-                      )
-                    ]);
+                    return SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columns: getSITableColumns(context),
+                              rows: getSITableRows(
+                                  context, snapshot, _siRepository),
+                            )));
                   }
 
                   if (snapshot.hasError) {

@@ -1,9 +1,7 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.literature;
 
 import jakarta.transaction.Transactional;
-import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.AuthorRepository;
@@ -44,4 +42,11 @@ public class AuthorService {
         }
         throw new IllegalStateException("author with id " + authorEntity.getAuthorId() + " not found");
     }
+
+    @Transactional
+    public Integer delete(Integer id) {
+        logger.info(() -> "deleting author with id: " + id);
+        return authorRepository.deleteAuthorById(id);
+    }
+
 }

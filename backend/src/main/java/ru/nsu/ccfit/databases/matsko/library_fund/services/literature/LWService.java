@@ -87,4 +87,10 @@ public class LWService {
         }
         throw new IllegalStateException("no literary work with id = " + literaryWorkEntity.getLwId());
     }
+
+    @Transactional
+    public void delete(Integer id) {
+        logger.info(() -> "deleting lw with id: " + id);
+        lwRepository.deleteLWById(id);
+    }
 }

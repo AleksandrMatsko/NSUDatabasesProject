@@ -125,4 +125,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
     List<Integer> findUsersNotVisitDuringPeriod(
             @Param("start_date") Date startDate,
             @Param("end_date") Date endDate);
+
+    @Query(value = """
+            DELETE FROM public."public.Users"
+            	WHERE user_id = :id RETURNING user_id ;
+            """, nativeQuery = true)
+    Integer deleteUserById(@Param("id") Integer id);
 }

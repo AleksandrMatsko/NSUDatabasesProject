@@ -154,4 +154,10 @@ public class UserService {
         }
         throw new IllegalStateException("user with id = " + newUser.getUserId() + " not found to update");
     }
+
+    @Transactional
+    public void delete(Integer id) {
+        logger.info(() -> "deleting user with id: " + id);
+        userRepository.deleteUserById(id);
+    }
 }

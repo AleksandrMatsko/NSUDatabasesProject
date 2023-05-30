@@ -45,4 +45,9 @@ public interface LWRepository extends JpaRepository<LiteraryWorkEntity, Integer>
             @Param("lwName") String lwName,
             @Param("categoryId") Integer categoryId);
 
+    @Query(value = """
+            DELETE FROM public."public.LiteraryWorks"
+            	WHERE lw_id = :id RETURNING lw_id ;
+            """, nativeQuery = true)
+    Integer deleteLWById(@Param("id") Integer id);
 }
