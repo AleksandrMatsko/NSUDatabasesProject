@@ -9,7 +9,7 @@ import java.util.Map;
 public class UpdateLWParams {
     private Integer lwId;
     private String name;
-    private LWCategoryEntity category;
+    private String categoryName;
     private ArrayList<AuthorEntity> authors;
     private Map<String, Object> categoryInfo;
 
@@ -29,12 +29,12 @@ public class UpdateLWParams {
         this.name = name;
     }
 
-    public LWCategoryEntity getCategory() {
-        return category;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCategory(LWCategoryEntity category) {
-        this.category = category;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public ArrayList<AuthorEntity> getAuthors() {

@@ -7,6 +7,7 @@ import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEnti
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
+import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.repositories.literature.*;
 
 import java.util.*;
@@ -80,12 +81,25 @@ public class LWService {
     }
 
     @Transactional
-    public LiteraryWorkEntity update(LiteraryWorkEntity literaryWorkEntity) {
-        logger.info(() -> "updating lw with id = " + literaryWorkEntity.getLwId());
-        if (lwRepository.existsById(literaryWorkEntity.getLwId())) {
-            return lwRepository.save(literaryWorkEntity);
+    public LiteraryWorkEntity update(LiteraryWorkEntity newLw, String categoryName, BaseLWCategoryEntity categoryInfo) {
+        logger.info(() -> "updating lw with id = " + newLw.getLwId());
+        var oldLw = lwRepository.findById(newLw.getLwId());
+        if (oldLw.isPresent()) {
+            if (categoryName != null) {
+                LWCategoryEntity category = lwCategoryRepository.getCategoryByName(categoryName);
+                newLw.setCategory(category);
+                categoryInfo.setLwId(newLw.getLwId());
+                newLw.setCategoryInfo(categoryInfo);
+                categoryInfo.setLiteraryWork(newLw);
+                baseLWCategoryRepository.save(categoryInfo);
+            }
+            else if (oldLw.get().getCategory() != null) {
+                baseLWCategoryRepository.deleteById(oldLw.get().getLwId());
+                newLw.setCategory(null);
+            }
+            return lwRepository.save(newLw);
         }
-        throw new IllegalStateException("no literary work with id = " + literaryWorkEntity.getLwId());
+        throw new IllegalStateException("no literary work with id = " + newLw.getLwId());
     }
 
     @Transactional

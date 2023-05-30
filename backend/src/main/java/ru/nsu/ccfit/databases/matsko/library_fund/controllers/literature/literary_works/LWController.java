@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ccfit.databases.matsko.library_fund.config.View;
-import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.AuthorEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.LiteraryWorkEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.literature.categories.BaseLWCategoryEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.services.literature.LWService;
@@ -71,20 +70,17 @@ public class LWController {
             @PathVariable("id") Integer id,
             @RequestBody UpdateLWParams params) {
         if (params.getLwId() != null && id.equals(params.getLwId())) {
+            LiteraryWorkEntity lw = new LiteraryWorkEntity();
+            lw.setLwId(params.getLwId());
+            lw.setName(params.getName());
+            lw.setAuthors(new HashSet<>(params.getAuthors()));
             for (LWCategoriesEnum lwCategory : LWCategoriesEnum.values()) {
-                if (lwCategory.getCategoryName().equals(params.getCategory().getCategoryName())) {
+                if (lwCategory.getCategoryName().equals(params.getCategoryName())) {
                     BaseLWCategoryEntity categoryInfo = lwCategory.getExample(params.getCategoryInfo());
-                    LiteraryWorkEntity lw = new LiteraryWorkEntity();
-                    lw.setLwId(params.getLwId());
-                    lw.setName(params.getName());
-                    lw.setCategory(params.getCategory());
-                    lw.setCategoryInfo(categoryInfo);
-                    lw.setAuthors(new HashSet<>(params.getAuthors()));
-                    categoryInfo.setLwId(id);
-                    return ResponseEntity.ok(lwService.update(lw));
+                    return ResponseEntity.ok(lwService.update(lw, params.getCategoryName(), categoryInfo));
                 }
             }
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.ok(lwService.update(lw, null, null));
         }
         return ResponseEntity.badRequest().body(null);
     }
