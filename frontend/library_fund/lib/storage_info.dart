@@ -328,6 +328,304 @@ class _SIAddScreenState extends State<SIAddScreen> {
   }
 }
 
+class SIUpdateScreen extends StatefulWidget {
+  const SIUpdateScreen({super.key});
+
+  @override
+  State<SIUpdateScreen> createState() => _SIUpdateScreenState();
+}
+
+class _SIUpdateScreenState extends State<SIUpdateScreen> {
+  final _siRepository = SIRepository();
+  dynamic _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  int? _storedId;
+  String? _bookId;
+  String? _hallId;
+  String? _bookcase;
+  String? _shelf;
+  bool? _availableIssue;
+  String? _durationIssue;
+  DateTime? _dateReceipt;
+  DateTime? _dateDispose;
+
+  void _userReady() {
+    setState(() {
+      if (_storedId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id хранимого экземпляра";
+        return;
+      }
+      if (_bookId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id книги";
+        return;
+      }
+      if (_hallId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id зала";
+        return;
+      }
+      if (_bookcase == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан номер книжного шкафа";
+        return;
+      }
+      if (_shelf == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан номер полки";
+        return;
+      }
+      if (_durationIssue == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана длительность выдачи";
+        return;
+      }
+      if (_dateReceipt == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана дата получения экземпляра";
+        return;
+      }
+
+      initializeDateFormatting();
+      DateFormat formatter = DateFormat(dateTemplate);
+      String receiptDate = formatter.format(_dateReceipt!);
+      String? disposeDate;
+      if (_dateDispose != null) {
+        disposeDate = formatter.format(_dateDispose!);
+      }
+
+      _success = _siRepository.update({
+        "storedId": _storedId!,
+        "book": {
+          "bookId": int.parse(_bookId!),
+        },
+        "hall": {
+          "hallId": int.parse(_hallId!),
+        },
+        "bookcase": int.parse(_bookcase!),
+        "shelf": int.parse(_shelf!),
+        "availableIssue": _availableIssue!,
+        "durationIssue": int.parse(_durationIssue!),
+        "dateReceipt": receiptDate,
+        "dateDispose": disposeDate,
+      });
+      _state = RequestWithParamsState.showingInfo;
+      Navigator.pushReplacementNamed(context, "/si");
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Object? obj = ModalRoute.of(context)?.settings.arguments;
+    Map<String, dynamic> json = obj as Map<String, dynamic>;
+    _storedId = json["storedId"] as int;
+    _bookId = ShortBook.fromJson(json["book"]).bookId.toString();
+    _hallId = json["hall"]["hallId"].toString();
+    _bookcase = json["bookcase"].toString();
+    _shelf = json["shelf"].toString();
+    _availableIssue ??= json["availableIssue"] as bool;
+    _durationIssue = json["durationIssue"].toString();
+    _dateReceipt = DateTime.parse(json["dateReceipt"] as String);
+    var strDateDispose = json["dateDispose"] as String?;
+    if (strDateDispose != null) {
+      _dateDispose = DateTime.parse(strDateDispose);
+    }
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Обновление хранимого экземпляра ${_storedId ?? ""}",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("id книги", style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _bookId,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _bookId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Text("id зала", style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  initialValue: _hallId,
+                  showCursor: true,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _hallId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Text("Номер книжного шкафа",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _bookcase,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _bookcase = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Text("Номер полки",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _shelf,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _shelf = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Text("Возможность выноса из библиотеки",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  child: Checkbox(
+                      value: _availableIssue,
+                      onChanged: (value) {
+                        setState(() {
+                          _availableIssue = value;
+                        });
+                      }),
+                ),
+                Text("Длительность выдачи (в днях)",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _durationIssue,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _durationIssue = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTime? dateTime = await showDatePicker(
+                          context: context,
+                          initialDate: _dateReceipt ?? DateTime.now(),
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTime != null) {
+                          _dateReceipt = dateTime;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать дату получения")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTime? dateTime = await showDatePicker(
+                          context: context,
+                          initialDate: _dateDispose ?? DateTime.now(),
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTime != null) {
+                          _dateDispose = dateTime;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать дату списания")
+                      ]),
+                    )),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Редактировать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<dynamic>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Экземпляр добавлен",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, "/si"),
+                          child: const Text("Меню экземляров")),
+                    ]),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  ));
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
+  }
+}
+
 class SIAllScreen extends StatefulWidget {
   const SIAllScreen({super.key});
 
@@ -565,7 +863,10 @@ List<DataRow> getSITableRows(
       ),
       DataCell(
         IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, "/si/update",
+                  arguments: si.toJsonUpdate());
+            },
             icon: const Icon(
               Icons.edit_note_sharp,
               color: appSecondaryColor,

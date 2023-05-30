@@ -64,4 +64,14 @@ class SIRepository {
         queryParameters: {"id": id});
     return response.data;
   }
+
+  Future<dynamic> update(Map<String, dynamic> params) async {
+    final response = await _dio.put("$_baseUrl/${params["storedId"]}",
+        options: Options(headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        }),
+        data: params);
+    return response.data;
+  }
 }

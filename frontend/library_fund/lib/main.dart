@@ -52,6 +52,7 @@ class MyApp extends StatelessWidget {
         "/si/byLw": (context) => const SIByTemplate(isLwTmp: true),
         "/si/byAuthor": (context) => const SIByTemplate(isLwTmp: false),
         "/si/addOne": (context) => const SIAddScreen(),
+        "/si/update": (context) => const SIUpdateScreen(),
         "/librns": (context) => const LibrarianOptionsScreen(),
         "/librns/getAll": (context) => const LibrarariansAllScreen(),
         "/librns/report": (context) => const LibrariansReportScreen(),

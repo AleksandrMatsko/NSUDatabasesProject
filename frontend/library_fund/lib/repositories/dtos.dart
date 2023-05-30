@@ -818,6 +818,25 @@ class StorageInfo {
         json["dateDispose"] as String?,
         ShortBook.fromJson(json["book"]));
   }
+
+  Map<String, dynamic> toJsonUpdate() {
+    return {
+      "storedId": storedId,
+      "hall": {
+        "hallId": hallId,
+      },
+      "bookcase": bookcase,
+      "shelf": shelf,
+      "availableIssue": availableIssue,
+      "durationIssue": durationIssue,
+      "dateReceipt": dateReceipt,
+      "dateDispose": dateDispose,
+      "book": {
+        "bookId": book.bookId,
+        "name": book.name,
+      }
+    };
+  }
 }
 
 class IssueJournal {
