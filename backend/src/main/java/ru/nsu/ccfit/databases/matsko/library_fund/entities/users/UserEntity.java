@@ -37,7 +37,7 @@ public class UserEntity {
     private UserCategoryEntity category;
 
     @JsonView({View.UserView.class})
-    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "user")
     private BaseUserCategoryEntity categoryInfo;
 
     @OneToOne(mappedBy = "user")

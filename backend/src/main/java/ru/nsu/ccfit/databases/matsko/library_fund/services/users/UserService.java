@@ -1,8 +1,12 @@
 package ru.nsu.ccfit.databases.matsko.library_fund.services.users;
 
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.LibrarianEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.libraries.RegistrationJournalEntity;
 import ru.nsu.ccfit.databases.matsko.library_fund.entities.users.UserCategoryEntity;
@@ -147,9 +151,22 @@ public class UserService {
     }
 
     @Transactional
-    public UserEntity update(UserEntity newUser) {
+    public UserEntity update(UserEntity newUser, String categoryName, BaseUserCategoryEntity categoryInfo) {
         logger.info(() -> "updating user with id = " + newUser.getUserId());
-        if (userRepository.existsById(newUser.getUserId())) {
+        var oldUser = userRepository.findById(newUser.getUserId());
+        if (oldUser.isPresent()) {
+            if (categoryName != null) {
+                UserCategoryEntity category = userCategoryRepository.getCategoryByName(categoryName);
+                newUser.setCategory(category);
+                categoryInfo.setUserId(newUser.getUserId());
+                newUser.setCategoryInfo(categoryInfo);
+                categoryInfo.setUser(newUser);
+                baseUserCategoryRepository.save(categoryInfo);
+            }
+            else if (oldUser.get().getCategory() != null) {
+                baseUserCategoryRepository.deleteById(oldUser.get().getUserId());
+                newUser.setCategory(null);
+            }
             return userRepository.save(newUser);
         }
         throw new IllegalStateException("user with id = " + newUser.getUserId() + " not found to update");

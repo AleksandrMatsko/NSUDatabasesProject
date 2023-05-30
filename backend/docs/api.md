@@ -321,10 +321,7 @@
             "lastName": "Бобков",
             "firstName": "Матвей",
             "patronymic": null,
-            "category": {
-                "categoryId": 2,
-                "categoryName": "student"
-            },
+            "categoryName": "student",
             "categoryInfo": {
                 "faculty": "ФФ",
                 "university": "НГУ"

@@ -9,7 +9,7 @@ public class UpdateUserParams {
     private String lastName;
     private String firstName;
     private String patronymic;
-    private UserCategoryEntity category;
+    private String categoryName;
     private Map<String, Object> categoryInfo;
 
     public Integer getUserId() {
@@ -44,12 +44,12 @@ public class UpdateUserParams {
         this.patronymic = patronymic;
     }
 
-    public UserCategoryEntity getCategory() {
-        return category;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCategory(UserCategoryEntity category) {
-        this.category = category;
+    public void setCategory(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public Map<String, Object> getCategoryInfo() {

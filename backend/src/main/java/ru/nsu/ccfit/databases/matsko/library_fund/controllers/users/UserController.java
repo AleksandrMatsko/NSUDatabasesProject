@@ -157,22 +157,20 @@ public class UserController {
             @PathVariable("id") Integer id,
             @RequestBody UpdateUserParams params) {
         if (params.getUserId() != null && id.equals(params.getUserId())) {
+            UserEntity userEntity = new UserEntity();
+            userEntity.setUserId(id);
+            userEntity.setLastName(params.getLastName());
+            userEntity.setFirstName(params.getFirstName());
+            userEntity.setPatronymic(params.getPatronymic());
             for (UserCategoryEnum category : UserCategoryEnum.values()) {
-                if (category.getCategoryName().equals(params.getCategory().getCategoryName())) {
+                if (category.getCategoryName().equals(params.getCategoryName())) {
                     BaseUserCategoryEntity categoryInfo = category.getExample(params.getCategoryInfo());
-                    UserEntity userEntity = new UserEntity();
-                    userEntity.setUserId(id);
-                    userEntity.setLastName(params.getLastName());
-                    userEntity.setFirstName(params.getFirstName());
-                    userEntity.setPatronymic(params.getPatronymic());
-                    userEntity.setCategory(params.getCategory());
-                    userEntity.setCategoryInfo(categoryInfo);
-                    categoryInfo.setUserId(id);
-                    categoryInfo.setUser(userEntity);
-                    return ResponseEntity.ok(userService.update(userEntity));
+                    //userEntity.setCategoryInfo(categoryInfo);
+                    //categoryInfo.setUser(userEntity);
+                    return ResponseEntity.ok(userService.update(userEntity, params.getCategoryName(), categoryInfo));
                 }
             }
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.ok(userService.update(userEntity, null, null));
         }
         return ResponseEntity.badRequest().body(null);
     }

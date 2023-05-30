@@ -13,7 +13,7 @@ public abstract class BaseUserCategoryEntity {
     @JsonIgnore
     private Integer userId;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @MapsId
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     private UserEntity user;
