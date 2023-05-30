@@ -33,12 +33,10 @@ class LibraryOptionsScreen extends StatelessWidget {
           itemExtent: 50,
           children: [
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/libs/getAll"),
+                onPressed: () => Navigator.pushNamed(context, "/libs/getAll"),
                 child: const Text("Получить все библиотеки")),
             OutlinedButton(
-                onPressed: () =>
-                    Navigator.pushReplacementNamed(context, "/libs/addOne"),
+                onPressed: () => Navigator.pushNamed(context, "/libs/addOne"),
                 child: const Text("Добавить новую библиотеку")),
           ],
         ));
