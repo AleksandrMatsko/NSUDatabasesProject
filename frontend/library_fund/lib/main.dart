@@ -101,6 +101,10 @@ class MainScreen extends StatelessWidget {
                 icon: const Icon(Icons.menu_rounded))
           ],
         ),
-        body: const Text("Проект по курсу базы данных."));
+        body: Center(
+            child: Text(
+          "Проект по курсу базы данных (2023 г.)",
+          style: Theme.of(context).textTheme.headlineMedium,
+        )));
   }
 }
