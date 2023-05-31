@@ -479,7 +479,10 @@ class _IJAllScreenState extends State<IJAllScreen> {
           ),
           DataCell(
             IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, "/ij/update",
+                      arguments: ij.toJsonUpdate());
+                },
                 icon: const Icon(
                   Icons.edit_note_sharp,
                   color: appSecondaryColor,
@@ -536,5 +539,278 @@ class _IJAllScreenState extends State<IJAllScreen> {
         },
       ),
     );
+  }
+}
+
+class IJUpdateScreen extends StatefulWidget {
+  const IJUpdateScreen({super.key});
+
+  @override
+  State<IJUpdateScreen> createState() => _IJUpdateScreenState();
+}
+
+class _IJUpdateScreenState extends State<IJUpdateScreen> {
+  final _ijRepository = IJRepository();
+  late Future<dynamic> _success;
+  var _state = RequestWithParamsState.askingUser;
+  late String _errorMessage;
+  int? _issueId;
+  String? _storedId;
+  String? _userId;
+  String? _issuedBy;
+  String? _acceptedBy;
+  DateTime? _dateIssue;
+  DateTime? _dateReturn;
+
+  void _userReady() {
+    setState(() {
+      if (_issueId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id выдачи";
+        return;
+      }
+      if (_storedId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id выдаваемого экземпляра";
+        return;
+      }
+      if (_userId == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id читателя, взявшего книгу";
+        return;
+      }
+      if (_issuedBy == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указан id выдавшего библиотекаря";
+        return;
+      }
+      if (_dateIssue == null) {
+        _state = RequestWithParamsState.errorInput;
+        _errorMessage = "Не указана дата выдачи";
+        return;
+      }
+
+      initializeDateFormatting();
+      DateFormat formatter = DateFormat(dateTemplate);
+      String issueDate = formatter.format(_dateIssue!);
+      String? returnDate;
+      int? acceptedBy;
+      if (_dateReturn != null && _acceptedBy != null) {
+        returnDate = formatter.format(_dateReturn!);
+        acceptedBy = int.parse(_acceptedBy!);
+      }
+
+      _success = _ijRepository.update({
+        "issueId": _issueId!,
+        "stored": {
+          "storedId": int.parse(_storedId!),
+        },
+        "user": {
+          "userId": int.parse(_userId!),
+        },
+        "dateIssue": issueDate,
+        "dateReturn": returnDate,
+        "issuedBy": {
+          "librarianId": int.parse(_issuedBy!),
+        },
+        "acceptedBy": {
+          "librarianId": acceptedBy,
+        },
+      });
+      _state = RequestWithParamsState.showingInfo;
+      Navigator.pushReplacementNamed(context, "/ij");
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final Object? obj = ModalRoute.of(context)?.settings.arguments;
+    Map<String, dynamic> json = obj as Map<String, dynamic>;
+    _issueId = json["issueId"] as int;
+    _userId = json["userId"].toString();
+    _storedId = json["storedId"].toString();
+    _dateIssue = DateTime.parse(json["dateIssue"] as String);
+    var strDateReturn = json["dateReturn"] as String?;
+    if (strDateReturn != null) {
+      _dateReturn = DateTime.parse(strDateReturn);
+    }
+    _issuedBy = json["issuedBy"].toString();
+    var acceptedBy = json["acceptedBy"];
+    if (acceptedBy != null) {
+      _acceptedBy = acceptedBy.toString();
+    }
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          title: Text(
+            "Обновление записи ${_issueId ?? ""} в журнале выдачи",
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          actions: [
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (BuildContext newBuildContext) {
+                    return const Menu();
+                  }));
+                },
+                icon: const Icon(Icons.menu_rounded))
+          ],
+        ),
+        body: switch (_state) {
+          RequestWithParamsState.askingUser => ListView(
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+              children: [
+                Text("id экземпляра",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _storedId,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _storedId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Text("id читателя",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _userId,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _userId = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTime? dateTime = await showDatePicker(
+                          context: context,
+                          initialDate: _dateIssue ?? DateTime.now(),
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTime != null) {
+                          _dateIssue = dateTime;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать дату выдачи")
+                      ]),
+                    )),
+                Text("id выдавшего библиотекаря",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _issuedBy,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _issuedBy = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                      onPressed: () async {
+                        final DateTime? dateTime = await showDatePicker(
+                          context: context,
+                          initialDate: _dateReturn ?? DateTime.now(),
+                          firstDate: DateTime(1990),
+                          lastDate: DateTime.now(),
+                        );
+                        if (dateTime != null) {
+                          _dateReturn = dateTime;
+                        }
+                      },
+                      child: const Row(children: [
+                        Icon(Icons.calendar_today),
+                        Text("Задать дату возврата")
+                      ]),
+                    )),
+                Text("id принявшего библиотекаря",
+                    style: Theme.of(context).textTheme.bodyLarge),
+                TextFormField(
+                  showCursor: true,
+                  initialValue: _acceptedBy,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                  onChanged: (value) {
+                    _acceptedBy = value;
+                  },
+                  keyboardType: TextInputType.number,
+                  inputFormatters: <TextInputFormatter>[
+                    FilteringTextInputFormatter.digitsOnly
+                  ],
+                ),
+                Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    child: FilledButton(
+                        onPressed: _userReady,
+                        child: const Row(
+                          children: [Text("Редактировать")],
+                        ))),
+              ],
+            ),
+          RequestWithParamsState.showingInfo => FutureBuilder<dynamic>(
+              future: _success,
+              builder: (context, snapshot) {
+                var isReady = snapshot.hasData &&
+                    snapshot.connectionState == ConnectionState.done;
+
+                if (isReady && snapshot.data!) {
+                  return Container(
+                    alignment: Alignment.center,
+                    child: Column(children: [
+                      Padding(
+                        padding: const EdgeInsets.all(40),
+                        child: Text("Запись добавлена",
+                            style: Theme.of(context).textTheme.titleLarge),
+                      ),
+                      FilledButton(
+                          onPressed: () =>
+                              Navigator.pushReplacementNamed(context, "/ij"),
+                          child: const Text("Меню журнала выдачи")),
+                    ]),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return Center(
+                      child: Text(
+                    "Ошибка: ${snapshot.error?.toString()}",
+                    style: errorStyle,
+                  ));
+                }
+
+                if (isReady && !snapshot.data!) {
+                  return const Center(
+                      child: Text(
+                    "Ошибка: что-то пошло не так",
+                    style: errorStyle,
+                  ));
+                }
+
+                return const Center(child: CircularProgressIndicator());
+              }),
+          RequestWithParamsState.errorInput => Center(
+              child: Text(_errorMessage, style: errorStyle),
+            )
+        });
   }
 }

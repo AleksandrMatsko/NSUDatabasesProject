@@ -46,4 +46,16 @@ class IJRepository {
         queryParameters: {"id": id});
     return response.data;
   }
+
+  Future<dynamic> update(Map<String, dynamic> params) async {
+    debugPrint(params.toString());
+    final response = await _dio.put("$_baseUrl/${params["issueId"]}",
+        options: Options(headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        }),
+        data: params);
+    debugPrint(response.data.toString());
+    return response.data;
+  }
 }

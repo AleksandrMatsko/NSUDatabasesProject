@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class ShortLW {
   int lwId;
   String name;
@@ -864,5 +862,17 @@ class IssueJournal {
         ShortUser.fromJson(json["user"]),
         ShortLibrarian.fromJson(json["issuedBy"]),
         librn);
+  }
+
+  Map<String, dynamic> toJsonUpdate() {
+    return {
+      "issueId": issueId,
+      "storedId": stored.storedId,
+      "dateIssue": dateIssue,
+      "dateReturn": dateReturn,
+      "issuedBy": issuedBy.librarianId,
+      "acceptedBy": acceptedBy?.librarianId,
+      "userId": user.userId,
+    };
   }
 }
